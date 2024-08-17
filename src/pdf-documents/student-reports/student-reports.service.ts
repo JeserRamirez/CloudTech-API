@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { getHelloWorldReport } from '../reports/hello-world.report';
 import { PrinterService } from '../printer/printer.service';
+import {
+	getKardexGraphicReport,
+	getKardexListReport,
+	getPeriodGradesReport,
+	getScheduleReport,
+} from '../reports/student-reports';
 
 @Injectable()
 export class StudentReportsService extends PrinterService {
@@ -8,10 +13,31 @@ export class StudentReportsService extends PrinterService {
 		super();
 	}
 
-	hello() {
-		const docDefinition = getHelloWorldReport({
-			name: 'Jeser',
-		});
+	schedule() {
+		const docDefinition = getScheduleReport();
+
+		const doc = this.printerService.createPdf(docDefinition);
+
+		return doc;
+	}
+
+	periodGrades() {
+		const docDefinition = getPeriodGradesReport();
+
+		const doc = this.printerService.createPdf(docDefinition);
+
+		return doc;
+	}
+	kardexList() {
+		const docDefinition = getKardexListReport();
+
+		const doc = this.printerService.createPdf(docDefinition);
+
+		return doc;
+	}
+
+	kardexGraphic() {
+		const docDefinition = getKardexGraphicReport();
 
 		const doc = this.printerService.createPdf(docDefinition);
 
