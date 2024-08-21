@@ -50,7 +50,18 @@ export const getScheduleReport = (): TDocumentDefinitions => {
 		styles: styles,
 
 		pageMargins: [15, 120, 15, 40],
-		header: commonHeaderSection({}),
+		header: commonHeaderSection({
+			documentType: 'CARGA ACADEMICA',
+			period: 'ENEJUN2024',
+			careerModel: 'P',
+			periodNumber: '8',
+			controlNumber: '20230239',
+			name: 'JESER RAMIREZ ESTRADA',
+			career: 'ING.SIST.COMP',
+			credits: '45.00',
+			showCredits: true,
+			packNumber: '08A',
+		}),
 
 		content: [
 			// Schedule table

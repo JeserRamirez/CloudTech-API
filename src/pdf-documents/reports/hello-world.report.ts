@@ -1,6 +1,5 @@
 import type { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { footerSection, watermarkSection } from './sections';
-import { commonHeaderSection } from './sections/headers';
 
 const tecnmLogoPath = 'src/pdf-documents/assets/tecnmLogo.png';
 
@@ -15,7 +14,6 @@ export const getHelloWorldReport = (
 
 	const docDefinition: TDocumentDefinitions = {
 		pageMargins: [40, 110, 40, 40],
-		header: commonHeaderSection({}),
 		background: watermarkSection({
 			image: tecnmLogoPath,
 			alignment: 'center',

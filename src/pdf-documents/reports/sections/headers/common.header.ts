@@ -1,4 +1,4 @@
-import type { Content } from 'pdfmake/interfaces';
+import type { Content, TableCellProperties } from 'pdfmake/interfaces';
 import fs from 'fs';
 import { DateFormatter } from 'src/pdf-documents/helpers';
 
@@ -12,17 +12,16 @@ const currentDate: Content = {
 };
 
 interface HeaderOptions {
-	documentType?: string;
-	period?: string;
-	careerModel?: string;
-	showDate?: boolean;
-	controlNumber?: string;
-	name?: string;
-	periodNumber?: string;
-	career?: string;
+	documentType: string;
+	period: string;
+	careerModel: string;
+	controlNumber: string;
+	name: string;
+	periodNumber: string;
+	career: string;
 	credits?: string;
 	showCredits?: boolean;
-	packNumber?: string;
+	packNumber: string;
 }
 
 export const commonHeaderSection = (options: HeaderOptions): Content => {
@@ -30,15 +29,34 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 		documentType,
 		period,
 		careerModel,
-		showDate,
 		controlNumber,
 		name,
 		periodNumber,
 		career,
 		credits,
-		showCredits,
+		showCredits = false,
 		packNumber,
 	} = options;
+
+	const creditsSection: Content & TableCellProperties[] = showCredits
+		? [
+				{
+					fontSize: 10,
+					text: 'CREDITOS:',
+					alignment: 'right',
+					border: [false, false, false, false],
+				},
+				{
+					fontSize: 10,
+					text: `${credits}`,
+					alignment: 'right',
+					border: [false, false, false, false],
+				},
+			]
+		: [
+				{ text: '', border: [false, false, false, false] },
+				{ text: '', border: [false, false, false, false] },
+			];
 
 	return {
 		margin: [20, 10, 20, 0],
@@ -81,7 +99,7 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 								[
 									{
 										fontSize: 10,
-										text: 'CARGA ACADEMICA',
+										text: `${documentType}`,
 										colSpan: 4,
 										border: [false, false, false, false],
 									},
@@ -96,7 +114,7 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 									},
 									{
 										fontSize: 10,
-										text: 'ENEJUN2024',
+										text: `${period}`,
 										alignment: 'right',
 										border: [false, false, false, true],
 									},
@@ -105,7 +123,7 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 								[
 									{
 										fontSize: 10,
-										text: 'P',
+										text: `${careerModel}`,
 										alignment: 'right',
 										border: [false, false, false, false],
 									},
@@ -133,12 +151,12 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 								[
 									{
 										fontSize: 10,
-										text: '20230238',
+										text: `${controlNumber}`,
 										border: [false, false, false, false],
 									},
 									{
 										fontSize: 10,
-										text: 'Pepe el Grillo Martinez',
+										text: `${name}`,
 										colSpan: 3,
 										border: [false, false, false, false],
 									},
@@ -152,7 +170,7 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 									},
 									{
 										fontSize: 10,
-										text: '8',
+										text: `${periodNumber}`,
 										alignment: 'center',
 										border: [false, false, false, true],
 									},
@@ -166,21 +184,10 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 									},
 									{
 										fontSize: 10,
-										text: 'ING. SIST. COMP',
+										text: `${career}`,
 										border: [false, false, false, false],
 									},
-									{
-										fontSize: 10,
-										text: 'CREDITOS:',
-										alignment: 'right',
-										border: [false, false, false, false],
-									},
-									{
-										fontSize: 10,
-										text: '32.00',
-										alignment: 'right',
-										border: [false, false, false, true],
-									},
+									...creditsSection,
 									{
 										fontSize: 10,
 										text: 'PAQUETE:',
@@ -189,7 +196,7 @@ export const commonHeaderSection = (options: HeaderOptions): Content => {
 									},
 									{
 										fontSize: 10,
-										text: '08A',
+										text: `${packNumber}`,
 										alignment: 'center',
 										border: [false, false, false, true],
 									},

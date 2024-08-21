@@ -37,7 +37,17 @@ export const getPeriodGradesReport = (): TDocumentDefinitions => {
 		styles: styles,
 
 		pageMargins: [50, 120, 50, 40],
-		header: commonHeaderSection({}),
+		header: commonHeaderSection({
+			documentType: 'BOLETA DE CALIFICACIONES',
+			period: 'ENEJUN2024',
+			careerModel: 'P',
+			periodNumber: '8',
+			controlNumber: '20230239',
+			name: 'JESER RAMIREZ ESTRADA',
+			career: 'ING.SIST.COMP',
+			showCredits: false,
+			packNumber: '08A',
+		}),
 
 		content: [
 			{

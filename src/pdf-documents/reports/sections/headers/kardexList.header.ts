@@ -7,19 +7,25 @@ const currentDate: Content = {
 	text: DateFormatter.getYYYYMMDD(new Date()),
 };
 
-// interface HeaderOptions {
-// 	documentType?: string;
-// 	period?: string;
-// 	careerModel?: string;
-// 	showDate?: boolean;
-// 	controlNumber?: string;
-// 	name?: string;
-// 	periodNumber?: string;
-// 	career?: string;
-// 	credits?: string;
-// 	showCredits?: boolean;
-// 	packNumber?: string;
-// }
+interface HeaderOptions {
+	documentType?: string;
+	controlNumber?: string;
+	name?: string;
+	plan?: string;
+	speciality?: string;
+	entryDate?: string;
+	totalCredits?: string;
+	totalSubjects?: string;
+	endDate?: string;
+	accumulatedCredits?: string;
+	subjectsTaken?: string;
+	periodNumber?: string;
+	creditsTaken?: string;
+	approvedSubjects?: string;
+	averageWithFailed?: string;
+	studentSituation?: string;
+	averageWithoutFailed?: string;
+}
 
 const styles = {
 	kardexListHeader: {
