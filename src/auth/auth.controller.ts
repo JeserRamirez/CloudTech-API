@@ -1,15 +1,16 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
+
 import {
 	CreateApplicantDto,
 	CreateStudentDto,
 	CreateTeacherDto,
 	LoginApplicantDto,
+	LoginStudentDto,
+	LoginTeacherDto,
 } from './dto';
-import { Auth } from './decorators/auth.decorator';
-import { GetUser } from './decorators/get-user.decorator';
-import { LoginStudentDto } from './dto/login_student.dto';
 import { ValidRoles } from './interfaces';
+import { AuthService } from './auth.service';
+import { Auth, GetUser } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -23,8 +24,6 @@ export class AuthController {
 	loginApplicant(@Body() loginApplicantDto: LoginApplicantDto) {
 		return this.authService.loginApplicant(loginApplicantDto);
 	}
-
-	// Register and login of Student
 	@Post('register-student')
 	createStudent(@Body() createStudentDto: CreateStudentDto) {
 		return this.authService.createStudent(createStudentDto);
@@ -33,12 +32,20 @@ export class AuthController {
 	loginStudent(@Body() loginStudentDto: LoginStudentDto) {
 		return this.authService.loginStudent(loginStudentDto);
 	}
+	@Post('register-teacher')
+	createTeacher(@Body() createTeacherDto: CreateTeacherDto) {
+		return this.authService.createTeacher(createTeacherDto);
+	}
+	@Post('login-teacher')
+	loginTeacher(@Body() loginTeacherDto: LoginTeacherDto) {
+		return this.authService.loginTeacher(loginTeacherDto);
+	}
 
-	// // Register and login of Teacher
-	// @Post('register-teacher')
-	// createTeacher(@Body() createTeacherDto: CreateTeacherDto) {
-	// 	return this.authService.createTeacher(createTeacherDto);
-	// }
+	@Post('logout')
+	async logout(@Body('userId') userId: string) {
+		await this.authService.logout(userId);
+		return { message: 'Logged out successfully' };
+	}
 
 	@Get('check-auth-status')
 	@Auth(ValidRoles.applicant)

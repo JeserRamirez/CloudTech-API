@@ -8,25 +8,42 @@ datasource db {
 }
 
 model Applicant {
-  applicant_id Int      @id @default(autoincrement())
-  curp         String   @unique
-  password     String
-  isActive     Boolean
-  roles        String[]
+  applicant_id    Int       @id @default(autoincrement())
+  curp            String    @unique
+  hashed_password String
+  isActive        Boolean
+  roles           String[]
+  sessions        Session[]
 }
 
 model Student {
-  student_id     Int      @id @default(autoincrement())
-  control_number String   @unique
-  password       String
-  isActive       Boolean
-  roles          String[]
+  student_id      Int       @id @default(autoincrement())
+  control_number  String    @unique
+  hashed_password String
+  isActive        Boolean
+  roles           String[]
+  sessions        Session[]
 }
 
 model Teacher {
-  teacher_id     Int      @id @default(autoincrement())
-  teacher_number String   @unique
-  password       String
-  isActive       Boolean
-  roles          String[]
+  teacher_id      Int       @id @default(autoincrement())
+  teacher_number  String    @unique
+  hashed_password String
+  isActive        Boolean
+  roles           String[]
+  sessions        Session[]
+}
+
+model Session {
+  id                    Int        @id @default(autoincrement())
+  userId                String // Puede ser curp, control_number, o teacher_number
+  token                 String     @unique
+  expiresAt             DateTime
+  createdAt             DateTime   @default(now())
+  Applicant             Applicant? @relation(fields: [applicantApplicant_id], references: [applicant_id])
+  applicantApplicant_id Int?
+  Student               Student?   @relation(fields: [studentStudent_id], references: [student_id])
+  studentStudent_id     Int?
+  Teacher               Teacher?   @relation(fields: [teacherTeacher_id], references: [teacher_id])
+  teacherTeacher_id     Int?
 }
