@@ -1,7 +1,7 @@
 import type { Content } from 'pdfmake/interfaces';
-import { DateFormatter } from 'src/pdf-documents/helpers';
+import { DateFormatter } from 'src/modules/pdf-documents/helpers';
 
-const svgLogoSep = 'src/pdf-documents/assets/sepLogo.png';
+const svgLogoSep = 'src/modules/pdf-documents/assets/sepLogo.png';
 
 const currentDate: Content = {
 	text: DateFormatter.getYYYYMMDD(new Date()),

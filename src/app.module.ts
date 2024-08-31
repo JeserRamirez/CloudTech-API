@@ -2,18 +2,21 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
-import { PDFDocumentsModule } from './pdf-documents/pdf-documents.module';
 import { SeedModule } from './seed/seed.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { S3Module } from './s3/s3.module';
+import { ModulesModule } from './modules/modules.module';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(),
+		ConfigModule.forRoot({ isGlobal: true }),
 		PrismaModule,
-		PDFDocumentsModule,
+		ModulesModule,
 		SeedModule,
 		AuthModule,
+		S3Module,
+		ModulesModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],

@@ -230,8 +230,6 @@ export class AuthService {
 	private handleDBErrors(error: any): never {
 		if (error.code == '23505') throw new BadRequestException(error.detail);
 
-		console.log(error);
-
 		if (error.code == 'P2002')
 			throw new BadRequestException(
 				'There already exists an user with that username',

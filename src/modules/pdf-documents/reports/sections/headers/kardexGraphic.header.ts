@@ -1,9 +1,9 @@
 import type { Content } from 'pdfmake/interfaces';
 import fs from 'fs';
-import { DateFormatter } from 'src/pdf-documents/helpers';
+import { DateFormatter } from 'src/modules/pdf-documents/helpers';
 
 const svgLogoItmina = fs.readFileSync(
-	'src/pdf-documents/assets/itminaLogo.svg',
+	'src/modules/pdf-documents/assets/itminaLogo.svg',
 	'utf8',
 );
 

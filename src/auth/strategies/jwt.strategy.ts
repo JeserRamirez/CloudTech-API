@@ -20,6 +20,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 	async validate(payload: JwtPayload) {
 		const { id } = payload;
 
+		// Verificar si el token está activo
+		const session = await this.prisma.session.findFirst({
+			where: {
+				userId: id,
+				expiresAt: { gt: new Date() }, // Verifica que el token no haya expirado
+			},
+		});
+
+		if (!session) {
+			throw new UnauthorizedException('Token not valid or session expired');
+		}
+
 		const user =
 			(await this.prisma.applicant.findUnique({
 				where: { curp: id },

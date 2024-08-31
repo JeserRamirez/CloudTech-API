@@ -2,7 +2,7 @@ import type { StyleDictionary, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { kardexListHeaderSection } from '../sections/headers';
 import { footerSection, watermarkSection } from '../sections';
 
-const tecnmLogoPath = 'src/pdf-documents/assets/tecnmLogo.png';
+const tecnmLogoPath = 'src/modules/pdf-documents/assets/tecnmLogo.png';
 
 const styles: StyleDictionary = {
 	header: {
