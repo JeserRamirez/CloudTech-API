@@ -23,8 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		// Verificar si el token está activo
 		const session = await this.prisma.session.findFirst({
 			where: {
-				userId: id,
-				expiresAt: { gt: new Date() }, // Verifica que el token no haya expirado
+				user_id: id,
+				expires_at: { gt: new Date() }, // Verifica que el token no haya expirado
 			},
 		});
 
@@ -43,7 +43,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
 		if (!user) throw new UnauthorizedException('Token not valid');
 
-		if (!user.isActive) throw new UnauthorizedException('User is not active');
+		if (!user.is_active) throw new UnauthorizedException('User is not active');
 
 		return user;
 	}

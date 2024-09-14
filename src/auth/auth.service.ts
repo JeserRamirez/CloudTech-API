@@ -16,6 +16,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
+import { getPeriod } from 'src/common/helpers';
 
 @Injectable()
 export class AuthService {
@@ -35,9 +36,9 @@ export class AuthService {
 		// Create a new session
 		await this.prisma.session.create({
 			data: {
-				userId: userId,
+				user_id: userId,
 				token: token,
-				expiresAt: expiresAt,
+				expires_at: expiresAt,
 			},
 		});
 	}
@@ -45,8 +46,8 @@ export class AuthService {
 	private async removeOldSessions(userId: string) {
 		await this.prisma.session.deleteMany({
 			where: {
-				userId: userId,
-				expiresAt: { lt: new Date() },
+				user_id: userId,
+				expires_at: { lt: new Date() },
 			},
 		});
 	}
@@ -54,7 +55,7 @@ export class AuthService {
 	private async invalidateOldSessions(userId: string) {
 		await this.prisma.session.deleteMany({
 			where: {
-				userId: userId,
+				user_id: userId,
 			},
 		});
 	}
@@ -69,8 +70,10 @@ export class AuthService {
 				data: {
 					curp: curp,
 					hashed_password: hashedPassword,
-					isActive: true,
+					is_active: true,
 					roles: ['applicant'],
+
+					period: getPeriod(new Date()),
 				},
 			});
 
@@ -119,8 +122,10 @@ export class AuthService {
 				data: {
 					control_number: controlNumber,
 					hashed_password: hashedPassword,
-					isActive: true,
+					is_active: true,
 					roles: ['student'],
+
+					period: getPeriod(new Date()),
 				},
 			});
 
@@ -169,8 +174,10 @@ export class AuthService {
 				data: {
 					teacher_number: teacherNumber,
 					hashed_password: hashedPassword,
-					isActive: true,
+					is_active: true,
 					roles: ['teacher'],
+
+					period: getPeriod(new Date()),
 				},
 			});
 
@@ -234,7 +241,7 @@ export class AuthService {
 			throw new BadRequestException(
 				'There already exists an user with that username',
 			);
-
+		console.log(error);
 		throw new InternalServerErrorException('Please check server logs');
 	}
 }

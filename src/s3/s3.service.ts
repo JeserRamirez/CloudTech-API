@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GetObjectCommand, S3 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { PutObjectCommand, DeleteObjectCommand, S3 } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -19,17 +18,46 @@ export class S3Service {
 		});
 	}
 
-	async getPreSignedURLToViewObject(
-		bucketName: string,
-		key: string,
-	): Promise<string> {
-		const command = new GetObjectCommand({
-			Bucket: bucketName,
-			Key: key,
-		});
-
-		return getSignedUrl(this.s3, command, { expiresIn: 300 });
+	async getFileUrl(bucketName: string, key: string): Promise<string> {
+		// Generate the public URL of the file
+		const url = `https://${bucketName}.s3.amazonaws.com/${key}`;
+		return url;
 	}
 
-	// Puedes agregar otros métodos para manejar subidas, eliminaciones, etc.
+	async uploadFile(
+		bucketName: string,
+		key: string,
+		body: Buffer,
+	): Promise<string> {
+		try {
+			const command = new PutObjectCommand({
+				Bucket: bucketName,
+				Key: key,
+				Body: body,
+			});
+			await this.s3.send(command);
+
+			// Generates the public URL of the file
+			const url = this.getFileUrl(bucketName, key);
+			return url;
+		} catch (error) {
+			console.error('Error uploading file:', error);
+			throw new Error('Error uploading file');
+		}
+	}
+
+	async deleteFile(key: string, bucket: string) {
+		const command = new DeleteObjectCommand({
+			Bucket: bucket, // bucket name
+			Key: key, // The key (filename) that you want to delete
+		});
+
+		try {
+			await this.s3.send(command);
+			console.log(`File ${key} successfully deleted from bucket ${bucket}`);
+		} catch (error) {
+			console.error(`Error deleting the file ${key}:`, error);
+			throw new Error('Error deleting the file of S3');
+		}
+	}
 }

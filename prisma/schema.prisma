@@ -7,68 +7,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Applicant {
-  applicant_id       Int                  @id @default(autoincrement())
-  curp               String               @unique
-  hashed_password    String
-  isActive           Boolean
-  roles              String[]
-  ApplicantDocuments ApplicantDocuments[]
-}
-
-model Student {
-  student_id      Int      @id @default(autoincrement())
-  control_number  String   @unique
-  hashed_password String
-  isActive        Boolean
+model applicant {
+  applicant_id    Int      @id @default(autoincrement())
+  curp            String?  @unique @db.VarChar(18)
+  hashed_password String?  @db.VarChar(255)
+  is_active       Boolean?
   roles           String[]
+  period          String?  @db.VarChar(255)
 }
 
-model Teacher {
-  teacher_id      Int      @id @default(autoincrement())
-  teacher_number  String   @unique
-  hashed_password String
-  isActive        Boolean
-  roles           String[]
+model job_data {
+  id_teacher_number String    @id @db.VarChar
+  plaza             String?   @db.VarChar
+  degree            String?   @db.VarChar
+  entry_date        DateTime? @db.Timestamp(6)
+  department        String?   @db.VarChar
+  teacher           teacher   @relation(fields: [id_teacher_number], references: [teacher_number], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model Session {
-  id        BigInt   @id @default(autoincrement())
-  userId    String // Puede ser curp, control_number, o teacher_number
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+model preventive_data {
+  id_student             String  @id @db.VarChar
+  id_nss                 String? @db.VarChar
+  clinic                 String? @db.VarChar
+  blood_type             String? @db.VarChar
+  allergies              String? @db.VarChar
+  disability             String? @db.VarChar
+  psychological_problems String? @db.VarChar
+  student                student @relation(fields: [id_student], references: [control_number], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model PersonalData {
-  personal_data_id Int            @id @default(autoincrement())
-  userId           String         @unique
-  first_name       String
-  last_name        String
-  birth_date       DateTime
-  address          String
-  phone_number     String
-  email            String         @unique
-  ProfilePicture    ProfilePicture?
-
-  @@index([first_name, last_name])
+model session {
+  id         BigInt    @id @default(autoincrement())
+  user_id    String?   @db.VarChar(255)
+  token      String?   @unique @db.VarChar(255)
+  expires_at DateTime? @db.Timestamp(6)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
 }
 
-model ProfilePicture {
-  profile_picture_id Int          @id @default(autoincrement())
-  s3_key           String
-  upload_date      DateTime     @default(now())
-  personal_data_id Int          @unique
-  PersonalData     PersonalData @relation(fields: [personal_data_id], references: [personal_data_id])
+model student {
+  student_id            Int                    @id @default(autoincrement())
+  control_number        String?                @unique @db.VarChar(255)
+  hashed_password       String?                @db.VarChar(255)
+  is_active             Boolean?
+  roles                 String[]
+  period                String?                @db.VarChar(255)
+  preventive_data       preventive_data?
+  student_personal_data student_personal_data?
+  student_tutor_data    student_tutor_data?
 }
 
-model ApplicantDocuments {
-  applicant_document_id Int        @id @default(autoincrement())
-  file_name             String
-  file_type             String
-  category              String
-  s3_key                String
-  upload_date           DateTime   @default(now())
-  applicant_id          Int?
-  Applicant             Applicant? @relation(fields: [applicant_id], references: [applicant_id])
+model student_personal_data {
+  id_student     String  @id @db.VarChar
+  firstname      String? @db.VarChar
+  lastname       String? @db.VarChar
+  street_name    String? @db.VarChar
+  street_number  String? @db.VarChar
+  city           String? @db.VarChar
+  cp             String? @db.VarChar
+  personal_email String? @db.VarChar
+  schoolar_email String? @db.VarChar
+  student        student @relation(fields: [id_student], references: [control_number], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model student_tutor_data {
+  id_student     String  @id @db.VarChar
+  firstname      String? @db.VarChar
+  lastname       String? @db.VarChar
+  street_name    String? @db.VarChar
+  street_number  String? @db.VarChar
+  city           String? @db.VarChar
+  cp             String? @db.VarChar
+  personal_email String? @db.VarChar
+  phone          String? @db.VarChar
+  workplace      String? @db.VarChar
+  student        student @relation(fields: [id_student], references: [control_number], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model teacher {
+  teacher_id            Int                    @id @default(autoincrement())
+  teacher_number        String?                @unique @db.VarChar(255)
+  hashed_password       String?                @db.VarChar(255)
+  is_active             Boolean?
+  roles                 String[]
+  period                String?                @db.VarChar(255)
+  job_data              job_data?
+  teacher_personal_data teacher_personal_data?
+}
+
+model teacher_personal_data {
+  id_teacher_number String  @id @db.VarChar
+  firstname         String? @db.VarChar
+  lastname          String? @db.VarChar
+  street_name       String? @db.VarChar
+  street_number     String? @db.VarChar
+  city              String? @db.VarChar
+  cp                String? @db.VarChar
+  personal_email    String? @db.VarChar
+  schoolar_email    String? @db.VarChar
+  teacher           teacher @relation(fields: [id_teacher_number], references: [teacher_number], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model profile_picture {
+  profile_picture_id Int       @id @default(autoincrement())
+  user_id            String?   @unique @db.VarChar(255)
+  s3_key             String?   @db.VarChar(255)
+  upload_date        DateTime? @default(now()) @db.Timestamp(6)
 }

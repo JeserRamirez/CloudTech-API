@@ -29,7 +29,7 @@ export class UserRoleGuard implements CanActivate {
 
 		if (!user) throw new BadRequestException('User not found');
 
-		// Chequea los roles dependiendo del tipo de usuario
+		// Checks the user type roles
 		let userRoles: string[];
 		if (user.curp) {
 			const applicant = await this.prisma.applicant.findUnique({
