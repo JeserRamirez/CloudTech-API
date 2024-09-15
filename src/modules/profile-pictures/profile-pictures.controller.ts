@@ -21,7 +21,7 @@ export class ProfilePicturesController {
 	) {}
 
 	@Get()
-	@Auth(ValidRoles.applicant)
+	@Auth(ValidRoles.applicant, ValidRoles.student, ValidRoles.teacher)
 	async getFile(@GetUser() user: any, @Res() res: Response) {
 		const fileUrl = await this.profilePicturesService.getOne(user);
 
@@ -33,7 +33,7 @@ export class ProfilePicturesController {
 	}
 
 	@Post()
-	@Auth(ValidRoles.applicant, ValidRoles.student)
+	@Auth(ValidRoles.applicant, ValidRoles.student, ValidRoles.teacher)
 	@UseInterceptors(FileInterceptor('file'))
 	async uploadProfilePicture(
 		@GetUser() user: any,
@@ -50,7 +50,7 @@ export class ProfilePicturesController {
 	}
 
 	@Delete()
-	@Auth(ValidRoles.applicant, ValidRoles.student)
+	@Auth(ValidRoles.applicant, ValidRoles.student, ValidRoles.teacher)
 	async deleteProfilePicture(@GetUser() user: any) {
 		await this.profilePicturesService.delete(user);
 

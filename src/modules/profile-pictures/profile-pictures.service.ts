@@ -3,6 +3,7 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { getUserId } from 'src/common/helpers';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { S3Service } from 'src/s3/s3.service';
@@ -13,6 +14,7 @@ export class ProfilePicturesService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly s3Service: S3Service,
+		private readonly configService: ConfigService,
 	) {}
 
 	private async getUserProfilePicture(userId: string) {
@@ -28,7 +30,7 @@ export class ProfilePicturesService {
 	): Promise<string> {
 		const uniqueFileName = `${userId}_${uuidv4()}_${fileName}`;
 		const fileUrl = await this.s3Service.uploadFile(
-			'nestjs-uploader-test',
+			this.configService.getOrThrow<string>('AWS_PROFILE_PICTURES_BUCKET_NAME'),
 			uniqueFileName,
 			file,
 		);
@@ -53,7 +55,7 @@ export class ProfilePicturesService {
 			throw new NotFoundException('User does not have a profile picture');
 
 		return await this.s3Service.getFileUrl(
-			'nestjs-uploader-test',
+			this.configService.getOrThrow<string>('AWS_PROFILE_PICTURES_BUCKET_NAME'),
 			userProfilePicture.s3_key,
 		);
 	}
@@ -68,7 +70,9 @@ export class ProfilePicturesService {
 
 		if (userProfilePicture && userProfilePicture.s3_key === fileName) {
 			return this.s3Service.getFileUrl(
-				'nestjs-uploader-test',
+				this.configService.getOrThrow<string>(
+					'AWS_PROFILE_PICTURES_BUCKET_NAME',
+				),
 				userProfilePicture.s3_key,
 			);
 		}
@@ -76,7 +80,9 @@ export class ProfilePicturesService {
 		if (userProfilePicture) {
 			await this.s3Service.deleteFile(
 				userProfilePicture.s3_key,
-				'nestjs-uploader-test',
+				this.configService.getOrThrow<string>(
+					'AWS_PROFILE_PICTURES_BUCKET_NAME',
+				),
 			);
 		}
 
@@ -95,7 +101,7 @@ export class ProfilePicturesService {
 
 		await this.s3Service.deleteFile(
 			userProfilePicture.s3_key,
-			'nestjs-uploader-test',
+			this.configService.getOrThrow<string>('AWS_PROFILE_PICTURES_BUCKET_NAME'),
 		);
 		await this.prisma.profile_picture.update({
 			where: { user_id: userId },
