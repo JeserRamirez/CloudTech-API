@@ -7,7 +7,9 @@ import {
 	CreateTeacherPersonalDataDto,
 	UpdateTeacherPersonalDataDto,
 } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Teacher Personal Data')
 @Controller('teacher-personal-data')
 export class TeacherPersonalDataController {
 	constructor(

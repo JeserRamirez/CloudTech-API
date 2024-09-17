@@ -13,7 +13,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Profile Pictures')
 @Controller('profile-pictures')
 export class ProfilePicturesController {
 	constructor(

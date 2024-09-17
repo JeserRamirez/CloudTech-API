@@ -11,7 +11,9 @@ import {
 import { ValidRoles } from './interfaces';
 import { AuthService } from './auth.service';
 import { Auth, GetUser } from './decorators';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
@@ -20,6 +22,7 @@ export class AuthController {
 	createApplicant(@Body() createApplicantDto: CreateApplicantDto) {
 		return this.authService.createApplicant(createApplicantDto);
 	}
+
 	@Post('login-applicant')
 	loginApplicant(@Body() loginApplicantDto: LoginApplicantDto) {
 		return this.authService.loginApplicant(loginApplicantDto);
@@ -28,6 +31,7 @@ export class AuthController {
 	createStudent(@Body() createStudentDto: CreateStudentDto) {
 		return this.authService.createStudent(createStudentDto);
 	}
+
 	@Post('login-student')
 	loginStudent(@Body() loginStudentDto: LoginStudentDto) {
 		return this.authService.loginStudent(loginStudentDto);

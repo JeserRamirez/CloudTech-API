@@ -4,7 +4,9 @@ import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { teacher } from '@prisma/client';
 import { CreateJobDataDto, UpdateJobDataDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Teacher Job Data')
 @Controller('job-data')
 export class JobDataController {
 	constructor(private readonly jobDataService: JobDataService) {}

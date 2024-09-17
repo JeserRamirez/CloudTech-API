@@ -1,6 +1,14 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class CreateTeacherDto {
+	@ApiProperty({
+		description: 'Teacher number',
+		example: '123',
+		type: 'string',
+		format: 'string',
+		required: true,
+	})
 	@IsString()
 	@MinLength(3)
 	@MaxLength(3)
@@ -9,6 +17,14 @@ export class CreateTeacherDto {
 	})
 	teacherNumber: string;
 
+	@ApiProperty({
+		description: 'Password of the teacher',
+		type: 'string',
+		minLength: 6,
+		maxLength: 50,
+		example: 'Password123!',
+		required: true,
+	})
 	@IsString()
 	@MinLength(6)
 	@MaxLength(50)

@@ -5,7 +5,9 @@ import { student } from '@prisma/client';
 import { ValidRoles } from 'src/auth/interfaces';
 import { CreatePreventiveDataDto } from './dto';
 import { UpdatePreventiveDataDto } from './dto/update-preventive-data.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Student Preventive Data')
 @Controller('preventive-data')
 export class PreventiveDataController {
 	constructor(private readonly preventiveDataService: PreventiveDataService) {}

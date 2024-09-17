@@ -4,7 +4,9 @@ import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { student } from '@prisma/client';
 import { CreateStudentTutorDataDto, UpdateStudentTutorDataDto } from './dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Student Tutor Data')
 @Controller('student-tutor-data')
 export class StudentTutorDataController {
 	constructor(
