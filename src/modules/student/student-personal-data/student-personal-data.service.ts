@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Injectable,
 	InternalServerErrorException,
+	NotFoundException,
 } from '@nestjs/common';
 import { student } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -75,6 +76,11 @@ export class StudentPersonalDataService {
 			throw new BadRequestException(
 				'There already exists a record with that userId',
 			);
+
+		if (error.code == 'P2025') {
+			throw new NotFoundException('There is no record with that userId');
+		}
+
 		console.log(error);
 		throw new InternalServerErrorException('Please check server logs');
 	}
