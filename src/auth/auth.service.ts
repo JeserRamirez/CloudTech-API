@@ -68,7 +68,7 @@ export class AuthService {
 
 			const applicant = await this.prisma.applicant.create({
 				data: {
-					curp: curp,
+					curp: curp.trim().toLowerCase(),
 					hashed_password: hashedPassword,
 					is_active: true,
 					roles: ['applicant'],
@@ -93,7 +93,7 @@ export class AuthService {
 		const { curp, password } = loginApplicantDto;
 
 		const applicant = await this.prisma.applicant.findUnique({
-			where: { curp },
+			where: { curp: curp.trim().toLowerCase() },
 			select: { curp: true, hashed_password: true },
 		});
 
@@ -120,7 +120,7 @@ export class AuthService {
 
 			const student = await this.prisma.student.create({
 				data: {
-					control_number: controlNumber,
+					control_number: controlNumber.trim(),
 					hashed_password: hashedPassword,
 					is_active: true,
 					roles: ['student'],
@@ -145,7 +145,7 @@ export class AuthService {
 		const { controlNumber, password } = loginStudentDto;
 
 		const student = await this.prisma.student.findUnique({
-			where: { control_number: controlNumber },
+			where: { control_number: controlNumber.trim() },
 			select: { control_number: true, hashed_password: true },
 		});
 
@@ -172,7 +172,7 @@ export class AuthService {
 
 			const teacher = await this.prisma.teacher.create({
 				data: {
-					teacher_number: teacherNumber,
+					teacher_number: teacherNumber.trim(),
 					hashed_password: hashedPassword,
 					is_active: true,
 					roles: ['teacher'],
@@ -197,7 +197,7 @@ export class AuthService {
 		const { teacherNumber, password } = loginTeacherDto;
 
 		const teacher = await this.prisma.teacher.findUnique({
-			where: { teacher_number: teacherNumber },
+			where: { teacher_number: teacherNumber.trim() },
 			select: { teacher_number: true, hashed_password: true },
 		});
 
