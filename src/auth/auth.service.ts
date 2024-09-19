@@ -68,7 +68,7 @@ export class AuthService {
 
 			const applicant = await this.prisma.applicant.create({
 				data: {
-					curp: curp.trim().toLowerCase(),
+					curp: curp.trim().toUpperCase(),
 					hashed_password: hashedPassword,
 					is_active: true,
 					roles: ['applicant'],
@@ -93,7 +93,7 @@ export class AuthService {
 		const { curp, password } = loginApplicantDto;
 
 		const applicant = await this.prisma.applicant.findUnique({
-			where: { curp: curp.trim().toLowerCase() },
+			where: { curp: curp.trim().toUpperCase() },
 			select: { curp: true, hashed_password: true },
 		});
 
