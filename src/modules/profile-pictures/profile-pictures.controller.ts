@@ -1,8 +1,8 @@
 import {
+	BadRequestException,
 	Controller,
 	Delete,
 	Get,
-	ParseFilePipe,
 	Post,
 	Res,
 	UploadedFile,
@@ -14,7 +14,10 @@ import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
+import { fileFilter } from './helpers';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle({ auth: true })
 @ApiTags('Profile Pictures')
 @Controller('profile-pictures')
 export class ProfilePicturesController {
@@ -36,12 +39,21 @@ export class ProfilePicturesController {
 
 	@Post()
 	@Auth(ValidRoles.applicant, ValidRoles.student, ValidRoles.teacher)
-	@UseInterceptors(FileInterceptor('file'))
+	@UseInterceptors(
+		FileInterceptor('file', {
+			fileFilter: fileFilter,
+			limits: { fileSize: 6500 },
+		}),
+	)
 	async uploadProfilePicture(
 		@GetUser() user: any,
-		@UploadedFile(new ParseFilePipe({ validators: [] }))
+		@UploadedFile()
 		file: Express.Multer.File,
 	) {
+		if (!file) {
+			throw new BadRequestException('Make sure that the file is an image');
+		}
+
 		const fileUrl = await this.profilePicturesService.upload(
 			user,
 			file.originalname,

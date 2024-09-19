@@ -12,7 +12,9 @@ import { ValidRoles } from './interfaces';
 import { AuthService } from './auth.service';
 import { Auth, GetUser } from './decorators';
 import { ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle({ auth: false })
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {

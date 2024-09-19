@@ -41,7 +41,6 @@ export class S3Service {
 			const url = this.getFileUrl(bucketName, key);
 			return url;
 		} catch (error) {
-			console.error('Error uploading file:', error);
 			throw new Error('Error uploading file');
 		}
 	}
@@ -54,10 +53,8 @@ export class S3Service {
 
 		try {
 			await this.s3.send(command);
-			console.log(`File ${key} successfully deleted from bucket ${bucket}`);
 		} catch (error) {
-			console.error(`Error deleting the file ${key}:`, error);
-			throw new Error('Error deleting the file of S3');
+			throw new Error(`Error deleting the file ${key} of S3`);
 		}
 	}
 }
