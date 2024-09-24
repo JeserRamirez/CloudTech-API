@@ -17,8 +17,8 @@ export class StudentPersonalDataService {
 
 	async getStudentPersonalData(user: student) {
 		const studentPersonalData =
-			await this.prisma.student_personal_data.findUnique({
-				where: { id_student: user.control_number },
+			await this.prisma.student_personal_data.findFirst({
+				where: { studentId: user.control_number },
 			});
 
 		if (studentPersonalData) return studentPersonalData;
@@ -37,9 +37,11 @@ export class StudentPersonalDataService {
 
 			const personalData = await this.prisma.student_personal_data.create({
 				data: {
-					id_student: user.control_number,
 					...createStudentPersonalDataDto,
 					street_number: street_number.toString(),
+					student: {
+						connect: { control_number: user.control_number },
+					},
 				},
 			});
 
@@ -57,8 +59,8 @@ export class StudentPersonalDataService {
 			const { street_number } = updateStudentPersonalDataDto;
 
 			const updatedPersonalData =
-				await this.prisma.student_personal_data.update({
-					where: { id_student: user.control_number },
+				await this.prisma.student_personal_data.updateMany({
+					where: { studentId: user.control_number },
 					data: {
 						...updateStudentPersonalDataDto,
 						street_number: street_number.toString(),

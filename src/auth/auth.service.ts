@@ -17,6 +17,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { getPeriod } from 'src/common/helpers';
+import { CreatePreventiveDataDto } from './dto/create-preventive-data.dto';
+import { CreateStudentPersonalDataDto } from './dto/create-student-personal-data.dto';
+import { CreateStudentTutorDataDto } from './dto/create-student-tutor-data.dto';
 
 @Injectable()
 export class AuthService {
@@ -61,21 +64,93 @@ export class AuthService {
 	}
 
 	// Register and login of Applicant
-	async createApplicant(createApplicantDto: CreateApplicantDto) {
+	async createApplicant(
+		createApplicantDto: CreateApplicantDto,
+		createPreventiveDataDto: CreatePreventiveDataDto,
+		createStudentPersonalDataDto: CreateStudentPersonalDataDto,
+		createStudentTutorDataDto: CreateStudentTutorDataDto,
+	) {
 		try {
 			const { curp, password } = createApplicantDto;
+			const { clinic } = createPreventiveDataDto;
+			const { street_number: studentStreetNumber } =
+				createStudentPersonalDataDto;
+			const { street_number: tutorStreetNumber } = createStudentTutorDataDto;
+
 			const hashedPassword = await bcrypt.hash(password, 10);
 
-			const applicant = await this.prisma.applicant.create({
-				data: {
-					curp: curp.trim().toUpperCase(),
-					hashed_password: hashedPassword,
-					is_active: true,
-					roles: ['applicant'],
+			const [applicant] = await this.prisma.$transaction([
+				this.prisma.applicant.create({
+					data: {
+						curp: curp.trim().toUpperCase(),
+						hashed_password: hashedPassword,
+						is_active: true,
+						roles: ['applicant'],
 
-					period: getPeriod(new Date()),
-				},
-			});
+						period: getPeriod(new Date()),
+					},
+				}),
+				this.prisma.student_personal_data.create({
+					data: {
+						...createStudentPersonalDataDto,
+						street_number: studentStreetNumber.toString(),
+						applicant: {
+							connect: {
+								curp: curp.trim().toUpperCase(),
+							},
+						},
+					},
+				}),
+				this.prisma.student_tutor_data.create({
+					data: {
+						...createStudentTutorDataDto,
+						street_number: tutorStreetNumber.toString(),
+						applicant: {
+							connect: {
+								curp: curp.trim().toUpperCase(),
+							},
+						},
+					},
+				}),
+				this.prisma.preventive_data.create({
+					data: {
+						...createPreventiveDataDto,
+						clinic: clinic.toString(),
+						applicant: {
+							connect: {
+								curp: curp.trim().toUpperCase(),
+							},
+						},
+					},
+				}),
+				this.prisma.student_kardex_plan.create({
+					data: {
+						id_plan_relation: 1,
+						complete: false,
+						end_semester: 8,
+						applicant: {
+							connect: {
+								curp: curp.trim().toUpperCase(),
+							},
+						},
+					},
+				}),
+				this.prisma.scholar_data.create({
+					data: {
+						school_prev: '',
+						graduation_period: '',
+						validate_periods: false,
+						current_period: 'AGODIC24',
+						accumulated_credits: 58,
+						status: '',
+						applicant: {
+							connect: {
+								curp: curp.trim().toUpperCase(),
+							},
+						},
+					},
+				}),
+			]);
 
 			const token = this.getJwtToken({ id: applicant.curp });
 
@@ -94,8 +169,13 @@ export class AuthService {
 
 		const applicant = await this.prisma.applicant.findUnique({
 			where: { curp: curp.trim().toUpperCase() },
-			select: { curp: true, hashed_password: true },
+			select: { curp: true, hashed_password: true, is_active: true },
 		});
+
+		if (!applicant.is_active)
+			throw new UnauthorizedException(
+				'Applicant is not active, talk with the administrator',
+			);
 
 		if (!applicant)
 			throw new UnauthorizedException('Credentials are not valid (username)');
@@ -115,19 +195,58 @@ export class AuthService {
 	// Register and login of Student
 	async createStudent(createStudentDto: CreateStudentDto) {
 		try {
-			const { controlNumber, password } = createStudentDto;
+			const { controlNumber, curp, password } = createStudentDto;
 			const hashedPassword = await bcrypt.hash(password, 10);
 
-			const student = await this.prisma.student.create({
-				data: {
-					control_number: controlNumber.trim(),
-					hashed_password: hashedPassword,
-					is_active: true,
-					roles: ['student'],
+			const [student] = await this.prisma.$transaction([
+				this.prisma.student.create({
+					data: {
+						control_number: controlNumber.trim(),
+						hashed_password: hashedPassword,
+						curp: curp.trim().toUpperCase(),
+						is_active: true,
+						roles: ['student'],
 
-					period: getPeriod(new Date()),
-				},
-			});
+						period: getPeriod(new Date()),
+					},
+				}),
+				this.prisma.student_personal_data.updateMany({
+					where: { applicantId: curp },
+					data: {
+						studentId: controlNumber.trim(),
+					},
+				}),
+				this.prisma.student_tutor_data.updateMany({
+					where: { applicantId: curp },
+					data: {
+						studentId: controlNumber.trim(),
+					},
+				}),
+				this.prisma.preventive_data.updateMany({
+					where: { applicantId: curp },
+					data: {
+						studentId: controlNumber.trim(),
+					},
+				}),
+				this.prisma.student_kardex_plan.updateMany({
+					where: { applicantId: curp },
+					data: {
+						studentId: controlNumber.trim(),
+					},
+				}),
+				this.prisma.scholar_data.updateMany({
+					where: { applicantId: curp },
+					data: {
+						studentId: controlNumber.trim(),
+					},
+				}),
+				this.prisma.applicant.updateMany({
+					where: { curp: curp },
+					data: {
+						is_active: false,
+					},
+				}),
+			]);
 
 			const token = this.getJwtToken({ id: student.control_number });
 
@@ -146,8 +265,13 @@ export class AuthService {
 
 		const student = await this.prisma.student.findUnique({
 			where: { control_number: controlNumber.trim() },
-			select: { control_number: true, hashed_password: true },
+			select: { control_number: true, hashed_password: true, is_active: true },
 		});
+
+		if (!student.is_active)
+			throw new UnauthorizedException(
+				'Student is not active, talk with the administrator',
+			);
 
 		if (!student)
 			throw new UnauthorizedException('Credentials are not valid (username)');
@@ -198,8 +322,13 @@ export class AuthService {
 
 		const teacher = await this.prisma.teacher.findUnique({
 			where: { teacher_number: teacherNumber.trim() },
-			select: { teacher_number: true, hashed_password: true },
+			select: { teacher_number: true, hashed_password: true, is_active: true },
 		});
+
+		if (!teacher.is_active)
+			throw new UnauthorizedException(
+				'Teacher is not active, talk with the administrator',
+			);
 
 		if (!teacher)
 			throw new UnauthorizedException('Credentials are not valid (username)');

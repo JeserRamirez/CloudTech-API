@@ -13,8 +13,8 @@ export class StudentTutorDataService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getStudentTutorData(user: student) {
-		const studentTutorData = await this.prisma.student_tutor_data.findUnique({
-			where: { id_student: user.control_number },
+		const studentTutorData = await this.prisma.student_tutor_data.findFirst({
+			where: { studentId: user.control_number },
 		});
 
 		if (studentTutorData) return studentTutorData;
@@ -33,9 +33,13 @@ export class StudentTutorDataService {
 
 			const tutorData = await this.prisma.student_tutor_data.create({
 				data: {
-					id_student: user.control_number,
 					...createStudentTutorDataDto,
 					street_number: street_number.toString(),
+					student: {
+						connect: {
+							control_number: user.control_number,
+						},
+					},
 				},
 			});
 
@@ -52,8 +56,8 @@ export class StudentTutorDataService {
 		try {
 			const { street_number } = updateStudentTutorDataDto;
 
-			const updatedTutorData = await this.prisma.student_tutor_data.update({
-				where: { id_student: user.control_number },
+			const updatedTutorData = await this.prisma.student_tutor_data.updateMany({
+				where: { studentId: user.control_number },
 				data: {
 					...updateStudentTutorDataDto,
 					street_number: street_number.toString(),

@@ -13,8 +13,8 @@ export class PreventiveDataService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getPreventiveData(user: student) {
-		const studentPreventiveData = await this.prisma.preventive_data.findUnique({
-			where: { id_student: user.control_number },
+		const studentPreventiveData = await this.prisma.preventive_data.findFirst({
+			where: { studentId: user.control_number },
 		});
 
 		if (studentPreventiveData) return studentPreventiveData;
@@ -23,6 +23,7 @@ export class PreventiveDataService {
 			message: `There is no preventive data of the user ${user.control_number}`,
 		};
 	}
+
 	async createPreventiveData(
 		user: student,
 		createPreventiveDataDto: CreatePreventiveDataDto,
@@ -32,9 +33,13 @@ export class PreventiveDataService {
 
 			const preventiveData = await this.prisma.preventive_data.create({
 				data: {
-					id_student: user.control_number,
 					...createPreventiveDataDto,
 					clinic: clinic.toString(),
+					student: {
+						connect: {
+							control_number: user.control_number,
+						},
+					},
 				},
 			});
 
@@ -43,6 +48,7 @@ export class PreventiveDataService {
 			this.handleDBErrors(error);
 		}
 	}
+
 	async updatePreventiveData(
 		user: student,
 		updatePreventiveDataDto: UpdatePreventiveDataDto,
@@ -50,13 +56,14 @@ export class PreventiveDataService {
 		try {
 			const { clinic } = updatePreventiveDataDto;
 
-			const updatedPreventiveData = await this.prisma.preventive_data.update({
-				where: { id_student: user.control_number },
-				data: {
-					...updatePreventiveDataDto,
-					clinic: clinic.toString(),
-				},
-			});
+			const updatedPreventiveData =
+				await this.prisma.preventive_data.updateMany({
+					where: { studentId: user.control_number },
+					data: {
+						...updatePreventiveDataDto,
+						clinic: clinic.toString(),
+					},
+				});
 
 			return updatedPreventiveData;
 		} catch (error) {
