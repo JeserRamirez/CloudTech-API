@@ -17,6 +17,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { getPeriod } from 'src/common/helpers';
+import { CreatePreventiveDataDto } from './dto/create-preventive-data.dto';
+import { CreateStudentPersonalDataDto } from './dto/create-student-personal-data.dto';
+import { CreateStudentTutorDataDto } from './dto/create-student-tutor-data.dto';
 
 @Injectable()
 export class AuthService {
@@ -61,21 +64,54 @@ export class AuthService {
 	}
 
 	// Register and login of Applicant
-	async createApplicant(createApplicantDto: CreateApplicantDto) {
+	async createApplicant(
+		createApplicantDto: CreateApplicantDto,
+		createPreventiveDataDto: CreatePreventiveDataDto,
+		createStudentPersonalDataDto: CreateStudentPersonalDataDto,
+		createStudentTutorDataDto: CreateStudentTutorDataDto,
+	) {
 		try {
 			const { curp, password } = createApplicantDto;
+			const { clinic } = createPreventiveDataDto;
+			const { street_number: studentStreetNumber } =
+				createStudentPersonalDataDto;
+			const { street_number: tutorStreetNumber } = createStudentTutorDataDto;
+
 			const hashedPassword = await bcrypt.hash(password, 10);
 
-			const applicant = await this.prisma.applicant.create({
-				data: {
-					curp: curp.trim().toUpperCase(),
-					hashed_password: hashedPassword,
-					is_active: true,
-					roles: ['applicant'],
-
-					period: getPeriod(new Date()),
-				},
-			});
+			const [applicant] = await this.prisma.$transaction([
+				this.prisma.applicant.create({
+					data: {
+						curp: curp.trim().toUpperCase(),
+						hashed_password: hashedPassword,
+						is_active: true,
+						roles: ['applicant'],
+						period: getPeriod(new Date()),
+						general_data: {
+							create: {
+								student_personal_data: {
+									create: {
+										...createStudentPersonalDataDto,
+										street_number: studentStreetNumber.toString(),
+									},
+								},
+								student_tutor_data: {
+									create: {
+										...createStudentTutorDataDto,
+										street_number: tutorStreetNumber.toString(),
+									},
+								},
+								preventive_data: {
+									create: {
+										...createPreventiveDataDto,
+										clinic: clinic.toString(),
+									},
+								},
+							},
+						},
+					},
+				}),
+			]);
 
 			const token = this.getJwtToken({ id: applicant.curp });
 
@@ -94,7 +130,7 @@ export class AuthService {
 
 		const applicant = await this.prisma.applicant.findUnique({
 			where: { curp: curp.trim().toUpperCase() },
-			select: { curp: true, hashed_password: true },
+			select: { curp: true, hashed_password: true, is_active: true },
 		});
 
 		if (!applicant)
@@ -102,6 +138,11 @@ export class AuthService {
 
 		if (!bcrypt.compareSync(password, applicant.hashed_password))
 			throw new UnauthorizedException('Credentials are not valid (password)');
+
+		if (!applicant.is_active)
+			throw new UnauthorizedException(
+				'Applicant is not active, talk with the administrator',
+			);
 
 		const token = this.getJwtToken({ id: applicant.curp });
 
@@ -115,26 +156,44 @@ export class AuthService {
 	// Register and login of Student
 	async createStudent(createStudentDto: CreateStudentDto) {
 		try {
-			const { controlNumber, password } = createStudentDto;
+			const { controlNumber, curp, password } = createStudentDto;
 			const hashedPassword = await bcrypt.hash(password, 10);
+
+			const applicant = await this.prisma.applicant.findUnique({
+				where: { curp: curp },
+			});
 
 			const student = await this.prisma.student.create({
 				data: {
 					control_number: controlNumber.trim(),
 					hashed_password: hashedPassword,
+					curp: curp.trim().toUpperCase(),
 					is_active: true,
 					roles: ['student'],
-
 					period: getPeriod(new Date()),
 				},
 			});
 
-			const token = this.getJwtToken({ id: student.control_number });
+			await this.prisma.$transaction([
+				this.prisma.general_data.updateMany({
+					where: { applicant_id: applicant.applicant_id },
+					data: {
+						student_id: student.student_id,
+						applicant_id: null,
+					},
+				}),
+				this.prisma.applicant.update({
+					where: { curp: curp.trim().toUpperCase() },
+					data: {
+						is_active: false,
+					},
+				}),
+			]);
 
+			const token = this.getJwtToken({ id: student.control_number });
 			// Delete old sessions and create a new one
 			await this.invalidateOldSessions(student.control_number);
 			await this.createSession(student.control_number, token);
-
 			return { ...student, token };
 		} catch (error) {
 			this.handleDBErrors(error);
@@ -146,7 +205,7 @@ export class AuthService {
 
 		const student = await this.prisma.student.findUnique({
 			where: { control_number: controlNumber.trim() },
-			select: { control_number: true, hashed_password: true },
+			select: { control_number: true, hashed_password: true, is_active: true },
 		});
 
 		if (!student)
@@ -154,6 +213,11 @@ export class AuthService {
 
 		if (!bcrypt.compareSync(password, student.hashed_password))
 			throw new UnauthorizedException('Credentials are not valid (password)');
+
+		if (!student.is_active)
+			throw new UnauthorizedException(
+				'Student is not active, talk with the administrator',
+			);
 
 		const token = this.getJwtToken({ id: student.control_number });
 
@@ -198,7 +262,7 @@ export class AuthService {
 
 		const teacher = await this.prisma.teacher.findUnique({
 			where: { teacher_number: teacherNumber.trim() },
-			select: { teacher_number: true, hashed_password: true },
+			select: { teacher_number: true, hashed_password: true, is_active: true },
 		});
 
 		if (!teacher)
@@ -206,6 +270,11 @@ export class AuthService {
 
 		if (!bcrypt.compareSync(password, teacher.hashed_password))
 			throw new UnauthorizedException('Credentials are not valid (password)');
+
+		if (!teacher.is_active)
+			throw new UnauthorizedException(
+				'Teacher is not active, talk with the administrator',
+			);
 
 		const token = this.getJwtToken({ id: teacher.teacher_number });
 

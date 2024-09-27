@@ -19,6 +19,21 @@ export class CreateStudentDto {
 	controlNumber: string;
 
 	@ApiProperty({
+		description: 'CURP of the applicant',
+		type: 'string',
+		example: 'LAEJ020515MVZMSSA2',
+		minLength: 18,
+		maxLength: 18,
+	})
+	@IsString()
+	@MinLength(18)
+	@MaxLength(18)
+	@Matches(/^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z\d]{2}$/, {
+		message: 'The CURP does not have a valid format',
+	})
+	curp: string;
+
+	@ApiProperty({
 		description: 'Password of the student',
 		type: 'string',
 		minLength: 6,

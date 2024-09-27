@@ -13,6 +13,9 @@ import { AuthService } from './auth.service';
 import { Auth, GetUser } from './decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
+import { CreatePreventiveDataDto } from './dto/create-preventive-data.dto';
+import { CreateStudentPersonalDataDto } from './dto/create-student-personal-data.dto';
+import { CreateStudentTutorDataDto } from './dto/create-student-tutor-data.dto';
 
 @SkipThrottle({ auth: false })
 @ApiTags('Auth')
@@ -21,8 +24,21 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 	// Register and login of Applicant
 	@Post('register-applicant')
-	createApplicant(@Body() createApplicantDto: CreateApplicantDto) {
-		return this.authService.createApplicant(createApplicantDto);
+	createApplicant(
+		@Body('applicant') createApplicantDto: CreateApplicantDto,
+		@Body('preventiveData')
+		createPreventiveDataDto: CreatePreventiveDataDto,
+		@Body('studentPersonalData')
+		createStudentPersonalDataDto: CreateStudentPersonalDataDto,
+		@Body('studentTutorData')
+		createStudentTutorDataDto: CreateStudentTutorDataDto,
+	) {
+		return this.authService.createApplicant(
+			createApplicantDto,
+			createPreventiveDataDto,
+			createStudentPersonalDataDto,
+			createStudentTutorDataDto,
+		);
 	}
 
 	@Post('login-applicant')

@@ -16,6 +16,8 @@ model applicant {
   period          String?  @db.VarChar(255)
 
   general_data general_data[]
+
+  general_data general_data[]
 }
 
 model student {
@@ -44,9 +46,35 @@ model general_data {
   student          student?           @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
   student_id       Int?
   last_Study_Level last_Study_Level[]
+model student {
+  student_id      Int      @id @default(autoincrement())
+  control_number  String?  @unique @db.VarChar(255)
+  curp            String?  @unique @db.VarChar(18)
+  hashed_password String?  @db.VarChar(255)
+  is_active       Boolean?
+  roles           String[]
+  period          String?  @db.VarChar(255)
+
+  general_data general_data[]
+}
+
+model general_data {
+  id_general_data Int @id @default(autoincrement())
+
+  preventive_data       preventive_data[]
+  student_personal_data student_personal_data[]
+  student_tutor_data    student_tutor_data[]
+  student_kardex_plan   student_kardex_plan[]
+  scholar_data          scholar_data[]
+
+  applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id], onDelete: Cascade, onUpdate: Cascade)
+  applicant_id Int?
+  student      student?   @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
+  student_id   Int?
 }
 
 model preventive_data {
+  id_preventive_data     Int     @id @default(autoincrement())
   id_preventive_data     Int     @id @default(autoincrement())
   id_nss                 String? @db.VarChar
   clinic                 String? @db.VarChar
@@ -63,18 +91,12 @@ model student_personal_data {
   id_student_personal_data Int     @id @default(autoincrement())
   firstname                String? @db.VarChar
   lastname                 String? @db.VarChar
-  birthdate                String? @db.VarChar
-  curp                     String? @db.VarChar
   street_name              String? @db.VarChar
   street_number            String? @db.VarChar
   city                     String? @db.VarChar
   cp                       String? @db.VarChar
-  phone                    String? @db.VarChar
   personal_email           String? @db.VarChar
   schoolar_email           String? @db.VarChar
-  civil_status             String? @db.VarChar
-  laboral_status           String? @db.VarChar
-  RFC                      String? @db.VarChar
 
   general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
@@ -97,36 +119,23 @@ model student_tutor_data {
 }
 
 model student_kardex_plan {
-  id_kardex        Int           @id @default(autoincrement())
+  id_kardex        Int     @id @default(autoincrement())
   id_plan_relation Int
   complete         Boolean
   end_semester     Int
-  
-  general_data_id  Int?
-  general_data     general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model scholar_data {
-  id_scholar_data     Int     @id @default(autoincrement())
-  school_prev         String? @db.VarChar
-  graduation_period   String? @db.VarChar
-  validate_periods    Boolean
-  current_period      String? @db.VarChar
-  accumulated_credits Int
-  status              String  @db.VarChar
 
   general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model last_Study_Level {
-  id_last_Study_Level    Int       @id @default(autoincrement())
-  provenance_school_name String?   @db.VarChar
-  provenance_State       String?   @db.VarChar
-  Provenence_City        String?   @db.VarChar
-  graduation_date        DateTime?
-  graduation_Score       String?   @db.VarChar
-  Area                   String?   @db.VarChar
+model scholar_data {
+  id_scholar_data     Int     @id @default(autoincrement())
+  school_prev         String?
+  graduation_period   String?
+  validate_periods    Boolean
+  current_period      String?
+  accumulated_credits Int
+  status              String
 
   general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
@@ -152,6 +161,29 @@ model teacher {
 }
 
 model teacher_personal_data {
+  id_teacher_personal_data Int     @id @default(autoincrement())
+  id_teacher_number        String  @unique @db.VarChar
+  firstname                String? @db.VarChar
+  lastname                 String? @db.VarChar
+  street_name              String? @db.VarChar
+  street_number            String? @db.VarChar
+  city                     String? @db.VarChar
+  cp                       String? @db.VarChar
+  personal_email           String? @db.VarChar
+  schoolar_email           String? @db.VarChar
+
+  teacher teacher @relation(fields: [id_teacher_number], references: [teacher_number], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model job_data {
+  id_job_data       Int       @id @default(autoincrement())
+  id_teacher_number String    @unique @db.VarChar
+  plaza             String?   @db.VarChar
+  degree            String?   @db.VarChar
+  entry_date        DateTime? @db.Timestamp(6)
+  department        String?   @db.VarChar
+
+  teacher teacher @relation(fields: [id_teacher_number], references: [teacher_number], onDelete: Cascade, onUpdate: Cascade)
   id_teacher_personal_data Int     @id @default(autoincrement())
   id_teacher_number        String  @unique @db.VarChar
   firstname                String? @db.VarChar
