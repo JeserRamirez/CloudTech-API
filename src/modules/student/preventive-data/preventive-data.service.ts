@@ -13,62 +13,56 @@ export class PreventiveDataService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getPreventiveData(user: student) {
-		const studentPreventiveData = await this.prisma.preventive_data.findFirst({
-			where: { studentId: user.control_number },
-		});
-
-		if (studentPreventiveData) return studentPreventiveData;
-
-		return {
-			message: `There is no preventive data of the user ${user.control_number}`,
-		};
+		// const studentPreventiveData = await this.prisma.preventive_data.findFirst({
+		// 	where: { studentId: user.control_number },
+		// });
+		// if (studentPreventiveData) return studentPreventiveData;
+		// return {
+		// 	message: `There is no preventive data of the user ${user.control_number}`,
+		// };
 	}
 
 	async createPreventiveData(
 		user: student,
 		createPreventiveDataDto: CreatePreventiveDataDto,
 	) {
-		try {
-			const { clinic } = createPreventiveDataDto;
-
-			const preventiveData = await this.prisma.preventive_data.create({
-				data: {
-					...createPreventiveDataDto,
-					clinic: clinic.toString(),
-					student: {
-						connect: {
-							control_number: user.control_number,
-						},
-					},
-				},
-			});
-
-			return preventiveData;
-		} catch (error) {
-			this.handleDBErrors(error);
-		}
+		// try {
+		// 	const { clinic } = createPreventiveDataDto;
+		// 	const preventiveData = await this.prisma.preventive_data.create({
+		// 		data: {
+		// 			...createPreventiveDataDto,
+		// 			clinic: clinic.toString(),
+		// 			student: {
+		// 				connect: {
+		// 					control_number: user.control_number,
+		// 				},
+		// 			},
+		// 		},
+		// 	});
+		// 	return preventiveData;
+		// } catch (error) {
+		// 	this.handleDBErrors(error);
+		// }
 	}
 
 	async updatePreventiveData(
 		user: student,
 		updatePreventiveDataDto: UpdatePreventiveDataDto,
 	) {
-		try {
-			const { clinic } = updatePreventiveDataDto;
-
-			const updatedPreventiveData =
-				await this.prisma.preventive_data.updateMany({
-					where: { studentId: user.control_number },
-					data: {
-						...updatePreventiveDataDto,
-						clinic: clinic.toString(),
-					},
-				});
-
-			return updatedPreventiveData;
-		} catch (error) {
-			console.log(error);
-		}
+		// try {
+		// 	const { clinic } = updatePreventiveDataDto;
+		// 	const updatedPreventiveData =
+		// 		await this.prisma.preventive_data.updateMany({
+		// 			where: { studentId: user.control_number },
+		// 			data: {
+		// 				...updatePreventiveDataDto,
+		// 				clinic: clinic.toString(),
+		// 			},
+		// 		});
+		// 	return updatedPreventiveData;
+		// } catch (error) {
+		// 	console.log(error);
+		// }
 	}
 
 	private handleDBErrors(error: any): never {

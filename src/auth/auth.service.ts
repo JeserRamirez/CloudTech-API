@@ -86,66 +86,27 @@ export class AuthService {
 						hashed_password: hashedPassword,
 						is_active: true,
 						roles: ['applicant'],
-
 						period: getPeriod(new Date()),
-					},
-				}),
-				this.prisma.student_personal_data.create({
-					data: {
-						...createStudentPersonalDataDto,
-						street_number: studentStreetNumber.toString(),
-						applicant: {
-							connect: {
-								curp: curp.trim().toUpperCase(),
-							},
-						},
-					},
-				}),
-				this.prisma.student_tutor_data.create({
-					data: {
-						...createStudentTutorDataDto,
-						street_number: tutorStreetNumber.toString(),
-						applicant: {
-							connect: {
-								curp: curp.trim().toUpperCase(),
-							},
-						},
-					},
-				}),
-				this.prisma.preventive_data.create({
-					data: {
-						...createPreventiveDataDto,
-						clinic: clinic.toString(),
-						applicant: {
-							connect: {
-								curp: curp.trim().toUpperCase(),
-							},
-						},
-					},
-				}),
-				this.prisma.student_kardex_plan.create({
-					data: {
-						id_plan_relation: 1,
-						complete: false,
-						end_semester: 8,
-						applicant: {
-							connect: {
-								curp: curp.trim().toUpperCase(),
-							},
-						},
-					},
-				}),
-				this.prisma.scholar_data.create({
-					data: {
-						school_prev: '',
-						graduation_period: '',
-						validate_periods: false,
-						current_period: 'AGODIC24',
-						accumulated_credits: 58,
-						status: '',
-						applicant: {
-							connect: {
-								curp: curp.trim().toUpperCase(),
+						general_data: {
+							create: {
+								student_personal_data: {
+									create: {
+										...createStudentPersonalDataDto,
+										street_number: studentStreetNumber.toString(),
+									},
+								},
+								student_tutor_data: {
+									create: {
+										...createStudentTutorDataDto,
+										street_number: tutorStreetNumber.toString(),
+									},
+								},
+								preventive_data: {
+									create: {
+										...createPreventiveDataDto,
+										clinic: clinic.toString(),
+									},
+								},
 							},
 						},
 					},
@@ -172,16 +133,16 @@ export class AuthService {
 			select: { curp: true, hashed_password: true, is_active: true },
 		});
 
-		if (!applicant.is_active)
-			throw new UnauthorizedException(
-				'Applicant is not active, talk with the administrator',
-			);
-
 		if (!applicant)
 			throw new UnauthorizedException('Credentials are not valid (username)');
 
 		if (!bcrypt.compareSync(password, applicant.hashed_password))
 			throw new UnauthorizedException('Credentials are not valid (password)');
+
+		if (!applicant.is_active)
+			throw new UnauthorizedException(
+				'Applicant is not active, talk with the administrator',
+			);
 
 		const token = this.getJwtToken({ id: applicant.curp });
 
@@ -198,50 +159,31 @@ export class AuthService {
 			const { controlNumber, curp, password } = createStudentDto;
 			const hashedPassword = await bcrypt.hash(password, 10);
 
-			const [student] = await this.prisma.$transaction([
-				this.prisma.student.create({
-					data: {
-						control_number: controlNumber.trim(),
-						hashed_password: hashedPassword,
-						curp: curp.trim().toUpperCase(),
-						is_active: true,
-						roles: ['student'],
+			const applicant = await this.prisma.applicant.findUnique({
+				where: { curp: curp },
+			});
 
-						period: getPeriod(new Date()),
-					},
-				}),
-				this.prisma.student_personal_data.updateMany({
-					where: { applicantId: curp },
+			const student = await this.prisma.student.create({
+				data: {
+					control_number: controlNumber.trim(),
+					hashed_password: hashedPassword,
+					curp: curp.trim().toUpperCase(),
+					is_active: true,
+					roles: ['student'],
+					period: getPeriod(new Date()),
+				},
+			});
+
+			await this.prisma.$transaction([
+				this.prisma.general_data.updateMany({
+					where: { applicant_id: applicant.applicant_id },
 					data: {
-						studentId: controlNumber.trim(),
+						student_id: student.student_id,
+						applicant_id: null,
 					},
 				}),
-				this.prisma.student_tutor_data.updateMany({
-					where: { applicantId: curp },
-					data: {
-						studentId: controlNumber.trim(),
-					},
-				}),
-				this.prisma.preventive_data.updateMany({
-					where: { applicantId: curp },
-					data: {
-						studentId: controlNumber.trim(),
-					},
-				}),
-				this.prisma.student_kardex_plan.updateMany({
-					where: { applicantId: curp },
-					data: {
-						studentId: controlNumber.trim(),
-					},
-				}),
-				this.prisma.scholar_data.updateMany({
-					where: { applicantId: curp },
-					data: {
-						studentId: controlNumber.trim(),
-					},
-				}),
-				this.prisma.applicant.updateMany({
-					where: { curp: curp },
+				this.prisma.applicant.update({
+					where: { curp: curp.trim().toUpperCase() },
 					data: {
 						is_active: false,
 					},
@@ -249,11 +191,9 @@ export class AuthService {
 			]);
 
 			const token = this.getJwtToken({ id: student.control_number });
-
 			// Delete old sessions and create a new one
 			await this.invalidateOldSessions(student.control_number);
 			await this.createSession(student.control_number, token);
-
 			return { ...student, token };
 		} catch (error) {
 			this.handleDBErrors(error);
@@ -268,16 +208,16 @@ export class AuthService {
 			select: { control_number: true, hashed_password: true, is_active: true },
 		});
 
-		if (!student.is_active)
-			throw new UnauthorizedException(
-				'Student is not active, talk with the administrator',
-			);
-
 		if (!student)
 			throw new UnauthorizedException('Credentials are not valid (username)');
 
 		if (!bcrypt.compareSync(password, student.hashed_password))
 			throw new UnauthorizedException('Credentials are not valid (password)');
+
+		if (!student.is_active)
+			throw new UnauthorizedException(
+				'Student is not active, talk with the administrator',
+			);
 
 		const token = this.getJwtToken({ id: student.control_number });
 
@@ -325,16 +265,16 @@ export class AuthService {
 			select: { teacher_number: true, hashed_password: true, is_active: true },
 		});
 
-		if (!teacher.is_active)
-			throw new UnauthorizedException(
-				'Teacher is not active, talk with the administrator',
-			);
-
 		if (!teacher)
 			throw new UnauthorizedException('Credentials are not valid (username)');
 
 		if (!bcrypt.compareSync(password, teacher.hashed_password))
 			throw new UnauthorizedException('Credentials are not valid (password)');
+
+		if (!teacher.is_active)
+			throw new UnauthorizedException(
+				'Teacher is not active, talk with the administrator',
+			);
 
 		const token = this.getJwtToken({ id: teacher.teacher_number });
 

@@ -8,32 +8,41 @@ datasource db {
 }
 
 model applicant {
-  applicant_id          Int                     @id @default(autoincrement())
-  curp                  String?                 @unique @db.VarChar(18)
-  hashed_password       String?                 @db.VarChar(255)
-  is_active             Boolean?
-  roles                 String[]
-  period                String?                 @db.VarChar(255)
-  student_personal_data student_personal_data[]
-  preventive_data       preventive_data[]
-  student_tutor_data    student_tutor_data[]
-  student_kardex_plan   student_kardex_plan[]
-  scholar_data          scholar_data[]
+  applicant_id    Int      @id @default(autoincrement())
+  curp            String?  @unique @db.VarChar(18)
+  hashed_password String?  @db.VarChar(255)
+  is_active       Boolean?
+  roles           String[]
+  period          String?  @db.VarChar(255)
+
+  general_data general_data[]
 }
 
 model student {
-  student_id            Int                     @id @default(autoincrement())
-  control_number        String?                 @unique @db.VarChar(255)
-  curp                  String?                 @unique @db.VarChar(18)
-  hashed_password       String?                 @db.VarChar(255)
-  is_active             Boolean?
-  roles                 String[]
-  period                String?                 @db.VarChar(255)
-  student_personal_data student_personal_data[]
+  student_id      Int      @id @default(autoincrement())
+  control_number  String?  @unique @db.VarChar(255)
+  curp            String?  @unique @db.VarChar(18)
+  hashed_password String?  @db.VarChar(255)
+  is_active       Boolean?
+  roles           String[]
+  period          String?  @db.VarChar(255)
+
+  general_data general_data[]
+}
+
+model general_data {
+  id_general_data Int @id @default(autoincrement())
+
   preventive_data       preventive_data[]
+  student_personal_data student_personal_data[]
   student_tutor_data    student_tutor_data[]
   student_kardex_plan   student_kardex_plan[]
   scholar_data          scholar_data[]
+
+  applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id], onDelete: Cascade, onUpdate: Cascade)
+  applicant_id Int?
+  student      student?   @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
+  student_id   Int?
 }
 
 model preventive_data {
@@ -44,11 +53,9 @@ model preventive_data {
   allergies              String? @db.VarChar
   disability             String? @db.VarChar
   psychological_problems String? @db.VarChar
-  applicantId            String? // Relación con applicant, requerido al inicio
-  studentId              String? // Relación con student, opcional hasta la transición
 
-  applicant applicant? @relation(fields: [applicantId], references: [curp], onUpdate: Cascade)
-  student   student?   @relation(fields: [studentId], onUpdate: Cascade, onDelete: Cascade, references: [control_number])
+  general_data_id Int?
+  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model student_personal_data {
@@ -61,11 +68,9 @@ model student_personal_data {
   cp                       String? @db.VarChar
   personal_email           String? @db.VarChar
   schoolar_email           String? @db.VarChar
-  applicantId              String? // Relación con applicant, requerido al inicio
-  studentId                String? // Relación con student, opcional hasta la transición
 
-  applicant applicant? @relation(fields: [applicantId], references: [curp], onUpdate: Cascade)
-  student   student?   @relation(fields: [studentId], references: [control_number], onUpdate: Cascade, onDelete: Cascade)
+  general_data_id Int?
+  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model student_tutor_data {
@@ -79,11 +84,9 @@ model student_tutor_data {
   personal_email        String? @db.VarChar
   phone                 String? @db.VarChar
   workplace             String? @db.VarChar
-  applicantId           String? // Relación con applicant, requerido al inicio
-  studentId             String? // Relación con student, opcional hasta la transición
 
-  applicant applicant? @relation(fields: [applicantId], references: [curp], onUpdate: Cascade)
-  student   student?   @relation(fields: [studentId], references: [control_number], onUpdate: Cascade, onDelete: Cascade)
+  general_data_id Int?
+  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model student_kardex_plan {
@@ -92,11 +95,8 @@ model student_kardex_plan {
   complete         Boolean
   end_semester     Int
 
-  applicantId String? // Relación con applicant, requerido al inicio
-  studentId   String? // Relación con student, opcional hasta la transición
-
-  applicant applicant? @relation(fields: [applicantId], references: [curp], onUpdate: Cascade)
-  student   student?   @relation(fields: [studentId], references: [control_number], onUpdate: Cascade, onDelete: Cascade)
+  general_data_id Int?
+  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model scholar_data {
@@ -108,11 +108,8 @@ model scholar_data {
   accumulated_credits Int
   status              String
 
-  applicantId String? // Relación con applicant, requerido al inicio
-  studentId   String? // Relación con student, opcional hasta la transición
-
-  applicant applicant? @relation(fields: [applicantId], references: [curp], onUpdate: Cascade)
-  student   student?   @relation(fields: [studentId], references: [control_number], onUpdate: Cascade, onDelete: Cascade)
+  general_data_id Int?
+  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model session {
