@@ -1,19 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-	IsNumber,
-	IsOptional,
-	IsString,
-	MaxLength,
-	MinLength,
-} from 'class-validator';
+import { IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreatePreventiveDataDto {
 	@ApiProperty({
 		description: 'NSS',
+		example: '12345678910',
 		required: true,
-		nullable: false,
 		type: 'string',
-		minLength: 1,
+		minLength: 11,
+		maxLength: 11,
 	})
 	@IsString()
 	@MinLength(11)
@@ -22,51 +17,46 @@ export class CreatePreventiveDataDto {
 
 	@ApiProperty({
 		description: 'clinic',
+		example: '32',
 		required: true,
-		type: 'number',
-		nullable: false,
+		type: 'string',
 	})
-	@IsNumber()
-	clinic: number;
+	@IsString()
+	clinic: string;
 
 	@ApiProperty({
 		description: 'blood type',
+		example: 'O+',
 		type: 'string',
-		required: false,
-		nullable: true,
+		required: true,
 	})
 	@IsString()
-	@IsOptional()
-	blood_type?: string;
+	blood_type: string;
 
 	@ApiProperty({
 		description: 'allergies',
+		example: 'Polen, Penicilina',
 		type: 'string',
-		required: false,
-		nullable: true,
+		required: true,
 	})
 	@IsString()
-	@IsOptional()
-	allergies?: string;
+	allergies: string;
 
 	@ApiProperty({
 		description: 'disability',
+		example: 'Sordera',
 		type: 'string',
-		required: false,
-		nullable: true,
+		required: true,
 	})
 	@IsString()
-	@IsOptional()
-	disability?: string;
+	disability: string;
 
 	@ApiProperty({
 		description: 'psychological problems',
-		nullable: true,
-		required: false,
+		example: 'Ansiedad',
+		required: true,
 		type: 'string',
-		minLength: 1,
 	})
 	@IsString()
-	@IsOptional()
-	psychological_problems?: string;
+	psychological_problems: string;
 }

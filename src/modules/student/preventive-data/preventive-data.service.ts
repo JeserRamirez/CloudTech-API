@@ -6,63 +6,44 @@ import {
 } from '@nestjs/common';
 import { student } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreatePreventiveDataDto, UpdatePreventiveDataDto } from './dto';
+import { UpdatePreventiveDataDto } from './dto';
 
 @Injectable()
 export class PreventiveDataService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getPreventiveData(user: student) {
-		// const studentPreventiveData = await this.prisma.preventive_data.findFirst({
-		// 	where: { studentId: user.control_number },
-		// });
-		// if (studentPreventiveData) return studentPreventiveData;
-		// return {
-		// 	message: `There is no preventive data of the user ${user.control_number}`,
-		// };
-	}
+		const { preventive_data } = await this.prisma.general_data.findFirst({
+			where: { student_id: user.student_id },
+			select: {
+				preventive_data: true,
+			},
+		});
 
-	async createPreventiveData(
-		user: student,
-		createPreventiveDataDto: CreatePreventiveDataDto,
-	) {
-		// try {
-		// 	const { clinic } = createPreventiveDataDto;
-		// 	const preventiveData = await this.prisma.preventive_data.create({
-		// 		data: {
-		// 			...createPreventiveDataDto,
-		// 			clinic: clinic.toString(),
-		// 			student: {
-		// 				connect: {
-		// 					control_number: user.control_number,
-		// 				},
-		// 			},
-		// 		},
-		// 	});
-		// 	return preventiveData;
-		// } catch (error) {
-		// 	this.handleDBErrors(error);
-		// }
+		if (!preventive_data)
+			return new NotFoundException({
+				message: `There is no preventive data of the user ${user.control_number}`,
+			});
+
+		return preventive_data;
 	}
 
 	async updatePreventiveData(
 		user: student,
 		updatePreventiveDataDto: UpdatePreventiveDataDto,
 	) {
-		// try {
-		// 	const { clinic } = updatePreventiveDataDto;
-		// 	const updatedPreventiveData =
-		// 		await this.prisma.preventive_data.updateMany({
-		// 			where: { studentId: user.control_number },
-		// 			data: {
-		// 				...updatePreventiveDataDto,
-		// 				clinic: clinic.toString(),
-		// 			},
-		// 		});
-		// 	return updatedPreventiveData;
-		// } catch (error) {
-		// 	console.log(error);
-		// }
+		try {
+			await this.prisma.preventive_data.updateMany({
+				where: { general_data: { student_id: user.student_id } },
+				data: {
+					...updatePreventiveDataDto,
+				},
+			});
+
+			return { message: 'Data updated successfully' };
+		} catch (error) {
+			this.handleDBErrors(error);
+		}
 	}
 
 	private handleDBErrors(error: any): never {

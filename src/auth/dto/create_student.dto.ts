@@ -19,7 +19,7 @@ export class CreateStudentDto {
 	controlNumber: string;
 
 	@ApiProperty({
-		description: 'CURP of the applicant',
+		description: 'CURP of the student',
 		type: 'string',
 		example: 'LAEJ020515MVZMSSA2',
 		minLength: 18,

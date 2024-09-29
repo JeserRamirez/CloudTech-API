@@ -1,8 +1,12 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
 
 import {
 	CreateApplicantDto,
+	CreateLastStudyLevelDto,
+	CreatePreventiveDataDto,
 	CreateStudentDto,
+	CreateStudentPersonalDataDto,
+	CreateStudentTutorDataDto,
 	CreateTeacherDto,
 	LoginApplicantDto,
 	LoginStudentDto,
@@ -11,54 +15,116 @@ import {
 import { ValidRoles } from './interfaces';
 import { AuthService } from './auth.service';
 import { Auth, GetUser } from './decorators';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
-import { CreatePreventiveDataDto } from './dto/create-preventive-data.dto';
-import { CreateStudentPersonalDataDto } from './dto/create-student-personal-data.dto';
-import { CreateStudentTutorDataDto } from './dto/create-student-tutor-data.dto';
+import { TrimPipe } from 'src/common/pipes';
 
-@SkipThrottle({ auth: false })
 @ApiTags('Auth')
+@SkipThrottle({ short: false, medium: true, large: true })
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 	// Register and login of Applicant
+	@ApiBody({
+		description: 'Datos del solicitante para registrarse',
+		schema: {
+			example: {
+				applicant: {
+					curp: 'RAEJ020717HVZMSSA2',
+					password: 'MachoMen2002',
+				},
+				student_personal_data: {
+					firstname: 'Jeser',
+					lastname: 'Ramirez Estrada',
+					birthdate: '2002-07-17',
+					street_name: 'Callejon Vidal Diaz Muñoz',
+					street_number: '7',
+					city: 'Acayucan',
+					cp: '96039',
+					phone: '+52 9241966858',
+					personal_email: 'jeserramirezestrada@gmail.com',
+					civil_status: 'SOLTERO',
+					laboral_status: 'DESEMPLEADO',
+					rfc: '02519617814',
+				},
+				last_study_level: {
+					provenance_school_name:
+						'Centro de Bachillerato Tecnologico Industrial y de Servicios No. 48',
+					provenance_state: 'Veracruz',
+					provenence_city: 'Acayucan',
+					graduation_date: '2020-07-12',
+					graduation_score: '90',
+					area: 'Laboratorista Quimico',
+				},
+				preventive_data: {
+					id_nss: '17170203123',
+					clinic: '32',
+					blood_type: 'O+',
+					allergies: 'NINGUNA',
+					disability: 'NINGUNA',
+					psychological_problems: 'NINGUNO',
+				},
+				student_tutor_data: {
+					firstname: 'Jeser',
+					lastname: 'Ramirez Estrada',
+					street_name: 'Callejon Vidal Diaz Muñoz',
+					street_number: '7',
+					city: 'Acayucan',
+					cp: '96039',
+					personal_email: 'jeserramirezestrada@gmail.com',
+					phone: '+529241966858',
+					workplace: 'estudiante',
+				},
+			},
+		},
+	})
 	@Post('register-applicant')
+	@UsePipes(new TrimPipe())
 	createApplicant(
 		@Body('applicant') createApplicantDto: CreateApplicantDto,
-		@Body('preventiveData')
-		createPreventiveDataDto: CreatePreventiveDataDto,
-		@Body('studentPersonalData')
+		@Body('student_personal_data')
 		createStudentPersonalDataDto: CreateStudentPersonalDataDto,
-		@Body('studentTutorData')
+		@Body('last_study_level')
+		createLastStudyLevelDto: CreateLastStudyLevelDto,
+		@Body('preventive_data')
+		createPreventiveDataDto: CreatePreventiveDataDto,
+		@Body('student_tutor_data')
 		createStudentTutorDataDto: CreateStudentTutorDataDto,
 	) {
+		console.log(createApplicantDto);
 		return this.authService.createApplicant(
 			createApplicantDto,
-			createPreventiveDataDto,
 			createStudentPersonalDataDto,
+			createLastStudyLevelDto,
+			createPreventiveDataDto,
 			createStudentTutorDataDto,
 		);
 	}
 
 	@Post('login-applicant')
+	@UsePipes(new TrimPipe())
 	loginApplicant(@Body() loginApplicantDto: LoginApplicantDto) {
 		return this.authService.loginApplicant(loginApplicantDto);
 	}
+
 	@Post('register-student')
+	@UsePipes(new TrimPipe())
 	createStudent(@Body() createStudentDto: CreateStudentDto) {
 		return this.authService.createStudent(createStudentDto);
 	}
 
 	@Post('login-student')
+	@UsePipes(new TrimPipe())
 	loginStudent(@Body() loginStudentDto: LoginStudentDto) {
 		return this.authService.loginStudent(loginStudentDto);
 	}
 	@Post('register-teacher')
+	@UsePipes(new TrimPipe())
 	createTeacher(@Body() createTeacherDto: CreateTeacherDto) {
 		return this.authService.createTeacher(createTeacherDto);
 	}
 	@Post('login-teacher')
+	@UsePipes(new TrimPipe())
 	loginTeacher(@Body() loginTeacherDto: LoginTeacherDto) {
 		return this.authService.loginTeacher(loginTeacherDto);
 	}

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UsePipes } from '@nestjs/common';
 import { TeacherPersonalDataService } from './teacher-personal-data.service';
 import { ValidRoles } from 'src/auth/interfaces';
 import { Auth, GetUser } from 'src/auth/decorators';
@@ -8,8 +8,11 @@ import {
 	UpdateTeacherPersonalDataDto,
 } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { TrimPipe } from 'src/common/pipes';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @ApiTags('Teacher Personal Data')
+@SkipThrottle({ short: true, medium: false, large: true })
 @Controller('teacher-personal-data')
 export class TeacherPersonalDataController {
 	constructor(
@@ -24,6 +27,7 @@ export class TeacherPersonalDataController {
 
 	@Post()
 	@Auth(ValidRoles.teacher)
+	@UsePipes(new TrimPipe())
 	async createTeacherPersonalData(
 		@GetUser() user: teacher,
 		@Body() createTeacherPersonalDataDto: CreateTeacherPersonalDataDto,
@@ -36,6 +40,7 @@ export class TeacherPersonalDataController {
 
 	@Patch()
 	@Auth(ValidRoles.teacher)
+	@UsePipes(new TrimPipe())
 	async updateStudentPersonalData(
 		@GetUser() user: teacher,
 		@Body() updateTeacherPersonalDataDto: UpdateTeacherPersonalDataDto,

@@ -2,12 +2,18 @@ import {
 	BadRequestException,
 	Injectable,
 	InternalServerErrorException,
+	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common';
+
 import * as bcrypt from 'bcrypt';
 import {
 	CreateApplicantDto,
+	CreateLastStudyLevelDto,
+	CreatePreventiveDataDto,
 	CreateStudentDto,
+	CreateStudentPersonalDataDto,
+	CreateStudentTutorDataDto,
 	CreateTeacherDto,
 	LoginApplicantDto,
 	LoginStudentDto,
@@ -17,9 +23,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { getPeriod } from 'src/common/helpers';
-import { CreatePreventiveDataDto } from './dto/create-preventive-data.dto';
-import { CreateStudentPersonalDataDto } from './dto/create-student-personal-data.dto';
-import { CreateStudentTutorDataDto } from './dto/create-student-tutor-data.dto';
 
 @Injectable()
 export class AuthService {
@@ -66,23 +69,22 @@ export class AuthService {
 	// Register and login of Applicant
 	async createApplicant(
 		createApplicantDto: CreateApplicantDto,
-		createPreventiveDataDto: CreatePreventiveDataDto,
 		createStudentPersonalDataDto: CreateStudentPersonalDataDto,
+		createLastStudyLevelDto: CreateLastStudyLevelDto,
+		createPreventiveDataDto: CreatePreventiveDataDto,
 		createStudentTutorDataDto: CreateStudentTutorDataDto,
 	) {
 		try {
 			const { curp, password } = createApplicantDto;
-			const { clinic } = createPreventiveDataDto;
-			const { street_number: studentStreetNumber } =
-				createStudentPersonalDataDto;
-			const { street_number: tutorStreetNumber } = createStudentTutorDataDto;
 
 			const hashedPassword = await bcrypt.hash(password, 10);
+
+			const curpFormatted = curp.toUpperCase();
 
 			const [applicant] = await this.prisma.$transaction([
 				this.prisma.applicant.create({
 					data: {
-						curp: curp.trim().toUpperCase(),
+						curp: curpFormatted,
 						hashed_password: hashedPassword,
 						is_active: true,
 						roles: ['applicant'],
@@ -92,19 +94,23 @@ export class AuthService {
 								student_personal_data: {
 									create: {
 										...createStudentPersonalDataDto,
-										street_number: studentStreetNumber.toString(),
+										curp: curpFormatted,
+										schoolar_email: '',
 									},
 								},
-								student_tutor_data: {
+								last_study_Level: {
 									create: {
-										...createStudentTutorDataDto,
-										street_number: tutorStreetNumber.toString(),
+										...createLastStudyLevelDto,
 									},
 								},
 								preventive_data: {
 									create: {
 										...createPreventiveDataDto,
-										clinic: clinic.toString(),
+									},
+								},
+								student_tutor_data: {
+									create: {
+										...createStudentTutorDataDto,
 									},
 								},
 							},
@@ -129,7 +135,7 @@ export class AuthService {
 		const { curp, password } = loginApplicantDto;
 
 		const applicant = await this.prisma.applicant.findUnique({
-			where: { curp: curp.trim().toUpperCase() },
+			where: { curp: curp.toUpperCase() },
 			select: { curp: true, hashed_password: true, is_active: true },
 		});
 
@@ -157,17 +163,24 @@ export class AuthService {
 	async createStudent(createStudentDto: CreateStudentDto) {
 		try {
 			const { controlNumber, curp, password } = createStudentDto;
+
 			const hashedPassword = await bcrypt.hash(password, 10);
 
+			const curpFormatted = curp.toUpperCase();
+
 			const applicant = await this.prisma.applicant.findUnique({
-				where: { curp: curp },
+				where: { curp: curpFormatted },
 			});
+
+			if (!applicant)
+				return new NotFoundException(
+					`No applicant was found with the curp: ${curpFormatted}`,
+				);
 
 			const student = await this.prisma.student.create({
 				data: {
-					control_number: controlNumber.trim(),
+					control_number: controlNumber,
 					hashed_password: hashedPassword,
-					curp: curp.trim().toUpperCase(),
 					is_active: true,
 					roles: ['student'],
 					period: getPeriod(new Date()),
@@ -183,7 +196,7 @@ export class AuthService {
 					},
 				}),
 				this.prisma.applicant.update({
-					where: { curp: curp.trim().toUpperCase() },
+					where: { curp: curpFormatted },
 					data: {
 						is_active: false,
 					},
@@ -204,7 +217,7 @@ export class AuthService {
 		const { controlNumber, password } = loginStudentDto;
 
 		const student = await this.prisma.student.findUnique({
-			where: { control_number: controlNumber.trim() },
+			where: { control_number: controlNumber },
 			select: { control_number: true, hashed_password: true, is_active: true },
 		});
 
@@ -236,7 +249,7 @@ export class AuthService {
 
 			const teacher = await this.prisma.teacher.create({
 				data: {
-					teacher_number: teacherNumber.trim(),
+					teacher_number: teacherNumber,
 					hashed_password: hashedPassword,
 					is_active: true,
 					roles: ['teacher'],
@@ -261,7 +274,7 @@ export class AuthService {
 		const { teacherNumber, password } = loginTeacherDto;
 
 		const teacher = await this.prisma.teacher.findUnique({
-			where: { teacher_number: teacherNumber.trim() },
+			where: { teacher_number: teacherNumber },
 			select: { teacher_number: true, hashed_password: true, is_active: true },
 		});
 

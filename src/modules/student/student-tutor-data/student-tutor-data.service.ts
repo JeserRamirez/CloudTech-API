@@ -6,62 +6,44 @@ import {
 } from '@nestjs/common';
 import { student } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateStudentTutorDataDto, UpdateStudentTutorDataDto } from './dto';
+import { UpdateStudentTutorDataDto } from './dto';
 
 @Injectable()
 export class StudentTutorDataService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getStudentTutorData(user: student) {
-		// const studentTutorData = await this.prisma.student_tutor_data.findFirst({
-		// 	where: { studentId: user.control_number },
-		// });
-		// if (studentTutorData) return studentTutorData;
-		// return {
-		// 	message: `There is no tutor data of the user ${user.control_number}`,
-		// };
-	}
+		const { student_tutor_data } = await this.prisma.general_data.findFirst({
+			where: { student_id: user.student_id },
+			select: {
+				student_tutor_data: true,
+			},
+		});
 
-	async createStudentTutorData(
-		user: student,
-		createStudentTutorDataDto: CreateStudentTutorDataDto,
-	) {
-		// try {
-		// 	const { street_number } = createStudentTutorDataDto;
-		// 	const tutorData = await this.prisma.student_tutor_data.create({
-		// 		data: {
-		// 			...createStudentTutorDataDto,
-		// 			street_number: street_number.toString(),
-		// 			student: {
-		// 				connect: {
-		// 					control_number: user.control_number,
-		// 				},
-		// 			},
-		// 		},
-		// 	});
-		// 	return tutorData;
-		// } catch (error) {
-		// 	this.handleDBErrors(error);
-		// }
+		if (!student_tutor_data)
+			return new NotFoundException({
+				message: `There is no tutor data of the user ${user.control_number}`,
+			});
+
+		return student_tutor_data;
 	}
 
 	async updateStudentTutorData(
 		user: student,
 		updateStudentTutorDataDto: UpdateStudentTutorDataDto,
 	) {
-		// try {
-		// 	const { street_number } = updateStudentTutorDataDto;
-		// 	const updatedTutorData = await this.prisma.student_tutor_data.updateMany({
-		// 		where: { studentId: user.control_number },
-		// 		data: {
-		// 			...updateStudentTutorDataDto,
-		// 			street_number: street_number.toString(),
-		// 		},
-		// 	});
-		// 	return updatedTutorData;
-		// } catch (error) {
-		// 	this.handleDBErrors(error);
-		// }
+		try {
+			await this.prisma.student_tutor_data.updateMany({
+				where: { general_data: { student_id: user.student_id } },
+				data: {
+					...updateStudentTutorDataDto,
+				},
+			});
+
+			return { message: 'Data updated successfully' };
+		} catch (error) {
+			this.handleDBErrors(error);
+		}
 	}
 
 	private handleDBErrors(error: any): never {

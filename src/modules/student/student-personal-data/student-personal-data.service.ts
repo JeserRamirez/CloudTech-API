@@ -6,65 +6,44 @@ import {
 } from '@nestjs/common';
 import { student } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-	CreateStudentPersonalDataDto,
-	UpdateStudentPersonalDataDto,
-} from './dto';
+import { UpdateStudentPersonalDataDto } from './dto';
 
 @Injectable()
 export class StudentPersonalDataService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getStudentPersonalData(user: student) {
-		// const studentPersonalData =
-		// 	await this.prisma.student_personal_data.findFirst({
-		// 		where: { studentId: user.control_number },
-		// 	});
-		// if (studentPersonalData) return studentPersonalData;
-		// return {
-		// 	message: `There is no personal data of the user ${user.control_number}`,
-		// };
-	}
+		const { student_personal_data } = await this.prisma.general_data.findFirst({
+			where: { student_id: user.student_id },
+			select: {
+				student_personal_data: true,
+			},
+		});
 
-	async createStudentPersonalData(
-		user: student,
-		createStudentPersonalDataDto: CreateStudentPersonalDataDto,
-	) {
-		// try {
-		// 	const { street_number } = createStudentPersonalDataDto;
-		// 	const personalData = await this.prisma.student_personal_data.create({
-		// 		data: {
-		// 			...createStudentPersonalDataDto,
-		// 			street_number: street_number.toString(),
-		// 			student: {
-		// 				connect: { control_number: user.control_number },
-		// 			},
-		// 		},
-		// 	});
-		// 	return personalData;
-		// } catch (error) {
-		// 	this.handleDBErrors(error);
-		// }
+		if (!student_personal_data)
+			return new NotFoundException({
+				message: `There is no personal data of the user ${user.control_number}`,
+			});
+
+		return student_personal_data;
 	}
 
 	async updateStudentPersonalData(
 		user: student,
 		updateStudentPersonalDataDto: UpdateStudentPersonalDataDto,
 	) {
-		// try {
-		// 	const { street_number } = updateStudentPersonalDataDto;
-		// 	const updatedPersonalData =
-		// 		await this.prisma.student_personal_data.updateMany({
-		// 			where: { studentId: user.control_number },
-		// 			data: {
-		// 				...updateStudentPersonalDataDto,
-		// 				street_number: street_number.toString(),
-		// 			},
-		// 		});
-		// 	return updatedPersonalData;
-		// } catch (error) {
-		// 	this.handleDBErrors(error);
-		// }
+		try {
+			await this.prisma.student_personal_data.updateMany({
+				where: { general_data: { student_id: user.student_id } },
+				data: {
+					...updateStudentPersonalDataDto,
+				},
+			});
+
+			return { message: 'Data updated successfully' };
+		} catch (error) {
+			this.handleDBErrors(error);
+		}
 	}
 
 	private handleDBErrors(error: any): never {

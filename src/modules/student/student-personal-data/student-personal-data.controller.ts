@@ -1,16 +1,16 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UsePipes } from '@nestjs/common';
 import { StudentPersonalDataService } from './student-personal-data.service';
 import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { student } from '@prisma/client';
-import {
-	CreateStudentPersonalDataDto,
-	UpdateStudentPersonalDataDto,
-} from './dto';
+import { UpdateStudentPersonalDataDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { TrimPipe } from 'src/common/pipes';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @ApiTags('Student Personal Data')
-@Controller('student-personal-data')
+@SkipThrottle({ short: true, medium: false, large: true })
+@Controller('student/student-personal-data')
 export class StudentPersonalDataController {
 	constructor(
 		private readonly studentPersonalDataService: StudentPersonalDataService,
@@ -21,19 +21,10 @@ export class StudentPersonalDataController {
 	async getStudentPersonalData(@GetUser() user: student) {
 		return await this.studentPersonalDataService.getStudentPersonalData(user);
 	}
-	@Post()
-	@Auth(ValidRoles.student)
-	async createStudentPersonalData(
-		@GetUser() user: student,
-		@Body() createStudentPersonalDataDto: CreateStudentPersonalDataDto,
-	) {
-		return await this.studentPersonalDataService.createStudentPersonalData(
-			user,
-			createStudentPersonalDataDto,
-		);
-	}
+
 	@Patch()
 	@Auth(ValidRoles.student)
+	@UsePipes(new TrimPipe())
 	async updateStudentPersonalData(
 		@GetUser() user: student,
 		@Body() updateStudentPersonalDataDto: UpdateStudentPersonalDataDto,

@@ -17,8 +17,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { fileFilter } from './helpers';
 import { SkipThrottle } from '@nestjs/throttler';
 
-@SkipThrottle({ auth: true })
 @ApiTags('Profile Pictures')
+@SkipThrottle({ short: true, medium: false, large: true })
 @Controller('profile-pictures')
 export class ProfilePicturesController {
 	constructor(

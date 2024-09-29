@@ -15,7 +15,11 @@ import { APP_GUARD } from '@nestjs/core';
 		ConfigModule.forRoot({ isGlobal: true }),
 		ThrottlerModule.forRootAsync({
 			useFactory: () => ({
-				throttlers: [{ name: 'auth', limit: 5, ttl: seconds(60) }],
+				throttlers: [
+					{ name: 'short', limit: 5, ttl: seconds(30) },
+					{ name: 'medium', limit: 10, ttl: seconds(120) },
+					{ name: 'large', limit: 20, ttl: seconds(300) },
+				],
 			}),
 		}),
 		PrismaModule,
@@ -23,7 +27,6 @@ import { APP_GUARD } from '@nestjs/core';
 		SeedModule,
 		AuthModule,
 		S3Module,
-		ModulesModule,
 	],
 	controllers: [AppController],
 	providers: [

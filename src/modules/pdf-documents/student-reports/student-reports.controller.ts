@@ -2,8 +2,10 @@ import { Controller, Get, Res } from '@nestjs/common';
 import { StudentReportsService } from './student-reports.service';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @ApiTags('Student Reports')
+@SkipThrottle({ short: true, medium: true, large: false })
 @Controller('student-reports')
 export class StudentReportsController {
 	constructor(private readonly studentReportsService: StudentReportsService) {}

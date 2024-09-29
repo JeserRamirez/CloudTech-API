@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+	IsDate,
 	IsEmail,
-	IsNumber,
-	IsOptional,
+	IsPhoneNumber,
 	IsString,
 	MaxLength,
 	MinLength,
@@ -10,7 +11,7 @@ import {
 
 export class CreateStudentPersonalDataDto {
 	@ApiProperty({
-		description: 'Student Firstname',
+		description: 'Applicant Firstname',
 		example: 'Pepe',
 		required: true,
 		type: 'string',
@@ -19,7 +20,7 @@ export class CreateStudentPersonalDataDto {
 	firstname: string;
 
 	@ApiProperty({
-		description: 'Student Lastname',
+		description: 'Applicant Lastname',
 		example: 'Martinez Gonzales',
 		required: true,
 		type: 'string',
@@ -28,39 +29,47 @@ export class CreateStudentPersonalDataDto {
 	lastname: string;
 
 	@ApiProperty({
+		description: 'Fecha de nacimiento',
+		example: '2022-01-01',
+		required: true,
+		type: 'date',
+		format: 'date',
+	})
+	@IsDate()
+	@Type(() => Date)
+	birthdate: Date;
+
+	@ApiProperty({
 		description: 'Street Name',
 		example: 'Calle 123',
-		required: false,
+		required: true,
 		type: 'string',
 	})
 	@IsString()
-	@IsOptional()
-	street_name?: string;
+	street_name: string;
 
 	@ApiProperty({
 		description: 'Street Number',
-		example: '123',
-		required: false,
-		type: 'number',
+		example: 'S/N or 123',
+		required: true,
+		type: 'string',
 	})
-	@IsNumber()
-	@IsOptional()
-	street_number?: number;
+	@IsString()
+	street_number: string;
 
 	@ApiProperty({
 		description: 'City',
 		example: 'Minatitlan',
-		required: false,
+		required: true,
 		type: 'string',
 	})
 	@IsString()
-	@IsOptional()
-	city?: string;
+	city: string;
 
 	@ApiProperty({
 		description: 'CP (5 digits)',
 		example: '92500',
-		required: false,
+		required: true,
 		type: 'string',
 		minLength: 5,
 		maxLength: 5,
@@ -68,8 +77,16 @@ export class CreateStudentPersonalDataDto {
 	@IsString()
 	@MinLength(5)
 	@MaxLength(5)
-	@IsOptional()
-	cp?: string;
+	cp: string;
+
+	@ApiProperty({
+		description: 'Phone number of the applicant',
+		example: '+54 9123456789',
+		type: 'string',
+		required: true,
+	})
+	@IsPhoneNumber()
+	phone: string;
 
 	@ApiProperty({
 		description: 'Personal Email',
@@ -82,12 +99,29 @@ export class CreateStudentPersonalDataDto {
 	personal_email: string;
 
 	@ApiProperty({
-		description: 'Schoolar Email',
-		example: 'pepe.margo@minatitlan.tecnm.mx',
+		description: 'Civil Status of Applicant',
+		example: 'SOLTERO',
 		required: true,
 		type: 'string',
-		format: 'email',
 	})
-	@IsEmail()
-	schoolar_email: string;
+	@IsString()
+	civil_status: string;
+
+	@ApiProperty({
+		description: 'Laboral Status of Applicant',
+		example: 'DESEMPLEADO',
+		required: true,
+		type: 'string',
+	})
+	@IsString()
+	laboral_status: string;
+
+	@ApiProperty({
+		description: 'RFC',
+		example: 'PMG920101ABC01',
+		required: true,
+		type: 'string',
+	})
+	@IsString()
+	rfc: string;
 }

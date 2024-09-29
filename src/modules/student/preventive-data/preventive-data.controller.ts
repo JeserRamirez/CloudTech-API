@@ -1,14 +1,16 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UsePipes } from '@nestjs/common';
 import { PreventiveDataService } from './preventive-data.service';
 import { Auth, GetUser } from 'src/auth/decorators';
 import { student } from '@prisma/client';
 import { ValidRoles } from 'src/auth/interfaces';
-import { CreatePreventiveDataDto } from './dto';
 import { UpdatePreventiveDataDto } from './dto/update-preventive-data.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { TrimPipe } from 'src/common/pipes';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @ApiTags('Student Preventive Data')
-@Controller('preventive-data')
+@SkipThrottle({ short: true, medium: false, large: true })
+@Controller('student/preventive-data')
 export class PreventiveDataController {
 	constructor(private readonly preventiveDataService: PreventiveDataService) {}
 
@@ -17,19 +19,10 @@ export class PreventiveDataController {
 	async getPreventiveData(@GetUser() user: student) {
 		return await this.preventiveDataService.getPreventiveData(user);
 	}
-	@Post()
-	@Auth(ValidRoles.student)
-	async createPreventiveData(
-		@GetUser() user: student,
-		@Body() createPreventiveDataDto: CreatePreventiveDataDto,
-	) {
-		return await this.preventiveDataService.createPreventiveData(
-			user,
-			createPreventiveDataDto,
-		);
-	}
+
 	@Patch()
 	@Auth(ValidRoles.student)
+	@UsePipes(new TrimPipe())
 	async updatePreventiveData(
 		@GetUser() user: student,
 		@Body() updatePreventiveDataDto: UpdatePreventiveDataDto,
