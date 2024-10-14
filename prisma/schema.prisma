@@ -8,7 +8,7 @@ datasource db {
 }
 
 model applicant {
-  applicant_id    String      @id
+  applicant_id    Int      @id @default(autoincrement())
   curp            String?  @unique @db.VarChar(18)
   hashed_password String?  @db.VarChar(255)
   is_active       Boolean?

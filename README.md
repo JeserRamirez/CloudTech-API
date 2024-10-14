@@ -30,3 +30,7 @@
 4. Levantar la base de datos `docker compose up -d`
 5. Generar el Prisma client `npx prisma generate`
 6. Ejecutar proyecto `yarn start:dev`
+7. Reconstruir la base de datos con la semilla
+```
+http://localhost:3000/api/v1/seed
+```
