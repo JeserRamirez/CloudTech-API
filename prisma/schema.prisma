@@ -29,6 +29,13 @@ model student {
   general_data general_data[]
 }
 
+model reset_password {
+  id_reset_password Int      @id @default(autoincrement())
+  token             String   @unique @db.VarChar(255)
+  userId            String // Can be control_number or teacher_number
+  expiration_date   DateTime @db.Timestamp(6)
+}
+
 model general_data {
   id_general_data Int @id @default(autoincrement())
 
@@ -140,12 +147,13 @@ model session {
 }
 
 model teacher {
-  teacher_id            Int                    @id @default(autoincrement())
-  teacher_number        String?                @unique @db.VarChar(255)
-  hashed_password       String?                @db.VarChar(255)
-  is_active             Boolean?
-  roles                 String[]
-  period                String?                @db.VarChar(255)
+  teacher_id      Int      @id @default(autoincrement())
+  teacher_number  String?  @unique @db.VarChar(255)
+  hashed_password String?  @db.VarChar(255)
+  is_active       Boolean?
+  roles           String[]
+  period          String?  @db.VarChar(255)
+
   job_data              job_data?
   teacher_personal_data teacher_personal_data?
 }

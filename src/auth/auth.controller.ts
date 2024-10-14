@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UsePipes } from '@nestjs/common';
 
 import {
 	CreateApplicantDto,
@@ -11,6 +11,9 @@ import {
 	LoginApplicantDto,
 	LoginStudentDto,
 	LoginTeacherDto,
+	ChangePasswordDto,
+	ForgotPasswordDto,
+	ResetPasswordDto,
 } from './dto';
 import { ValidRoles } from './interfaces';
 import { AuthService } from './auth.service';
@@ -129,10 +132,31 @@ export class AuthController {
 		return this.authService.loginTeacher(loginTeacherDto);
 	}
 
+	@Patch('change-password')
+	@Auth(ValidRoles.applicant, ValidRoles.student, ValidRoles.teacher)
+	async changePassword(
+		@GetUser() user: any,
+		@Body() changePasswordDto: ChangePasswordDto,
+	) {
+		return this.authService.changePassword(user, changePasswordDto);
+	}
+
+	@Post('forgot-password')
+	async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+		return this.authService.forgotPassword(forgotPasswordDto);
+	}
+
+	@Patch('reset-password')
+	async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+		return this.authService.resetPassword(resetPasswordDto);
+	}
+
 	@Post('logout')
-	async logout(@Body('userId') userId: string) {
-		await this.authService.logout(userId);
-		return { message: 'Logged out successfully' };
+	@Auth(ValidRoles.applicant, ValidRoles.student, ValidRoles.teacher)
+	async logout(@GetUser() user: any) {
+		console.log(user);
+		await this.authService.logout(user);
+		return { message: 'Logged out successfully!!' };
 	}
 
 	@Get('check-auth-status')

@@ -18,17 +18,25 @@ import {
 	LoginApplicantDto,
 	LoginStudentDto,
 	LoginTeacherDto,
+	ChangePasswordDto,
+	ForgotPasswordDto,
+	ResetPasswordDto,
 } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { getPeriod } from 'src/common/helpers';
+import { student, teacher } from '@prisma/client';
+import { nanoid } from 'nanoid';
+import { MailService } from './services/mail.service';
+import { TokenExpiredException } from './error';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly jwtService: JwtService,
+		private readonly emailService: MailService,
 	) {}
 
 	private async createSession(userId: string, token: string) {
@@ -298,7 +306,287 @@ export class AuthService {
 		return { ...teacher, token };
 	}
 
-	async logout(userId: string) {
+	async changePassword(user: any, changePasswordDto: ChangePasswordDto) {
+		try {
+			const { oldPassword, newPassword } = changePasswordDto;
+
+			if (oldPassword === newPassword) {
+				throw new BadRequestException('Type a new password');
+			}
+
+			let userId: string;
+			if (user.roles.includes('applicant')) {
+				userId = user.curp;
+
+				const applicant = await this.prisma.applicant.findUnique({
+					where: { curp: userId },
+				});
+
+				const isMatch = bcrypt.compareSync(
+					oldPassword,
+					applicant.hashed_password,
+				);
+
+				if (!isMatch) {
+					throw new UnauthorizedException('The current password is incorrect');
+				}
+
+				await this.prisma.applicant.updateMany({
+					where: { curp: userId },
+					data: { hashed_password: bcrypt.hashSync(newPassword, 10) },
+				});
+			} else if (user.roles.includes('student')) {
+				userId = user.control_number;
+
+				const student = await this.prisma.student.findUnique({
+					where: {
+						control_number: userId,
+					},
+				});
+
+				const isMatch = bcrypt.compareSync(
+					oldPassword,
+					student.hashed_password,
+				);
+
+				if (!isMatch) {
+					throw new UnauthorizedException('The current password is incorrect');
+				}
+
+				await this.prisma.student.updateMany({
+					where: { control_number: userId },
+					data: { hashed_password: bcrypt.hashSync(newPassword, 10) },
+				});
+			} else if (user.roles.includes('teacher')) {
+				userId = user.teacher_number;
+
+				const teacher = await this.prisma.teacher.findUnique({
+					where: { teacher_number: userId },
+				});
+
+				const isMatch = bcrypt.compareSync(
+					oldPassword,
+					teacher.hashed_password,
+				);
+
+				if (!isMatch) {
+					throw new UnauthorizedException('The current password is incorrect');
+				}
+
+				await this.prisma.teacher.updateMany({
+					where: { teacher_number: userId },
+					data: { hashed_password: bcrypt.hashSync(newPassword, 10) },
+				});
+			}
+
+			return { message: 'Password changed successfully!!' };
+		} catch (error) {
+			if (
+				error instanceof BadRequestException ||
+				error instanceof UnauthorizedException
+			) {
+				throw error;
+			}
+
+			this.handleDBErrors(error);
+		}
+	}
+
+	async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+		try {
+			const { userId, email } = forgotPasswordDto;
+			// Check that user exists
+			let user:
+				| (teacher & { teacher_personal_data: { schoolar_email: string } })
+				| (student & {
+						general_data: {
+							student_personal_data: { schoolar_email: string }[];
+						}[];
+				  });
+
+			if (userId.length === 3) {
+				const teacher = await this.prisma.teacher.findUnique({
+					where: { teacher_number: userId },
+					include: {
+						teacher_personal_data: { select: { schoolar_email: true } },
+					},
+				});
+
+				if (!teacher) throw new NotFoundException('Teacher not found');
+
+				if (
+					!(
+						teacher.teacher_number === userId &&
+						teacher.teacher_personal_data.schoolar_email === email
+					)
+				)
+					throw new NotFoundException({
+						message: 'Email does not exist',
+					});
+
+				user = teacher;
+
+				//If user exists, delete all the old tokens so only the new one will work
+				await this.prisma.reset_password.deleteMany({
+					where: { userId: user.teacher_number },
+				});
+
+				// If user exists, generate password reset link
+				const reset_token = nanoid(64);
+				const expiry_date = new Date();
+				expiry_date.setMinutes(expiry_date.getMinutes() + 15);
+
+				// Send the link to the user (using nodemailer)
+				this.emailService.sendPasswordResetEmail(email, reset_token);
+
+				await this.prisma.reset_password.create({
+					data: {
+						token: reset_token,
+						userId: user.teacher_number,
+						expiration_date: expiry_date,
+					},
+				});
+
+				// console.log(user.teacher_personal_data.schoolar_email);
+			} else if (userId.length === 8) {
+				const student = await this.prisma.student.findUnique({
+					where: { control_number: userId },
+					include: {
+						general_data: {
+							select: {
+								student_personal_data: {
+									select: {
+										schoolar_email: true,
+									},
+								},
+							},
+						},
+					},
+				});
+
+				if (!student) throw new NotFoundException('Student not found');
+
+				if (
+					!(
+						student.control_number === userId &&
+						student.general_data[0].student_personal_data[0].schoolar_email ===
+							email
+					)
+				)
+					throw new NotFoundException({
+						message: 'Email does not match',
+					});
+
+				user = student;
+
+				//If user exists, delete all the old tokens so only the new one will work
+				await this.prisma.reset_password.deleteMany({
+					where: { userId: user.control_number },
+				});
+
+				// If user exists, generate password reset link
+				const reset_token = nanoid(64);
+				const expiry_date = new Date();
+				expiry_date.setMinutes(expiry_date.getMinutes() + 15);
+
+				// Send the link to the user (using nodemailer)
+				await this.emailService.sendPasswordResetEmail(email, reset_token);
+
+				await this.prisma.reset_password.create({
+					data: {
+						token: reset_token,
+						userId: user.control_number,
+						expiration_date: expiry_date,
+					},
+				});
+
+				// console.log(user.general_data[0].student_personal_data[0].schoolar_email);
+			}
+
+			return {
+				message: 'If this user exists, will receive an email',
+			};
+		} catch (error) {
+			if (error instanceof NotFoundException) {
+				throw error;
+			}
+
+			this.handleDBErrors(error);
+		}
+	}
+
+	async resetPassword(resetPasswordDto: ResetPasswordDto) {
+		try {
+			// Find a valid reset token
+			const token = await this.prisma.reset_password.findUnique({
+				where: { token: resetPasswordDto.token },
+			});
+
+			if (!token) throw new NotFoundException('No token found');
+
+			const expirationDateString = token.expiration_date;
+			const expirationDate = new Date(expirationDateString);
+			const currentDate = new Date();
+
+			if (currentDate.getTime() > expirationDate.getTime()) {
+				await this.prisma.reset_password.delete({
+					where: { token: resetPasswordDto.token },
+				});
+				throw new TokenExpiredException(expirationDate);
+			}
+
+			const hashedPassword = bcrypt.hashSync(resetPasswordDto.newPassword, 10);
+
+			// Change user password
+			if (token.userId.length === 3) {
+				await this.prisma.teacher.update({
+					where: { teacher_number: token.userId },
+					data: {
+						hashed_password: hashedPassword,
+					},
+				});
+
+				// Delete the token after the token has been used
+				await this.prisma.reset_password.delete({
+					where: { token: resetPasswordDto.token },
+				});
+			} else if (token.userId.length === 8) {
+				await this.prisma.student.update({
+					where: { control_number: token.userId },
+					data: {
+						hashed_password: hashedPassword,
+					},
+				});
+
+				// Delete the token after the token has been used
+				await this.prisma.reset_password.delete({
+					where: { token: resetPasswordDto.token },
+				});
+			}
+
+			return { message: 'Password changed succesfully' };
+		} catch (error) {
+			if (
+				error instanceof NotFoundException ||
+				error instanceof TokenExpiredException
+			) {
+				throw error;
+			}
+
+			this.handleDBErrors(error);
+		}
+	}
+
+	async logout(user: any) {
+		let userId: string;
+		if (user.roles.includes('applicant')) {
+			userId = user.curp;
+		} else if (user.includes('student')) {
+			userId = user.control_number;
+		} else if (user.includes('teacher')) {
+			userId = user.teacher_number;
+		}
+
 		// Delete all active sessions of the user
 		await this.invalidateOldSessions(userId);
 	}
@@ -317,6 +605,9 @@ export class AuthService {
 	}
 
 	private handleDBErrors(error: any): never {
+		if (error === undefined)
+			throw new NotFoundException('This record does not exist');
+
 		if (error.code == '23505') throw new BadRequestException(error.detail);
 
 		if (error.code == 'P2002')
