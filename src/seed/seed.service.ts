@@ -223,6 +223,8 @@ export class SeedService {
 
         }
 
+        await this.prisma.$executeRaw`TRUNCATE TABLE "teacher" RESTART IDENTITY CASCADE;`;
+
         const teachersToCreate = usersToCreate / 2; // Cantidad de usuarios a generar
 
         for (let i = 0; i < teachersToCreate; i++) {
@@ -249,36 +251,28 @@ export class SeedService {
                 },
             });
 
-            // const connectTeacherPersonalData = await this.prisma.teacher_personal_data.create({
-            //     data: {
-            //         teacher: {
-            //             connect: { teacher_id: teacher.teacher_id }, // Conectar con el teacher recién creado
-            //         }
-            //     },
-            // });
+            const connectTeacherPersonalData = await this.prisma.teacher_personal_data.create({
+                data: {
+                    teacher: {
+                        connect: { teacher_id: teacher.teacher_id }, // Conectar con el teacher recién creado
+                    }
+                },
+            });
 
-            // const teacherPersonalData = await this.prisma.teacher_personal_data.create({
-            //     data: {
-            //        // id_teacher_number: faker.number.int({ min: 10101101, max: 20230254 }).toString(),
-            //         firstname: faker.person.firstName(), // Nombre
-            //         lastname: faker.person.lastName(), // Apellido
-            //         street_name: faker.location.street(), // Nombre de calle
-            //         street_number: faker.location.buildingNumber(), // Número de calle
-            //         city: faker.location.city(), // Ciudad
-            //         cp: faker.location.zipCode(), // Código postal
-            //         personal_email: faker.internet.email(), // Email personal
-            //         schoolar_email: faker.internet.email(), // Email escolar
-            //     },
-            // });
-
-            // const connectTeacherNumberData = await this.prisma.teacher.update({
-            //     data: {
-            //         teacher_personal_data: {
-            //             connect: { id_teacher_number: teacherPersonalData.id_teacher_number }, // Conectar con el teacher recién creado
-            //         }
-            //     },
-            //     where: undefined
-            // });
+            const teacherPersonalData = await this.prisma.teacher_personal_data.update({
+                where: { id_teacher_number: connectTeacherPersonalData.id_teacher_number },
+                data: {
+                   // id_teacher_number: faker.number.int({ min: 10101101, max: 20230254 }).toString(),
+                    firstname: faker.person.firstName(), // Nombre
+                    lastname: faker.person.lastName(), // Apellido
+                    street_name: faker.location.street(), // Nombre de calle
+                    street_number: faker.location.buildingNumber(), // Número de calle
+                    city: faker.location.city(), // Ciudad
+                    cp: faker.location.zipCode(), // Código postal
+                    personal_email: faker.internet.email(), // Email personal
+                    schoolar_email: faker.internet.email(), // Email escolar
+                },
+            });
 
         }
 
