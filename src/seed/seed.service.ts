@@ -644,6 +644,101 @@ export class SeedService {
             });
         }
 
+        
+
+        const subjectPlanRelations1 = await this.prisma.subject_plan_relation.findMany({
+            take: 10, // Obtiene los primeros 10 registros
+          });
+          
+          if (subjectPlanRelations1.length === 0) {
+            throw new Error('No subject plan relations found in the database.');
+          }
+          
+          const subjectList = [
+            'Matemáticas I',
+            'Física I',
+            'Introducción a la Programación',
+            'Contabilidad Básica',
+            'Derecho Constitucional',
+            'Cálculo Diferencial',
+            'Química General',
+            'Psicología del Desarrollo',
+            'Mercadotecnia Básica',
+            'Introducción a la Pedagogía',
+          ];
+          
+          const competenceList = [
+            {
+              skill: 'Aplicar conceptos básicos para resolver problemas matemáticos.',
+              description: 'Desarrollar habilidades para análisis y solución de problemas usando fundamentos de álgebra y geometría.',
+            },
+            {
+              skill: 'Entender las leyes fundamentales de la física.',
+              description: 'Aplicar principios físicos para comprender fenómenos naturales y su relación con la ingeniería.',
+            },
+            {
+              skill: 'Desarrollar programas básicos en lenguajes de programación.',
+              description: 'Implementar algoritmos y resolver problemas computacionales mediante lenguajes de programación estructurada.',
+            },
+            {
+              skill: 'Registrar operaciones financieras básicas.',
+              description: 'Realizar el registro de operaciones financieras en libros contables aplicando principios de contabilidad.',
+            },
+            {
+              skill: 'Interpretar los derechos fundamentales de la constitución.',
+              description: 'Aplicar conceptos básicos del derecho constitucional en casos prácticos y cotidianos.',
+            },
+            {
+              skill: 'Aplicar técnicas de cálculo para resolver problemas matemáticos.',
+              description: 'Resolver problemas de límites, derivadas e integrales en situaciones prácticas.',
+            },
+            {
+              skill: 'Comprender los principios básicos de la química.',
+              description: 'Analizar las propiedades químicas de los elementos y su impacto en la vida diaria y la industria.',
+            },
+            {
+              skill: 'Analizar las etapas del desarrollo humano.',
+              description: 'Comprender los factores que influyen en el desarrollo físico, cognitivo y emocional de los individuos.',
+            },
+            {
+              skill: 'Entender los fundamentos básicos de la mercadotecnia.',
+              description: 'Desarrollar estrategias de marketing para promover productos y servicios en diferentes mercados.',
+            },
+            {
+              skill: 'Analizar el proceso educativo y los principios de la pedagogía.',
+              description: 'Estudiar las teorías y métodos pedagógicos para mejorar la práctica educativa.',
+            },
+          ];
+          
+          for (let i = 0; i < subjectList.length; i++) {
+            const createdSubject = await this.prisma.initial_data_subject.create({
+              data: {
+                characterization: {
+                  name: subjectList[i],
+                  description: faker.lorem.sentence(),
+                },
+                didactics: {
+                  methods: faker.helpers.arrayElement(['Exposición', 'Discusión', 'Trabajo en equipo']),
+                  evaluation: faker.helpers.arrayElement(['Exámenes', 'Proyectos', 'Participación']),
+                },
+                competence_specify: {
+                  skill: competenceList[i].skill,
+                  description: competenceList[i].description,
+                },
+              },
+            });
+          
+            // Asigna la relación de plan de materia
+            await this.prisma.subject_plan_relation.update({
+              where: { id_subject_plan_relation: subjectPlanRelations1[i].id_subject_plan_relation },
+              data: {
+                initial_data_subject: {
+                  connect: { id_initial_data_subject: createdSubject.id_initial_data_subject },
+                },
+              },
+            });
+          }
+          
 
 
 
