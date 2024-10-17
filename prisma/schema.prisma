@@ -235,6 +235,8 @@ model subject_plan {
   id_subject_plan       Int     @id @default(autoincrement())
   id_carrer             Int?    @unique @db.Integer
   name                  String? @db.VarChar
+  modality              String? @db.VarChar   // Modalidad específica (dual, en línea)
+
 
   carrer carrer? @relation(fields: [id_carrer], references: [id_carrer], onDelete: Cascade, onUpdate: Cascade)
 
@@ -262,10 +264,10 @@ model specialities {
   carrer carrer? @relation(fields: [carrer_id], references: [id_carrer], onDelete: Cascade, onUpdate: Cascade)
 
 
-  Speciality_Subject_Plan Speciality_Subject_Plan[]
+  speciality_subject_plan speciality_subject_plan[]
 }
 
-model Speciality_Subject_Plan {
+model speciality_subject_plan {
   id_speciality_subject_plan Int @id @default(autoincrement())
   specialities_id            Int?
   subject_plan_relation_id   Int?
@@ -292,7 +294,7 @@ model subject_plan_relation{
 
   assing_initial_data_subject assing_initial_data_subject[]
 
-  Speciality_Subject_Plan Speciality_Subject_Plan[]
+  Speciality_Subject_Plan speciality_subject_plan[]
 }
 
 model student_kardex_plan {
