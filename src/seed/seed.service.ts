@@ -13,11 +13,43 @@ export class SeedService {
 
     async seedDatabase() {
 
+        await this.prisma.$executeRaw`TRUNCATE TABLE "applicant" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "student" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "general_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "preventive_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "student_personal_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "student_tutor_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "scholar_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "last_study_Level" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "session" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "teacher" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "teacher_personal_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "job_data" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "profile_picture" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "applicant_payment_token" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "examn_applicant" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "applicant_payment_inscription" RESTART IDENTITY CASCADE;`;
         await this.prisma.$executeRaw`TRUNCATE TABLE "carrer" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "subject_plan" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "subject" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "specialities" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "speciality_subject_plan" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "subject_plan_relation" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "student_kardex_plan" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "student_current_class" RESTART IDENTITY CASCADE;`;
         await this.prisma.$executeRaw`TRUNCATE TABLE "group" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "group_tags" RESTART IDENTITY CASCADE;`;
         await this.prisma.$executeRaw`TRUNCATE TABLE "class_room" RESTART IDENTITY CASCADE;`;
         await this.prisma.$executeRaw`TRUNCATE TABLE "class_schedule" RESTART IDENTITY CASCADE;`;
-        await this.prisma.$executeRaw`TRUNCATE TABLE "complementary_activity" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "initial_data_subject" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "general_data_subject" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "general_competence_edit" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "assing_data_subject" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "assing_initial_data_subject" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "assing_general_data_subject" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "curse_following_grades_themes" RESTART IDENTITY CASCADE;`;
+        await this.prisma.$executeRaw`TRUNCATE TABLE "grades_current" RESTART IDENTITY CASCADE;`;
+
         const carreras = await this.prisma.carrer.createMany({
             data: [
                 { carrer_name: 'Ingeniería en Sistemas Computacionales', modality: 'Escolarizado' },
@@ -382,9 +414,8 @@ export class SeedService {
 
 
 
-        await this.prisma.$executeRaw`TRUNCATE TABLE "teacher" RESTART IDENTITY CASCADE;`;
 
-        const teachersToCreate = usersToCreate / 2; // Cantidad de usuarios a generar
+        const teachersToCreate = 10; // Cantidad de usuarios a generar
 
         for (let i = 0; i < teachersToCreate; i++) {
 
@@ -529,6 +560,8 @@ export class SeedService {
 
 
 
+
+
             const activities = [
                 'Taller de Liderazgo',
                 'Conferencia de Innovación',
@@ -644,17 +677,17 @@ export class SeedService {
             });
         }
 
-        
+
 
         const subjectPlanRelations1 = await this.prisma.subject_plan_relation.findMany({
             take: 10, // Obtiene los primeros 10 registros
-          });
-          
-          if (subjectPlanRelations1.length === 0) {
+        });
+
+        if (subjectPlanRelations1.length === 0) {
             throw new Error('No subject plan relations found in the database.');
-          }
-          
-          const subjectList = [
+        }
+
+        const subjectList = [
             'Matemáticas I',
             'Física I',
             'Introducción a la Programación',
@@ -665,80 +698,414 @@ export class SeedService {
             'Psicología del Desarrollo',
             'Mercadotecnia Básica',
             'Introducción a la Pedagogía',
-          ];
-          
-          const competenceList = [
+        ];
+
+        const competenceList = [
             {
-              skill: 'Aplicar conceptos básicos para resolver problemas matemáticos.',
-              description: 'Desarrollar habilidades para análisis y solución de problemas usando fundamentos de álgebra y geometría.',
+                skill: 'Aplicar conceptos básicos para resolver problemas matemáticos.',
+                description: 'Desarrollar habilidades para análisis y solución de problemas usando fundamentos de álgebra y geometría.',
             },
             {
-              skill: 'Entender las leyes fundamentales de la física.',
-              description: 'Aplicar principios físicos para comprender fenómenos naturales y su relación con la ingeniería.',
+                skill: 'Entender las leyes fundamentales de la física.',
+                description: 'Aplicar principios físicos para comprender fenómenos naturales y su relación con la ingeniería.',
             },
             {
-              skill: 'Desarrollar programas básicos en lenguajes de programación.',
-              description: 'Implementar algoritmos y resolver problemas computacionales mediante lenguajes de programación estructurada.',
+                skill: 'Desarrollar programas básicos en lenguajes de programación.',
+                description: 'Implementar algoritmos y resolver problemas computacionales mediante lenguajes de programación estructurada.',
             },
             {
-              skill: 'Registrar operaciones financieras básicas.',
-              description: 'Realizar el registro de operaciones financieras en libros contables aplicando principios de contabilidad.',
+                skill: 'Registrar operaciones financieras básicas.',
+                description: 'Realizar el registro de operaciones financieras en libros contables aplicando principios de contabilidad.',
             },
             {
-              skill: 'Interpretar los derechos fundamentales de la constitución.',
-              description: 'Aplicar conceptos básicos del derecho constitucional en casos prácticos y cotidianos.',
+                skill: 'Interpretar los derechos fundamentales de la constitución.',
+                description: 'Aplicar conceptos básicos del derecho constitucional en casos prácticos y cotidianos.',
             },
             {
-              skill: 'Aplicar técnicas de cálculo para resolver problemas matemáticos.',
-              description: 'Resolver problemas de límites, derivadas e integrales en situaciones prácticas.',
+                skill: 'Aplicar técnicas de cálculo para resolver problemas matemáticos.',
+                description: 'Resolver problemas de límites, derivadas e integrales en situaciones prácticas.',
             },
             {
-              skill: 'Comprender los principios básicos de la química.',
-              description: 'Analizar las propiedades químicas de los elementos y su impacto en la vida diaria y la industria.',
+                skill: 'Comprender los principios básicos de la química.',
+                description: 'Analizar las propiedades químicas de los elementos y su impacto en la vida diaria y la industria.',
             },
             {
-              skill: 'Analizar las etapas del desarrollo humano.',
-              description: 'Comprender los factores que influyen en el desarrollo físico, cognitivo y emocional de los individuos.',
+                skill: 'Analizar las etapas del desarrollo humano.',
+                description: 'Comprender los factores que influyen en el desarrollo físico, cognitivo y emocional de los individuos.',
             },
             {
-              skill: 'Entender los fundamentos básicos de la mercadotecnia.',
-              description: 'Desarrollar estrategias de marketing para promover productos y servicios en diferentes mercados.',
+                skill: 'Entender los fundamentos básicos de la mercadotecnia.',
+                description: 'Desarrollar estrategias de marketing para promover productos y servicios en diferentes mercados.',
             },
             {
-              skill: 'Analizar el proceso educativo y los principios de la pedagogía.',
-              description: 'Estudiar las teorías y métodos pedagógicos para mejorar la práctica educativa.',
+                skill: 'Analizar el proceso educativo y los principios de la pedagogía.',
+                description: 'Estudiar las teorías y métodos pedagógicos para mejorar la práctica educativa.',
             },
-          ];
-          
-          for (let i = 0; i < subjectList.length; i++) {
+        ];
+
+        for (let i = 0; i < subjectList.length; i++) {
             const createdSubject = await this.prisma.initial_data_subject.create({
-              data: {
-                characterization: {
-                  name: subjectList[i],
-                  description: faker.lorem.sentence(),
+                data: {
+                    characterization: {
+                        name: subjectList[i],
+                        description: faker.lorem.sentence(),
+                    },
+                    didactics: {
+                        methods: faker.helpers.arrayElement(['Exposición', 'Discusión', 'Trabajo en equipo']),
+                        evaluation: faker.helpers.arrayElement(['Exámenes', 'Proyectos', 'Participación']),
+                    },
+                    competence_specify: {
+                        skill: competenceList[i].skill,
+                        description: competenceList[i].description,
+                    },
                 },
-                didactics: {
-                  methods: faker.helpers.arrayElement(['Exposición', 'Discusión', 'Trabajo en equipo']),
-                  evaluation: faker.helpers.arrayElement(['Exámenes', 'Proyectos', 'Participación']),
-                },
-                competence_specify: {
-                  skill: competenceList[i].skill,
-                  description: competenceList[i].description,
-                },
-              },
             });
-          
+
             // Asigna la relación de plan de materia
             await this.prisma.subject_plan_relation.update({
-              where: { id_subject_plan_relation: subjectPlanRelations1[i].id_subject_plan_relation },
-              data: {
-                initial_data_subject: {
-                  connect: { id_initial_data_subject: createdSubject.id_initial_data_subject },
+                where: { id_subject_plan_relation: subjectPlanRelations1[i].id_subject_plan_relation },
+                data: {
+                    initial_data_subject: {
+                        connect: { id_initial_data_subject: createdSubject.id_initial_data_subject },
+                    },
+
                 },
-              },
             });
-          }
-          
+
+            const connectGeneralDataSubject = await this.prisma.general_data_subject.create({
+                data: {
+                    initial_data_subject: {
+                        connect: {
+                            id_initial_data_subject: createdSubject.id_initial_data_subject, // 
+                        },
+                    },
+                    description_tag: subjectList[i],
+                },
+            });
+
+            const connectGeneralCompetenceEdit = await this.prisma.general_competence_edit.create({
+                data: {
+                    general_data_subject: {
+                        connect: {
+                            id_general_data_subject: createdSubject.id_initial_data_subject, // 
+                        },
+                    },
+                },
+            });
+        }
+
+
+        const general_competence_edit = await this.prisma.general_competence_edit.findMany({
+            take: 10, // Obtiene los primeros 10 registros
+        });
+
+        if (general_competence_edit.length === 0) {
+            throw new Error('No general competence edit found in the database.');
+        }
+        const generalCompetenceData = [
+            {
+                description: 'Aplicar los conceptos fundamentales de las matemáticas en la resolución de problemas cotidianos.',
+                topics_and_sub: ['Álgebra', 'Geometría', 'Trigonometría'],
+                activities_learning: ['Resolución de problemas', 'Análisis de ecuaciones'],
+                activities_teaching: ['Clases magistrales', 'Ejercicios prácticos'],
+                competence_generic: 'Desarrollar pensamiento lógico y crítico.',
+            },
+            {
+                description: 'Entender y aplicar los principios básicos de la física en fenómenos naturales.',
+                topics_and_sub: ['Cinemática', 'Dinámica', 'Fuerzas'],
+                activities_learning: ['Simulaciones', 'Pruebas experimentales'],
+                activities_teaching: ['Talleres prácticos', 'Demostraciones'],
+                competence_generic: 'Capacidad para aplicar el método científico.',
+            },
+            {
+                description: 'Desarrollar programas básicos y aplicar lógica de programación estructurada.',
+                topics_and_sub: ['Algoritmos', 'Estructuras de control', 'Funciones'],
+                activities_learning: ['Desarrollo de algoritmos', 'Escritura de código'],
+                activities_teaching: ['Laboratorios de programación', 'Evaluaciones de proyectos'],
+                competence_generic: 'Capacidad para resolver problemas computacionales.',
+            },
+            {
+                description: 'Registrar y analizar operaciones contables básicas.',
+                topics_and_sub: ['Activos', 'Pasivos', 'Capital'],
+                activities_learning: ['Análisis de estados financieros', 'Elaboración de balances'],
+                activities_teaching: ['Exposiciones teóricas', 'Ejercicios prácticos'],
+                competence_generic: 'Capacidad para gestionar información financiera básica.',
+            },
+            {
+                description: 'Interpretar los principios de la constitución y su impacto en la sociedad.',
+                topics_and_sub: ['Derechos fundamentales', 'División de poderes', 'Normas jurídicas'],
+                activities_learning: ['Análisis de casos', 'Debates legales'],
+                activities_teaching: ['Lectura de textos jurídicos', 'Discusiones dirigidas'],
+                competence_generic: 'Capacidad para aplicar principios constitucionales.',
+            },
+            {
+                description: 'Aplicar los principios de cálculo diferencial en la solución de problemas matemáticos.',
+                topics_and_sub: ['Límites', 'Derivadas', 'Integrales'],
+                activities_learning: ['Resolución de ecuaciones', 'Aplicaciones prácticas'],
+                activities_teaching: ['Exámenes teóricos', 'Problemas prácticos'],
+                competence_generic: 'Habilidad en el uso de técnicas de cálculo.',
+            },
+            {
+                description: 'Entender los conceptos básicos de la química y sus aplicaciones.',
+                topics_and_sub: ['Elementos químicos', 'Compuestos', 'Reacciones químicas'],
+                activities_learning: ['Laboratorios químicos', 'Ejercicios prácticos'],
+                activities_teaching: ['Exposiciones', 'Pruebas experimentales'],
+                competence_generic: 'Capacidad para realizar análisis químicos.',
+            },
+            {
+                description: 'Analizar el desarrollo humano desde el punto de vista psicológico.',
+                topics_and_sub: ['Crecimiento cognitivo', 'Desarrollo emocional', 'Socialización'],
+                activities_learning: ['Análisis de casos', 'Simulaciones'],
+                activities_teaching: ['Clases interactivas', 'Proyectos de investigación'],
+                competence_generic: 'Habilidad para comprender el desarrollo humano.',
+            },
+            {
+                description: 'Desarrollar estrategias de mercadotecnia para productos y servicios.',
+                topics_and_sub: ['Estrategias de producto', 'Canales de distribución', 'Publicidad'],
+                activities_learning: ['Diseño de campañas', 'Análisis de mercado'],
+                activities_teaching: ['Estudios de caso', 'Proyectos prácticos'],
+                competence_generic: 'Capacidad para gestionar proyectos de mercadotecnia.',
+            },
+            {
+                description: 'Entender las bases de la pedagogía y su aplicación en la educación.',
+                topics_and_sub: ['Teorías educativas', 'Métodos de enseñanza', 'Evaluación'],
+                activities_learning: ['Desarrollo de planes educativos', 'Simulaciones de clases'],
+                activities_teaching: ['Clases prácticas', 'Evaluaciones de desempeño'],
+                competence_generic: 'Capacidad para diseñar programas educativos.',
+            },
+        ];
+
+        // Inserción en el modelo general_competence_edit
+        for (let i = 0; i < subjectList.length; i++) {
+            await this.prisma.general_competence_edit.update({
+                where: { id_general_competence_edit: general_competence_edit[i].id_general_competence_edit },
+                data: {
+
+                    description: {
+                        general: generalCompetenceData[i].description,
+                    },
+                    topics_and_sub: {
+                        topics: generalCompetenceData[i].topics_and_sub,
+                    },
+                    activities_learning: {
+                        learning_methods: generalCompetenceData[i].activities_learning,
+                    },
+                    activities_teaching: {
+                        teaching_methods: generalCompetenceData[i].activities_teaching,
+                    },
+                    competence_generic: {
+                        generic: generalCompetenceData[i].competence_generic,
+                    },
+                    theorical: faker.number.int({ min: 20, max: 40 }), // Horas teóricas
+                    practice: faker.number.int({ min: 20, max: 40 }), // Horas prácticas
+                    scope_indicators: {
+                        indicators: faker.helpers.arrayElements(['Dominio conceptual', 'Capacidad analítica']),
+                    },
+                    value_indicator: {
+                        indicator: faker.helpers.arrayElement(['Aprobado', 'Sobresaliente', 'Notable']),
+                    },
+                    scheduling_tp: {
+                        week: faker.number.int({ min: 1, max: 15 }), // semanas
+                    },
+                    scheduling_tr: {
+                        week: faker.number.int({ min: 1, max: 15 }), // semanas
+                    },
+                },
+            });
+        }
+
+
+        // Recuperamos las tablas por defecto
+        const initialDataSubjects = await this.prisma.initial_data_subject.findMany({
+            take: 10, // Limitar a las primeras 10 materias
+        });
+
+        const generalDataSubjects = await this.prisma.general_data_subject.findMany({
+            take: 10, // Limitar a las primeras 10 materias
+        });
+
+        const generalCompetenceEdits = await this.prisma.general_competence_edit.findMany({
+            take: 10, // Limitar a las primeras 10 competencias
+        });
+
+
+
+        // Creamos las inserciones en las tablas modificables
+        for (let i = 0; i < initialDataSubjects.length; i++) {
+            const initialSubject = initialDataSubjects[i];
+            const generalSubject = generalDataSubjects[i];
+            const generalCompetence = generalCompetenceEdits[i];
+
+            // Insertar en assing_initial_data_subject
+            const assingInitialDataSubject = await this.prisma.assing_initial_data_subject.create({
+                data: {
+                    characterization: initialSubject.characterization,
+                    didactics: initialSubject.didactics,
+                    competence_specify: initialSubject.competence_specify,
+                    subject_plan_relation_id: initialSubject.subject_plan_relation_id,
+                },
+            });
+
+
+
+            // Insertar en assing_general_data_subject
+            await this.prisma.assing_general_data_subject.create({
+                data: {
+                    description_tag: generalSubject.description_tag,
+                },
+            });
+
+            // Insertar en assing_general_competence_edit
+            await this.prisma.assing_general_competence_edit.create({
+                data: {
+                    description: generalCompetence.description,
+                    topics_and_sub: generalCompetence.topics_and_sub,
+                    activities_learning: generalCompetence.activities_learning,
+                    activities_teaching: generalCompetence.activities_teaching,
+                    competence_generic: generalCompetence.competence_generic,
+                    theorical: generalCompetence.theorical,
+                    practice: generalCompetence.practice,
+                    scope_indicators: generalCompetence.scope_indicators,
+                    value_indicator: generalCompetence.value_indicator,
+                    scheduling_tp: generalCompetence.scheduling_tp,
+                    scheduling_tr: generalCompetence.scheduling_tr,
+                },
+            });
+
+
+            const connectGeneralCompetenceEdit = await this.prisma.assing_general_competence_edit.update({
+                where: {
+                    id_general_competence_edit: generalCompetence.id_general_competence_edit,
+                },
+                data: {
+                    assing_general_data_subject: {
+                        connect: {
+                            id_general_data_subject: assingInitialDataSubject.id_initial_data_subject // 
+                        },
+                    },
+                },
+            });
+
+            const connectCurseFollowing = await this.prisma.curse_following_grades_themes.create({
+                data: {
+                    assing_general_data_subject: {
+                        connect: {
+                            id_general_data_subject: assingInitialDataSubject.id_initial_data_subject // 
+                        },
+                    },
+                },
+            });
+
+
+            const connectAssingInitialDataSubject = await this.prisma.assing_initial_data_subject.update({
+                where: {
+                    id_initial_data_subject: assingInitialDataSubject.id_initial_data_subject,
+                },
+                data: {
+                    assing_general_data_subject: {
+                        connect: {
+                            id_general_data_subject: assingInitialDataSubject.id_initial_data_subject // 
+                        },
+                    },
+                },
+            });
+
+            const connectAssingDataSubject = await this.prisma.assing_data_subject.create({
+                data: {
+                    initial_data_subject: {
+                        connect: {
+                            id_initial_data_subject: assingInitialDataSubject.id_initial_data_subject // 
+                        },
+                    },
+                    assing_initial_data_subject: {
+                        connect: {
+                            id_initial_data_subject: assingInitialDataSubject.id_initial_data_subject // 
+                        },
+                    },
+                },
+            });
+
+
+        }
+
+        // Creamos la lista de IDs para las class_schedule 
+        const classScheduleIds = Array.from({ length: 10 }, (_, i) => i + 1); // IDs del 1 al 25
+
+        // Actualizamos cada class_schedule
+        for (let i = 0; i < classScheduleIds.length; i++) {
+            const updateClassSchedule = await this.prisma.class_schedule.update({
+                where: {
+                    id_class_schedule: classScheduleIds[i], // ID de class_schedule actual
+                },
+                data: {
+                    assing_data_subject_id: classScheduleIds[i] // Asigna un ID aleatorio entre 1 y 10
+                },
+            });
+        }
+
+        const students2 = await this.prisma.student.findMany({
+            take: 50, // Limita la búsqueda a los primeros 50 estudiantes
+        });
+
+        const classSchedules = await this.prisma.class_schedule.findMany({
+            take: 10, // Obtiene los primeros 10 horarios de clase
+        });
+
+        // Verifica que hay horarios de clase disponibles
+        if (classSchedules.length === 0) {
+            throw new Error('No class schedules found in the database.');
+        }
+
+        for (const student of students2) {
+            // Selecciona un ID de clase aleatorio
+            const randomClassScheduleId = faker.helpers.arrayElement(classSchedules).id_class_schedule;
+
+            await this.prisma.student_current_class.create({
+                data: {
+                    class_schedule_id: randomClassScheduleId, // Asigna el ID de horario de clase aleatorio
+                    student_id: student.student_id, // ID del estudiante
+                },
+            });
+
+
+        }
+
+
+        // Buscar los primeros 50 registros de 'student_current_class'
+        const studentCurrentClasses = await this.prisma.student_current_class.findMany({
+            take: 50, // Limita la búsqueda a los primeros 50 registros
+        });
+
+        // Buscar los primeros 10 registros de 'curse_following_grades_themes'
+        const curseFollowingGradesThemes = await this.prisma.curse_following_grades_themes.findMany({
+            take: 10, // Limita la búsqueda a los primeros 10 registros
+        });
+
+        if (studentCurrentClasses.length === 0 || curseFollowingGradesThemes.length === 0) {
+            throw new Error('No hay suficientes registros en las tablas necesarias.');
+        }
+
+        for (let i = 0; i < studentCurrentClasses.length; i++) {
+            const studentClass = studentCurrentClasses[i];
+
+            // Asignar temas de forma cíclica a los estudiantes
+            const theme = curseFollowingGradesThemes[i % curseFollowingGradesThemes.length]; // Usamos el módulo para repetir los temas
+
+            // Inserta los datos en la tabla 'grades_current' para cada estudiante
+            await this.prisma.grades_current.create({
+                data: {
+                    student_current_class_id: studentClass.id_current_class, // ID del registro de 'student_current_class'
+                    curse_following_grades_themes_id: theme.id_curse_following_grades_themes, // ID del tema de curso
+                    grade: faker.number.int({ min: 50, max: 100 }), // Nota aleatoria entre 50 y 100
+                    faults: faker.number.int({ min: 0, max: 10 }), // Faltas aleatorias entre 0 y 10
+                    percentage: faker.number.float({ min: 50, max: 100 }).toFixed(2), // Porcentaje aleatorio con 2 decimales
+                },
+            });
+        }
+
+
+
+
 
 
 
