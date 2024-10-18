@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "class_schedule" ALTER COLUMN "start_time" SET DATA TYPE TIMESTAMP(6),
+ALTER COLUMN "end_time" SET DATA TYPE TIMESTAMP(6);

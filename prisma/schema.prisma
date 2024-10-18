@@ -16,6 +16,10 @@ model applicant {
   period          String?  @db.VarChar(255)
 
   general_data general_data[]
+
+  applicant_payment_token applicant_payment_token[]
+
+  applicant_payment_inscription applicant_payment_inscription[]
 }
 
 model student {
@@ -27,6 +31,12 @@ model student {
   period          String?  @db.VarChar(255)
 
   general_data general_data[]
+
+  student_current_status student_current_status[]
+
+  student_complementary_activities student_complementary_activities[]
+
+  student_current_class student_current_class[]
 }
 
 model reset_password {
@@ -73,7 +83,14 @@ model student_personal_data {
   curp                     String?   @db.VarChar
   street_name              String?   @db.VarChar
   street_number            String?   @db.VarChar
-  city                     String?   @db.VarChar
+  // city                     String?   @db.VarChar
+  state_of_birth           String?   @db.VarChar // Estado de nacimiento
+  state                    String?   @db.VarChar // Estado actual
+  municipality_of_birth    String?   @db.VarChar // Municipio de nacimiento
+  home_phone               String?   @db.VarChar // Teléfono de domicilio
+  mobile_phone             String?   @db.VarChar // Teléfono celular
+  neighborhood             String?   @db.VarChar // Colonia
+  company                  String?   @db.VarChar // Empresa (opcional)
   cp                       String?   @db.VarChar
   phone                    String?   @db.VarChar
   personal_email           String?   @db.VarChar
@@ -92,21 +109,15 @@ model student_tutor_data {
   lastname              String? @db.VarChar
   street_name           String? @db.VarChar
   street_number         String? @db.VarChar
-  city                  String? @db.VarChar
+ 
+  state                 String? @db.VarChar // Estado
+  neighborhood          String? @db.VarChar // Colonia
+  home_phone            String? @db.VarChar // Teléfono de domicilio
+  mobile_phone          String? @db.VarChar // Teléfono celular
   cp                    String? @db.VarChar
   personal_email        String? @db.VarChar
-  phone                 String? @db.VarChar
-  workplace             String? @db.VarChar
-
-  general_data_id Int?
-  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
-}
-
-model student_kardex_plan {
-  id_kardex        Int     @id @default(autoincrement())
-  id_plan_relation Int
-  complete         Boolean
-  end_semester     Int
+  rfc                   String? @db.VarChar // RFC
+  workplace             String? @db.VarChar // Empresa
 
   general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
@@ -120,6 +131,7 @@ model scholar_data {
   current_period      String? @db.VarChar
   accumulated_credits Int
   status              String  @db.VarChar
+  admission_period    String? @db.VarChar // Periodo de ingreso
 
   general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
@@ -156,6 +168,10 @@ model teacher {
 
   job_data              job_data?
   teacher_personal_data teacher_personal_data?
+
+  class_schedule class_schedule[]
+
+  complementary_activity complementary_activity[]
 }
 
 model teacher_personal_data {
@@ -189,4 +205,341 @@ model profile_picture {
   user_id            String?   @unique @db.VarChar(255)
   s3_key             String?   @db.VarChar(255)
   upload_date        DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model applicant_payment_token {
+  id_payment_token Int      @id @default(autoincrement())
+  applicant_id     Int?
+  payment_data     Json?    @db.Json
+  payment_status   Boolean? @db.Boolean
+
+  applicant applicant? @relation(fields: [applicant_id], references: [applicant_id], onDelete: Cascade, onUpdate: Cascade)
+
+  examn_applicant examn_applicant[]
+}
+
+model examn_applicant {
+  id_examn_applicant         Int     @id @default(autoincrement())
+  applicant_payment_token_id Int?
+  exam_data                  Json?   @db.Json
+  examn_status               Boolean @db.Boolean
+
+  applicant_payment_token applicant_payment_token? @relation(fields: [applicant_payment_token_id], references: [id_payment_token], onDelete: Cascade, onUpdate: Cascade)
+
+  applicant_payment_inscription applicant_payment_inscription[]
+}
+
+model applicant_payment_inscription {
+  id_payment_inscription Int      @id @default(autoincrement())
+  examn_applicant_id     Int?
+  applicant_id           Int?
+  payment_data           Json?    @db.Json
+  payment_status         Boolean? @db.Boolean
+
+  examn_applicant examn_applicant? @relation(fields: [examn_applicant_id], references: [id_examn_applicant], onDelete: Cascade, onUpdate: Cascade)
+  applicant       applicant?       @relation(fields: [applicant_id], references: [applicant_id])
+}
+
+model carrer {
+  id_carrer   Int     @id @default(autoincrement())
+  carrer_name String? @db.VarChar
+  modality    String? @db.VarChar
+
+  subject_plan subject_plan[]
+
+  specialities specialities[]
+
+  student_current_status student_current_status[]
+}
+
+model subject_plan {
+  id_subject_plan Int     @id @default(autoincrement())
+  id_carrer       Int?    @unique @db.Integer
+  name            String? @db.VarChar
+  modality        String? @db.VarChar // Modalidad específica (dual, en línea)
+
+  carrer carrer? @relation(fields: [id_carrer], references: [id_carrer], onDelete: Cascade, onUpdate: Cascade)
+
+  subject_plan_relation subject_plan_relation[]
+}
+
+model subject {
+  id_subject        Int      @id @default(autoincrement())
+  subject_name      String?  @db.VarChar
+  theoretical_hours String?  @db.VarChar
+  practical_hours   Int?     @db.Integer
+  credits           Int?     @db.Integer
+  syllabus          String[] @db.VarChar
+
+  subject_plan_relation subject_plan_relation[]
+}
+
+model specialities {
+  id_speciality   Int     @id @default(autoincrement())
+  carrer_id       Int?
+  speciality_name String? @db.VarChar
+  duration        Int?    @db.Integer
+
+  carrer carrer? @relation(fields: [carrer_id], references: [id_carrer], onDelete: Cascade, onUpdate: Cascade)
+
+  speciality_subject_plan speciality_subject_plan[]
+}
+
+model speciality_subject_plan {
+  id_speciality_subject_plan Int  @id @default(autoincrement())
+  specialities_id            Int?
+  subject_plan_relation_id   Int?
+
+  specialities          specialities?          @relation(fields: [specialities_id], references: [id_speciality], onDelete: Cascade, onUpdate: Cascade)
+  subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model subject_plan_relation {
+  id_subject_plan_relation Int  @id @default(autoincrement())
+  id_subject_plan          Int? @db.Integer
+  id_subject               Int? @db.Integer
+  semester                 Int? @db.Integer
+
+  subject_plan subject_plan? @relation(fields: [id_subject_plan], references: [id_subject_plan], onDelete: Cascade, onUpdate: Cascade)
+  subject      subject?      @relation(fields: [id_subject], references: [id_subject], onDelete: Cascade, onUpdate: Cascade)
+
+  student_kardex_plan student_kardex_plan[]
+
+  class_schedule class_schedule[]
+
+  initial_data_subject initial_data_subject[]
+
+  assing_initial_data_subject assing_initial_data_subject[]
+
+  Speciality_Subject_Plan speciality_subject_plan[]
+}
+
+model student_kardex_plan {
+  id_kardex                Int      @id @default(autoincrement())
+  general_data_id          Int?
+  subject_plan_relation_id Int?
+  id_plan_relation         Int?     @db.Integer
+  complete                 Boolean? @db.Boolean
+  end_semester             Int?     @db.Integer
+
+  general_data          general_data?          @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
+  subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model student_current_class {
+  id_current_class  Int  @id @default(autoincrement())
+  class_schedule_id Int?
+  student_id        Int?
+
+  class_schedule class_schedule? @relation(fields: [class_schedule_id], references: [id_class_schedule], onDelete: Cascade, onUpdate: Cascade)
+  student        student?        @relation(fields: [student_id], references: [student_id])
+
+  grades_current grades_current[]
+}
+
+model group {
+  id_group   Int      @id @default(autoincrement())
+  group_type String[] @db.VarChar
+  semester   Int?     @db.Integer
+  period     String?  @db.VarChar(255)
+
+  class_schedule class_schedule[]
+
+  group_tags group_tags[]
+}
+
+model group_tags {
+  id_group_tags Int     @id @default(autoincrement())
+  id_group      Int?    @db.Integer
+  tag           String? @db.VarChar
+
+  group group? @relation(fields: [id_group], references: [id_group], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model class_room {
+  id_class_room String @id @db.Char(10)
+  room_number   Int?   @db.Integer
+  capacity      Int?   @db.Integer
+
+  class_schedule class_schedule[]
+}
+
+model class_schedule {
+  id_class_schedule        Int       @id @default(autoincrement())
+  group_id                 Int?
+  subject_plan_relation_id Int?
+  class_room_id            String?
+  teacher_id               String?
+  day_of_week              String?   @db.VarChar(255)
+  start_time               DateTime? @db.Timestamp(6)
+  end_time                 DateTime? @db.Timestamp(6)
+  assing_data_subject_id   Int?
+
+  assing_data_subject assing_data_subject? @relation(fields: [assing_data_subject_id], references: [id_assing_data_subject])
+
+  group                 group?                 @relation(fields: [group_id], references: [id_group])
+  subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
+  class_room            class_room?            @relation(fields: [class_room_id], references: [id_class_room], onDelete: Cascade, onUpdate: Cascade)
+  teacher               teacher?               @relation(fields: [teacher_id], references: [teacher_number], onDelete: Cascade, onUpdate: Cascade)
+
+  student_current_class student_current_class[]
+}
+
+//Data Model Skeleton Default
+
+model initial_data_subject {
+  id_initial_data_subject  Int   @id @default(autoincrement())
+  subject_plan_relation_id Int?
+  characterization         Json? @db.Json
+  didactics                Json? @db.Json
+  competence_specify       Json? @db.Json
+  general_data_subject_id  Int?
+
+  subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
+
+  general_data_subject general_data_subject? @relation(fields: [general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
+  assing_data_subject  assing_data_subject[]
+}
+
+model general_data_subject {
+  id_general_data_subject Int                       @id @default(autoincrement())
+  description_tag         String?                   @db.VarChar
+  general_competence_edit general_competence_edit[]
+
+  initial_data_subject initial_data_subject[]
+}
+
+model general_competence_edit {
+  id_general_competence_edit Int   @id @default(autoincrement())
+  description                Json? @db.Json
+  topics_and_sub             Json? @db.Json
+  activities_learning        Json? @db.Json
+  activities_teaching        Json? @db.Json
+  competence_generic         Json? @db.Json
+  theorical                  Int?  @db.Integer
+  practice                   Int?  @db.Integer
+  scope_indicators           Json? @db.Json
+  value_indicator            Json? @db.Json
+  scheduling_tp              Json? @db.Json
+  scheduling_tr              Json? @db.Json
+
+  general_data_subject    general_data_subject? @relation(fields: [general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
+  general_data_subject_id Int?
+}
+
+//Data Model Skeleton assing
+model assing_data_subject {
+  id_assing_data_subject  Int  @id @default(autoincrement())
+  initial_data_subject_id Int?
+
+  initial_data_subject initial_data_subject? @relation(fields: [initial_data_subject_id], references: [id_initial_data_subject], onDelete: Cascade, onUpdate: Cascade)
+
+  assing_initial_data_subject    assing_initial_data_subject? @relation(fields: [assing_initial_data_subject_id], references: [id_initial_data_subject])
+  assing_initial_data_subject_id Int?
+
+  class_schedule class_schedule[]
+}
+
+model assing_initial_data_subject {
+  id_initial_data_subject        Int   @id @default(autoincrement())
+  characterization               Json? @db.Json
+  didactics                      Json? @db.Json
+  competence_specify             Json? @db.Json
+  subject_plan_relation_id       Int?
+  assing_general_data_subject_id Int?
+
+  subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
+
+  assing_general_data_subject assing_general_data_subject? @relation(fields: [assing_general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
+
+  assing_data_subject assing_data_subject[]
+}
+
+model assing_general_data_subject {
+  id_general_data_subject Int     @id @default(autoincrement())
+  description_tag         String? @db.VarChar
+
+  assing_initial_data_subject assing_initial_data_subject[]
+
+  assing_general_competence_edit assing_general_competence_edit[]
+
+  curse_following_grades_themes curse_following_grades_themes[]
+}
+
+model assing_general_competence_edit {
+  id_general_competence_edit Int   @id @default(autoincrement())
+  description                Json? @db.Json
+  topics_and_sub             Json? @db.Json
+  activities_learning        Json? @db.Json
+  activities_teaching        Json? @db.Json
+  competence_generic         Json? @db.Json
+  theorical                  Int?  @db.Integer
+  practice                   Int?  @db.Integer
+  scope_indicators           Json? @db.Json
+  value_indicator            Json? @db.Json
+  scheduling_tp              Json? @db.Json
+  scheduling_tr              Json? @db.Json
+
+  assing_general_data_subject    assing_general_data_subject? @relation(fields: [assing_general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
+  assing_general_data_subject_id Int?
+}
+
+model curse_following_grades_themes {
+  id_curse_following_grades_themes Int  @id @default(autoincrement())
+  assing_general_data_subject_id   Int?
+
+  assing_general_data_subject assing_general_data_subject? @relation(fields: [assing_general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
+
+  grades_current grades_current[]
+}
+
+model grades_current {
+  id_grades_current                Int     @id @default(autoincrement())
+  student_current_class_id         Int?
+  curse_following_grades_themes_id Int?
+  grade                            Int?    @db.Integer
+  faults                           Int?    @db.Integer
+  percentage                       String? @db.VarChar(255)
+
+  curse_following_grades_themes curse_following_grades_themes? @relation(fields: [curse_following_grades_themes_id], references: [id_curse_following_grades_themes], onDelete: Cascade, onUpdate: Cascade)
+
+  student_current_class student_current_class? @relation(fields: [student_current_class_id], references: [id_current_class], onDelete: Cascade, onUpdate: Cascade)
+}
+
+//  activity complementary & kardex status/ student_current_status
+
+model student_current_status {
+  id_status           Int     @id @default(autoincrement())
+  student_id          Int?    @db.Integer
+  carrer_id           Int?    @db.Integer
+  general_average     String? @db.VarChar
+  completed_subjects  Int?    @db.Integer
+  current_subjects    Int?    @db.Integer
+  accumulated_credits Int?    @db.Integer
+
+  student student? @relation(fields: [student_id], references: [student_id])
+  carrer  carrer?  @relation(fields: [carrer_id], references: [id_carrer])
+}
+
+model complementary_activity {
+  id_complementary Int     @id @default(autoincrement())
+  activity_name    String? @db.VarChar
+  assigned_teacher Int?
+  period           String? @db.VarChar
+  credits          Int?    @db.Integer
+
+  teacher teacher? @relation(fields: [assigned_teacher], references: [teacher_id])
+
+  student_complementary_activities student_complementary_activities[]
+}
+
+model student_complementary_activities {
+  id_activity               Int      @id @default(autoincrement())
+  student_id                Int?
+  complementary_activity_id Int?
+  status                    String[] @db.VarChar // "In Progress", "Completed"
+  period                    String?  @db.VarChar
+
+  student                student?                @relation(fields: [student_id], references: [student_id])
+  complementary_activity complementary_activity? @relation(fields: [complementary_activity_id], references: [id_complementary])
 }
