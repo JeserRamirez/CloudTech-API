@@ -209,16 +209,26 @@ export class SeedService {
                     curp: generateSimpleCURP(),
                     street_name: faker.location.street(),
                     street_number: faker.location.buildingNumber(),
-                    city: faker.location.city(),
+                    // city: faker.location.city(),
                     cp: faker.location.zipCode(),
-                    phone: faker.phone.number(),
+                    phone: faker.phone.number(), // Teléfono de domicilio
                     personal_email: faker.internet.email(),
                     schoolar_email: faker.internet.email(),
                     civil_status: faker.helpers.arrayElement(['Soltero', 'Casado', 'Divorciado']),
                     laboral_status: faker.helpers.arrayElement(['Empleado', 'Desempleado']),
                     rfc: faker.database.mongodbObjectId(), // RFC puede ser una combinación de caracteres
+                    state_of_birth: faker.location.state(), // Estado de nacimiento
+                    state: faker.location.state(), // Estado
+                    municipality_of_birth: faker.location.city(), // Municipio de nacimiento
+                    home_phone: faker.phone.number(), // Teléfono de domicilio
+                    mobile_phone: faker.phone.number(), // Teléfono celular
+                    neighborhood: faker.location.direction(), // Colonia
+                    company: faker.company.name(), // Empresa (opcional)
                 },
             });
+            
+            
+            
 
             const studentTutorData = await this.prisma.student_tutor_data.create({
                 data: {
@@ -226,13 +236,17 @@ export class SeedService {
                     lastname: faker.person.lastName(),
                     street_name: faker.location.street(),
                     street_number: faker.location.buildingNumber(),
-                    city: faker.location.city(),
+                    state: faker.location.state(), // Estado
+                    neighborhood: faker.location.direction(), // Colonia
+                    home_phone: faker.phone.number(), // Teléfono de domicilio
+                    mobile_phone: faker.phone.number(), // Teléfono celular
                     cp: faker.location.zipCode(),
                     personal_email: faker.internet.email(),
-                    phone: faker.phone.number(),
-                    workplace: faker.company.name(), // Genera un nombre de empresa para el lugar de trabajo
+                    rfc: faker.database.mongodbObjectId(), // RFC puede ser una combinación de caracteres
+                    workplace: faker.company.name(), // Empresa
                 },
             });
+            
 
             const scholarData = await this.prisma.scholar_data.create({
                 data: {
@@ -240,6 +254,7 @@ export class SeedService {
                     graduation_period: generatePeriod(),
                     validate_periods: faker.datatype.boolean(),
                     current_period: generatePeriod(),
+                    admission_period: generatePeriod(),
                     accumulated_credits: faker.number.int({ min: 0, max: 300 }),
                     status: faker.helpers.arrayElement(['Activo', 'Inactivo']),
                 },
@@ -409,7 +424,53 @@ export class SeedService {
             });
 
 
+            const connectAplicantPayment = await this.prisma.applicant_payment_token.create({
+                data: {
+                    applicant: {
+                        connect: { applicant_id: applicant.applicant_id }, // Conectar con el teacher recién creado
+                    }
+                },
+            });
 
+            await this.prisma.applicant_payment_token.update({
+                where: {
+                    id_payment_token: connectAplicantPayment.id_payment_token
+                },
+                data: {
+                    //   applicant_id: applicant.applicant_id, // ID del solicitante
+                    payment_data: {
+                        // Datos de pago aleatorios
+                        amount: faker.number.int({ min: 500, max: 5000 }), // Cantidad de pago aleatoria
+                        method: faker.helpers.arrayElement(['Credit Card', 'Bank Transfer', 'PayPal']), // Método de pago aleatorio
+                        date: faker.date.past(), // Fecha de pago aleatoria
+                    },
+                    payment_status: faker.datatype.boolean(), // Estado de pago (true = pagado, false = no pagado)
+                },
+            });
+
+            const connectExamAplicant = await this.prisma.examn_applicant.create({
+                data: {
+                    exam_data: faker.date.soon({ days: faker.number.int({ min: 30, max: 90 }) }), // Fecha de examen en los próximos 30 a 90 días
+                    examn_status: faker.datatype.boolean(),
+                    applicant_payment_token: {
+                        connect: { id_payment_token: connectAplicantPayment.id_payment_token }, // Conectar con el teacher recién creado
+                    }
+                },
+            });
+
+             
+            const connectApplicantPaymentInscription = await this.prisma.applicant_payment_inscription.create({
+                data: {
+                    payment_data: faker.date.soon({ days: faker.number.int({ min: 30, max: 90 }) }), // Fecha de examen en los próximos 30 a 90 días
+                    payment_status: faker.datatype.boolean(),
+                    applicant: {
+                        connect: { applicant_id: applicant.applicant_id }, // Conectar con el teacher recién creado
+                    },
+                    examn_applicant:{
+                        connect: { id_examn_applicant: connectExamAplicant.id_examn_applicant }, // Conectar con el teacher recién creado
+                    }
+                },
+            });
         }
 
 
