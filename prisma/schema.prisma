@@ -15,10 +15,8 @@ model applicant {
   roles           String[]
   period          String?  @db.VarChar(255)
 
-  general_data general_data[]
-
-  applicant_payment_token applicant_payment_token[]
-
+  general_data                  general_data[]
+  applicant_payment_token       applicant_payment_token[]
   applicant_payment_inscription applicant_payment_inscription[]
 }
 
