@@ -9,6 +9,7 @@ datasource db {
 
 model applicant {
   applicant_id    Int      @id @default(autoincrement())
+  curp            String?  @unique @db.VarChar(18)
   hashed_password String?  @db.VarChar(255)
   is_active       Boolean?
   roles           String[]
@@ -25,7 +26,6 @@ model student {
   student_id      Int      @id @default(autoincrement())
   control_number  String?  @unique @db.VarChar(255)
   hashed_password String?  @db.VarChar(255)
-  curp            String?  @db.VarChar(255)
   is_active       Boolean?
   roles           String[]
   period          String?  @db.VarChar(255)
