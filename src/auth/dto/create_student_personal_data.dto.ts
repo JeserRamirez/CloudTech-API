@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
 	IsDate,
 	IsEmail,
+	IsOptional,
 	IsPhoneNumber,
 	IsString,
 	MaxLength,
@@ -58,13 +59,68 @@ export class CreateStudentPersonalDataDto {
 	street_number: string;
 
 	@ApiProperty({
-		description: 'City',
-		example: 'Minatitlan',
+		description: 'State of Birth',
+		example: 'San Francisco',
 		required: true,
 		type: 'string',
 	})
 	@IsString()
-	city: string;
+	state_of_birth: string;
+
+	@ApiProperty({
+		description: 'State of residence',
+		example: 'San Francisco',
+		required: true,
+		type: 'string',
+	})
+	@IsString()
+	state: string;
+
+	@ApiProperty({
+		description: 'Municipality of birth',
+		example: 'San Francisco',
+		required: true,
+		type: 'string',
+	})
+	@IsString()
+	municipality_of_birth: string;
+
+	@ApiProperty({
+		description: 'Home phone number of the applicant',
+		example: '+54 9123456789',
+		type: 'string',
+		required: true,
+	})
+	@IsPhoneNumber()
+	home_phone: string;
+
+	@ApiProperty({
+		description: 'Phone number of the applicant',
+		example: '+54 9123456789',
+		type: 'string',
+		required: true,
+	})
+	@IsPhoneNumber()
+	mobile_phone: string;
+
+	@ApiProperty({
+		description: 'Neighborhood',
+		example: 'Fishermans Warf',
+		required: true,
+		type: 'string',
+	})
+	@IsString()
+	neighborhood: string;
+
+	@ApiProperty({
+		description: 'Company name',
+		example: 'Google',
+		required: false,
+		type: 'string',
+	})
+	@IsOptional()
+	@IsString()
+	company?: string;
 
 	@ApiProperty({
 		description: 'CP (5 digits)',
@@ -78,15 +134,6 @@ export class CreateStudentPersonalDataDto {
 	@MinLength(5)
 	@MaxLength(5)
 	cp: string;
-
-	@ApiProperty({
-		description: 'Phone number of the applicant',
-		example: '+54 9123456789',
-		type: 'string',
-		required: true,
-	})
-	@IsPhoneNumber()
-	phone: string;
 
 	@ApiProperty({
 		description: 'Personal Email',

@@ -9,19 +9,19 @@ export class MailService {
 
 	constructor(private readonly configService: ConfigService) {
 		this.transporter = nodemailer.createTransport({
-			service: this.configService.getOrThrow<string>('MY_EMAIL_SERVICE'),
-			host: this.configService.getOrThrow<string>('MY_EMAIL_HOST'),
-			port: this.configService.getOrThrow<number>('MY_EMAIL_PORT'),
+			service: this.configService.getOrThrow<string>('EMAIL_SERVICE'),
+			host: this.configService.getOrThrow<string>('EMAIL_HOST'),
+			port: this.configService.getOrThrow<number>('EMAIL_PORT'),
 			secure: true,
 			auth: {
-				user: this.configService.getOrThrow<string>('MY_EMAIL_ADDRESS'),
-				pass: this.configService.getOrThrow<string>('MY_EMAIL_PASSWORD'),
+				user: this.configService.getOrThrow<string>('EMAIL_ADDRESS'),
+				pass: this.configService.getOrThrow<string>('EMAIL_PASSWORD'),
 			},
 		});
 	}
 
 	async sendPasswordResetEmail(to: string, token: string) {
-		const resetLink = `${this.configService.getOrThrow<string>('MY_EMAIL_FRONTEND_DOMAIN')}/reset-password?token=${token}`;
+		const resetLink = `${this.configService.getOrThrow<string>('EMAIL_FRONTEND_DOMAIN')}/reset-password?token=${token}`;
 
 		const mailOptions = {
 			from: 'Auth-backend CloudTech service',

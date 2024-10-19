@@ -7,6 +7,7 @@ import {
 import { applicant } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateStudentPersonalDataDto } from './dto';
+import { removeAttributes } from 'src/common/helpers';
 
 @Injectable()
 export class StudentPersonalDataService {
@@ -25,7 +26,13 @@ export class StudentPersonalDataService {
 				message: `There is no personal data of the user ${user.curp}`,
 			});
 
-		return student_personal_data;
+		const cleanedData = removeAttributes(student_personal_data, [
+			'schoolar_email',
+			'general_data_id',
+			'id_student_personal_data',
+		]);
+
+		return cleanedData;
 	}
 
 	async updateStudentPersonalData(
@@ -37,6 +44,13 @@ export class StudentPersonalDataService {
 				where: { general_data: { applicant_id: user.applicant_id } },
 				data: {
 					...updateStudentPersonalDataDto,
+				},
+			});
+
+			await this.prisma.applicant.update({
+				where: { applicant_id: user.applicant_id },
+				data: {
+					curp: updateStudentPersonalDataDto.curp,
 				},
 			});
 

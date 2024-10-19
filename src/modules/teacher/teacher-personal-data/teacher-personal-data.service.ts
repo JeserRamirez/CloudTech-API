@@ -10,6 +10,7 @@ import {
 	UpdateTeacherPersonalDataDto,
 } from './dto';
 import { teacher } from '@prisma/client';
+import { removeAttributes } from 'src/common/helpers';
 
 @Injectable()
 export class TeacherPersonalDataService {
@@ -21,11 +22,17 @@ export class TeacherPersonalDataService {
 				where: { id_teacher_number: user.teacher_number },
 			});
 
-		if (teacherPersonalData) return teacherPersonalData;
+		if (!teacherPersonalData)
+			return {
+				message: `There is no personal data of the user ${user.teacher_number}`,
+			};
 
-		return {
-			message: `There is no personal data of the user ${user.teacher_number}`,
-		};
+		const cleanedData = removeAttributes(teacherPersonalData, [
+			'id_teacher_number',
+			'id_teacher_personal_data',
+		]);
+
+		return cleanedData;
 	}
 
 	async createTeacherPersonalData(

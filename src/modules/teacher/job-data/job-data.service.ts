@@ -7,6 +7,7 @@ import {
 import { teacher } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateJobDataDto, UpdateJobDataDto } from './dto';
+import { removeAttributes } from 'src/common/helpers';
 
 @Injectable()
 export class JobDataService {
@@ -17,11 +18,17 @@ export class JobDataService {
 			where: { id_teacher_number: user.teacher_number },
 		});
 
-		if (jobData) return jobData;
+		if (!jobData)
+			return {
+				message: `There is no job data of the user ${user.teacher_number}`,
+			};
 
-		return {
-			message: `There is no job data of the user ${user.teacher_number}`,
-		};
+		const cleanedData = removeAttributes(jobData, [
+			'id_teacher_number',
+			'id_job_data',
+		]);
+
+		return cleanedData;
 	}
 
 	async createJobData(user: teacher, createJobDataDto: CreateJobDataDto) {

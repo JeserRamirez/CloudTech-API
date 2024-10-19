@@ -45,13 +45,40 @@ export class CreateStudentTutorDataDto {
 	street_number: string;
 
 	@ApiProperty({
-		description: 'City of the tutor',
+		description: 'State of the tutor',
 		example: 'San Jose',
 		type: 'string',
 		required: true,
 	})
 	@IsString()
-	city: string;
+	state: string;
+
+	@ApiProperty({
+		description: 'Neighborhood of the tutor',
+		example: 'San Jose',
+		type: 'string',
+		required: true,
+	})
+	@IsString()
+	neighborhood: string;
+
+	@ApiProperty({
+		description: 'Home phone number of the tutor',
+		example: '+54 9123456789',
+		type: 'string',
+		required: true,
+	})
+	@IsPhoneNumber()
+	home_phone: string;
+
+	@ApiProperty({
+		description: 'Phone number of the tutor',
+		example: '+54 9123456789',
+		type: 'string',
+		required: true,
+	})
+	@IsPhoneNumber()
+	mobile_phone: string;
 
 	@ApiProperty({
 		description: 'Postal code of the tutor',
@@ -74,13 +101,13 @@ export class CreateStudentTutorDataDto {
 	personal_email: string;
 
 	@ApiProperty({
-		description: 'Phone number of the tutor',
-		example: '+54 9123456789',
-		type: 'string',
+		description: 'RFC',
+		example: 'PMG920101ABC01',
 		required: true,
+		type: 'string',
 	})
-	@IsPhoneNumber()
-	phone: string;
+	@IsString()
+	rfc: string;
 
 	@ApiProperty({
 		description: 'Workplace of the tutor',

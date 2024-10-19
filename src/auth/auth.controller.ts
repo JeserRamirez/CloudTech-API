@@ -42,9 +42,13 @@ export class AuthController {
 					birthdate: '2002-07-17',
 					street_name: 'Callejon Vidal Diaz Muñoz',
 					street_number: '7',
-					city: 'Acayucan',
+					state_of_birth: 'Veracruz',
+					state: 'Veracruz',
+					municipality_of_birth: 'Acayucan',
+					home_phone: '+52 9242436858',
+					mobile_phone: '+52 9241966858',
+					neighborhood: 'Barrio Zapotal',
 					cp: '96039',
-					phone: '+52 9241966858',
 					personal_email: 'jeserramirezestrada@gmail.com',
 					civil_status: 'SOLTERO',
 					laboral_status: 'DESEMPLEADO',
@@ -72,10 +76,13 @@ export class AuthController {
 					lastname: 'Ramirez Estrada',
 					street_name: 'Callejon Vidal Diaz Muñoz',
 					street_number: '7',
-					city: 'Acayucan',
+					state: 'Veracruz',
+					neighborhood: 'Barrio Zapotal',
+					home_phone: '+52 9242436858',
+					mobile_phone: '+52 9241966858',
 					cp: '96039',
 					personal_email: 'jeserramirezestrada@gmail.com',
-					phone: '+529241966858',
+					rfc: '02519617814',
 					workplace: 'estudiante',
 				},
 			},
@@ -121,6 +128,7 @@ export class AuthController {
 	loginStudent(@Body() loginStudentDto: LoginStudentDto) {
 		return this.authService.loginStudent(loginStudentDto);
 	}
+
 	@Post('register-teacher')
 	@UsePipes(new TrimPipe())
 	createTeacher(@Body() createTeacherDto: CreateTeacherDto) {

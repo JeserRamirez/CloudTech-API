@@ -80,14 +80,4 @@ export class CreateTeacherPersonalDataDto {
 	})
 	@IsEmail()
 	personal_email: string;
-
-	@ApiProperty({
-		description: 'Schoolar Email',
-		example: 'l20230235@minatitlan.tecnm.mx',
-		required: true,
-		type: 'string',
-		format: 'email',
-	})
-	@IsEmail()
-	schoolar_email: string;
 }

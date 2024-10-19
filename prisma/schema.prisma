@@ -9,7 +9,6 @@ datasource db {
 
 model applicant {
   applicant_id    Int      @id @default(autoincrement())
-  curp            String?  @unique @db.VarChar(18)
   hashed_password String?  @db.VarChar(255)
   is_active       Boolean?
   roles           String[]
@@ -26,6 +25,7 @@ model student {
   student_id      Int      @id @default(autoincrement())
   control_number  String?  @unique @db.VarChar(255)
   hashed_password String?  @db.VarChar(255)
+  curp            String?  @db.VarChar(255)
   is_active       Boolean?
   roles           String[]
   period          String?  @db.VarChar(255)
@@ -92,7 +92,6 @@ model student_personal_data {
   neighborhood             String?   @db.VarChar // Colonia
   company                  String?   @db.VarChar // Empresa (opcional)
   cp                       String?   @db.VarChar
-  phone                    String?   @db.VarChar
   personal_email           String?   @db.VarChar
   schoolar_email           String?   @db.VarChar
   civil_status             String?   @db.VarChar
@@ -109,15 +108,15 @@ model student_tutor_data {
   lastname              String? @db.VarChar
   street_name           String? @db.VarChar
   street_number         String? @db.VarChar
- 
-  state                 String? @db.VarChar // Estado
-  neighborhood          String? @db.VarChar // Colonia
-  home_phone            String? @db.VarChar // Teléfono de domicilio
-  mobile_phone          String? @db.VarChar // Teléfono celular
-  cp                    String? @db.VarChar
-  personal_email        String? @db.VarChar
-  rfc                   String? @db.VarChar // RFC
-  workplace             String? @db.VarChar // Empresa
+
+  state          String? @db.VarChar // Estado
+  neighborhood   String? @db.VarChar // Colonia
+  home_phone     String? @db.VarChar // Teléfono de domicilio
+  mobile_phone   String? @db.VarChar // Teléfono celular
+  cp             String? @db.VarChar
+  personal_email String? @db.VarChar
+  rfc            String? @db.VarChar // RFC
+  workplace      String? @db.VarChar // Empresa
 
   general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)

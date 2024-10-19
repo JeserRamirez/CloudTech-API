@@ -7,6 +7,7 @@ import {
 import { student } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateLastStudyLevelDto } from './dto';
+import { removeAttributes } from 'src/common/helpers';
 
 @Injectable()
 export class LastStudyLevelService {
@@ -25,7 +26,12 @@ export class LastStudyLevelService {
 				message: `There is no last study level data of the user ${user.control_number}`,
 			});
 
-		return last_study_Level;
+		const cleanedData = removeAttributes(last_study_Level, [
+			'general_data_id',
+			'id_last_study_Level',
+		]);
+
+		return cleanedData;
 	}
 
 	async updateLastStudyLevel(

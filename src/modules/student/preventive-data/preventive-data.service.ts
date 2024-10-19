@@ -7,6 +7,7 @@ import {
 import { student } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePreventiveDataDto } from './dto';
+import { removeAttributes } from 'src/common/helpers';
 
 @Injectable()
 export class PreventiveDataService {
@@ -25,7 +26,12 @@ export class PreventiveDataService {
 				message: `There is no preventive data of the user ${user.control_number}`,
 			});
 
-		return preventive_data;
+		const cleanedData = removeAttributes(preventive_data, [
+			'general_data_id',
+			'id_preventive_data',
+		]);
+
+		return cleanedData;
 	}
 
 	async updatePreventiveData(
