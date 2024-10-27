@@ -1,17 +1,20 @@
 export const removeAttributes = (data: any, attributesToRemove: string[]) => {
 	if (!data) return data;
 
-	if (Array.isArray(data)) {
-		return data.map((item) => {
+	const clonedData = JSON.parse(JSON.stringify(data)); // Clonar el objeto o array para evitar modificar el original
+
+	const deleteAttributesRecursively = (item: any) => {
+		if (Array.isArray(item)) {
+			item.forEach((subItem) => deleteAttributesRecursively(subItem));
+		} else if (typeof item === 'object' && item !== null) {
 			attributesToRemove.forEach((attr) => delete item[attr]);
-			return item;
-		});
-	}
+			Object.values(item).forEach((value) =>
+				deleteAttributesRecursively(value),
+			);
+		}
+	};
 
-	if (typeof data === 'object') {
-		attributesToRemove.forEach((attr) => delete data[attr]);
-		return data;
-	}
+	deleteAttributesRecursively(clonedData);
 
-	return data;
+	return clonedData;
 };

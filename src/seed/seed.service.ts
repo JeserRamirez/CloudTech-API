@@ -603,25 +603,25 @@ export class SeedService {
 					},
 				});
 
-			await this.prisma.applicant_payment_token.update({
-				where: {
-					id_payment_token: connectAplicantPayment.id_payment_token,
-				},
-				data: {
-					//   applicant_id: applicant.applicant_id, // ID del solicitante
-					payment_data: {
-						// Datos de pago aleatorios
-						amount: faker.number.int({ min: 500, max: 5000 }), // Cantidad de pago aleatoria
-						method: faker.helpers.arrayElement([
-							'Credit Card',
-							'Bank Transfer',
-							'PayPal',
-						]), // Método de pago aleatorio
-						date: faker.date.past(), // Fecha de pago aleatoria
-					},
-					payment_status: faker.datatype.boolean(), // Estado de pago (true = pagado, false = no pagado)
-				},
-			});
+			// await this.prisma.applicant_payment_token.update({
+			// 	where: {
+			// 		id_payment_token: connectAplicantPayment.id_payment_token,
+			// 	},
+			// 	data: {
+			// 		//   applicant_id: applicant.applicant_id, // ID del solicitante
+			// 		payment_data: {
+			// 			// Datos de pago aleatorios
+			// 			amount: faker.number.int({ min: 500, max: 5000 }), // Cantidad de pago aleatoria
+			// 			method: faker.helpers.arrayElement([
+			// 				'Credit Card',
+			// 				'Bank Transfer',
+			// 				'PayPal',
+			// 			]), // Método de pago aleatorio
+			// 			date: faker.date.past(), // Fecha de pago aleatoria
+			// 		},
+			// 		payment_status: faker.datatype.boolean(), // Estado de pago (true = pagado, false = no pagado)
+			// 	},
+			// });
 
 			const connectExamAplicant = await this.prisma.examn_applicant.create({
 				data: {

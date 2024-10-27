@@ -86,8 +86,34 @@ export class AuthService {
 			const { curp, password } = createApplicantDto;
 
 			const hashedPassword = await bcrypt.hash(password, 10);
-
 			const curpFormatted = curp.toUpperCase();
+
+			// Obtener las fechas desde la base de datos
+			const fees = await this.prisma.fees.findMany({
+				where: {
+					AND: [{ fee_type: 'preficha' }],
+				},
+				select: { start_date: true, deadline: true },
+			});
+
+			// Filtrar las fechas para el año actual
+			const filteredFees = fees.filter(
+				(fee) =>
+					fee.start_date.getUTCFullYear() === new Date().getUTCFullYear(),
+			);
+
+			const [start_date] = filteredFees.map((fee) => fee.start_date);
+			const [deadline] = filteredFees.map((fee) => fee.deadline);
+
+			// Obtener la fecha actual en UTC
+			const currentDate = new Date();
+			currentDate.setHours(currentDate.getHours() - 6); // Ajustar a UTC-6
+
+			if (!start_date || currentDate < start_date || currentDate > deadline) {
+				throw new BadRequestException(
+					'El proceso de inscripción aún no ha iniciado o ya ha terminado',
+				);
+			}
 
 			const [applicant] = await this.prisma.$transaction([
 				this.prisma.applicant.create({
@@ -135,6 +161,10 @@ export class AuthService {
 
 			return { ...applicant, token };
 		} catch (error) {
+			if (error instanceof BadRequestException) {
+				throw error;
+			}
+
 			this.handleDBErrors(error);
 		}
 	}
@@ -286,16 +316,19 @@ export class AuthService {
 			select: { teacher_number: true, hashed_password: true, is_active: true },
 		});
 
-		if (!teacher)
+		if (!teacher) {
 			throw new UnauthorizedException('Credentials are not valid (username)');
+		}
 
-		if (!bcrypt.compareSync(password, teacher.hashed_password))
+		if (!bcrypt.compareSync(password, teacher.hashed_password)) {
 			throw new UnauthorizedException('Credentials are not valid (password)');
+		}
 
-		if (!teacher.is_active)
+		if (!teacher.is_active) {
 			throw new UnauthorizedException(
 				'Teacher is not active, talk with the administrator',
 			);
+		}
 
 		const token = this.getJwtToken({ id: teacher.teacher_number });
 
@@ -614,6 +647,7 @@ export class AuthService {
 			throw new BadRequestException(
 				'There already exists an user with that username',
 			);
+
 		console.log(error);
 		throw new InternalServerErrorException('Please check server logs');
 	}

@@ -101,7 +101,6 @@ export class AuthController {
 		@Body('student_tutor_data')
 		createStudentTutorDataDto: CreateStudentTutorDataDto,
 	) {
-		console.log(createApplicantDto);
 		return this.authService.createApplicant(
 			createApplicantDto,
 			createStudentPersonalDataDto,

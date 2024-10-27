@@ -69,7 +69,7 @@ model preventive_data {
   disability             String? @db.VarChar
   psychological_problems String? @db.VarChar
 
-  general_data_id Int?
+  general_data_id Int?          @unique
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
@@ -96,7 +96,7 @@ model student_personal_data {
   laboral_status           String?   @db.VarChar
   rfc                      String?   @db.VarChar
 
-  general_data_id Int?
+  general_data_id Int?          @unique
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
@@ -116,7 +116,7 @@ model student_tutor_data {
   rfc            String? @db.VarChar // RFC
   workplace      String? @db.VarChar // Empresa
 
-  general_data_id Int?
+  general_data_id Int?          @unique
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
@@ -130,7 +130,7 @@ model scholar_data {
   status              String  @db.VarChar
   admission_period    String? @db.VarChar // Periodo de ingreso
 
-  general_data_id Int?
+  general_data_id Int?          @unique
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
@@ -143,7 +143,7 @@ model last_study_Level {
   graduation_score       String?   @db.VarChar
   area                   String?   @db.VarChar
 
-  general_data_id Int?
+  general_data_id Int?          @unique
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
 }
 
@@ -205,12 +205,27 @@ model profile_picture {
 }
 
 model applicant_payment_token {
-  id_payment_token Int      @id @default(autoincrement())
-  applicant_id     Int?
-  payment_data     Json?    @db.Json
-  payment_status   Boolean? @db.Boolean
+  id_payment_token             Int       @id @default(autoincrement())
+  folio                        String?   @unique @db.VarChar(255)
+  pre_application_token        String?   @unique @db.VarChar(255)
+  career                       String?   @db.VarChar(255)
+  career_model                 String?   @db.VarChar(255)
+  pre_application_request_date DateTime? @default(now()) @db.Timestamp(6)
+  state                        String?   @db.VarChar(255)
 
-  applicant applicant? @relation(fields: [applicant_id], references: [applicant_id], onDelete: Cascade, onUpdate: Cascade)
+  total_amount_to_pay Decimal? @db.Decimal(10, 2)
+  payment_status      Boolean? @db.Boolean
+  payment_method      String?  @db.VarChar(255)
+  reference_number    String?  @db.VarChar(255)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  applicant_id Int?
+  applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id], onDelete: Cascade, onUpdate: Cascade)
+
+  fees_id Int? // Referencia al período
+  fees    fees? @relation(fields: [fees_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   examn_applicant examn_applicant[]
 }
@@ -228,13 +243,46 @@ model examn_applicant {
 
 model applicant_payment_inscription {
   id_payment_inscription Int      @id @default(autoincrement())
-  examn_applicant_id     Int?
-  applicant_id           Int?
   payment_data           Json?    @db.Json
   payment_status         Boolean? @db.Boolean
 
-  examn_applicant examn_applicant? @relation(fields: [examn_applicant_id], references: [id_examn_applicant], onDelete: Cascade, onUpdate: Cascade)
-  applicant       applicant?       @relation(fields: [applicant_id], references: [applicant_id])
+  fees_id Int? // Referencia al período
+  fees    fees? @relation(fields: [fees_id], references: [id])
+
+  examn_applicant_id Int?
+  examn_applicant    examn_applicant? @relation(fields: [examn_applicant_id], references: [id_examn_applicant], onDelete: Cascade, onUpdate: Cascade)
+
+  applicant_id Int?
+  applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id])
+}
+
+model fees {
+  id         Int      @id @default(autoincrement())
+  fee_type   String // Ejemplo: 'preficha', 'inscripción', 'reinscripción'
+  amount     Decimal  @db.Decimal(10, 2) // Monto del costo
+  discount   Decimal  @db.Decimal(10, 2) // Descuento a aplicar
+  start_date DateTime //Inicio de inscripciones de nuevo ingreso (preficha), inscripciones, reinscripciones,
+  semester   String?
+  deadline   DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  period_id Int // Referencia al período
+  period    period @relation(fields: [period_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  applicant_payment_token       applicant_payment_token[]
+  applicant_payment_inscription applicant_payment_inscription[]
+}
+
+model period {
+  id         Int      @id @default(autoincrement())
+  name       String // Nombre del período, ej. '2024A'
+  start_date DateTime // Fecha de inicio del período
+  end_date   DateTime // Fecha de finalización del período
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  fees fees[]
 }
 
 model carrer {
@@ -313,12 +361,12 @@ model subject_plan_relation {
 
 model student_kardex_plan {
   id_kardex                Int      @id @default(autoincrement())
-  general_data_id          Int?
   subject_plan_relation_id Int?
   id_plan_relation         Int?     @db.Integer
   complete                 Boolean? @db.Boolean
   end_semester             Int?     @db.Integer
 
+  general_data_id       Int?                   @unique
   general_data          general_data?          @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
   subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
 }
