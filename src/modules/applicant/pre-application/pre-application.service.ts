@@ -46,7 +46,7 @@ export class PreApplicationService {
 
 			if (!payment_token) {
 				throw new NotFoundException(
-					'No se ha encontrado una solicitud de pre-ficha',
+					'No se ha encontrado una solicitud de pre-ficha para el aplicante',
 				);
 			}
 
@@ -165,7 +165,7 @@ export class PreApplicationService {
 					where: { applicant_id: user.applicant_id },
 					select: {
 						applicant_payment_token: {
-							select: { pre_application_token: true },
+							select: { pre_application_token: true, payment_status: true },
 						},
 					},
 				});
@@ -176,13 +176,19 @@ export class PreApplicationService {
 				);
 			}
 
-			if (
-				typeof applicant_payment_token[0].pre_application_token === 'string'
-			) {
+			if (applicant_payment_token[0].payment_status === true) {
 				throw new BadRequestException(
-					'No se puede actualizar la solicitud de pre-ficha ya que ya se le ha asignado una ficha',
+					'No se puede actualizar la solicitud de pre-ficha, ya que ya se ha aprobado el pago',
 				);
 			}
+
+			// if (
+			// 	typeof applicant_payment_token[0].pre_application_token === 'string'
+			// ) {
+			// 	throw new BadRequestException(
+			// 		'No se puede actualizar la solicitud de pre-ficha ya que ya se le ha asignado una ficha',
+			// 	);
+			// }
 
 			const paymentToken = await this.prisma.applicant_payment_token.updateMany(
 				{
@@ -304,7 +310,11 @@ export class PreApplicationService {
 					where: { applicant_id: user.applicant_id },
 					select: {
 						applicant_payment_token: {
-							select: { id_payment_token: true, payment_status: true },
+							select: {
+								id_payment_token: true,
+								payment_status: true,
+								pre_application_token: true,
+							},
 						},
 					},
 				});
@@ -316,7 +326,13 @@ export class PreApplicationService {
 			}
 
 			const [token] = applicant_payment_token;
-			const { id_payment_token, payment_status } = token;
+			const { id_payment_token, payment_status, pre_application_token } = token;
+
+			if (pre_application_token !== null) {
+				throw new BadRequestException(
+					'Ya ha sido asignada una ficha para el aplicante',
+				);
+			}
 
 			if (!payment_status) {
 				throw new BadRequestException(
@@ -344,22 +360,24 @@ export class PreApplicationService {
 			// Formatear el token a un número de 4 dígitos (e.g., 0384)
 			const formattedToken = newToken.toString().padStart(4, '0');
 
-			// Actualizar el pre_application_token en la base de datos
-			await this.prisma.applicant_payment_token.update({
-				where: { id_payment_token: id_payment_token },
-				data: {
-					pre_application_token: formattedToken,
-					updated_at: new Date(),
-				},
-			});
+			// Actualizar el pre_application_token y asignar la fecha de examen en la base de datos
+			await this.prisma.$transaction([
+				this.prisma.applicant_payment_token.update({
+					where: { id_payment_token: id_payment_token },
+					data: {
+						pre_application_token: formattedToken,
+						updated_at: new Date(),
+					},
+				}),
 
-			await this.prisma.examn_applicant.create({
-				data: {
-				  applicant_payment_token_id: id_payment_token,
-				  exam_date: new Date(),
-				  examn_status: false,
-				}
-			  });
+				this.prisma.examn_applicant.create({
+					data: {
+						applicant_payment_token_id: id_payment_token,
+						exam_date: new Date(),
+						examn_status: false,
+					},
+				}),
+			]);
 		} catch (error) {
 			if (
 				error instanceof BadRequestException ||
@@ -376,12 +394,18 @@ export class PreApplicationService {
 			const payment_token = await this.prisma.applicant_payment_token.findFirst(
 				{
 					where: { applicant_id: user.applicant_id },
-					include: { fees: true, examn_applicant: true},
+					include: { fees: true, examn_applicant: true },
 				},
 			);
 
 			if (!payment_token) {
 				throw new NotFoundException('No se encontró la solicitud de pre-ficha');
+			}
+
+			if (payment_token.pre_application_token === null) {
+				throw new BadRequestException(
+					'Aún no ha sido generada una ficha para la solicitud de pre-ficha del aplicante',
+				);
 			}
 
 			const cleanedData = removeAttributes(payment_token, [
@@ -395,6 +419,8 @@ export class PreApplicationService {
 				'reference_number',
 				'applicant_id',
 				'fees_id',
+				'created_at',
+				'updated_at',
 				'fees',
 				'id_examn_applicant',
 				'applicant_payment_token_id',
@@ -403,7 +429,10 @@ export class PreApplicationService {
 
 			return cleanedData;
 		} catch (error) {
-			if (error instanceof NotFoundException) {
+			if (
+				error instanceof NotFoundException ||
+				error instanceof BadRequestException
+			) {
 				throw error;
 			}
 			this.handleDBErrors(error);
