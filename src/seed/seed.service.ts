@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SeedService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService) { }
 
 	async seedDatabase() {
 		await this.prisma
@@ -623,9 +623,10 @@ export class SeedService {
 			// 	},
 			// });
 
+
 			const connectExamAplicant = await this.prisma.examn_applicant.create({
 				data: {
-					exam_data: faker.date.soon({
+					exam_date: faker.date.soon({
 						days: faker.number.int({ min: 30, max: 90 }),
 					}), // Fecha de examen en los próximos 30 a 90 días
 					examn_status: faker.datatype.boolean(),

@@ -233,7 +233,7 @@ model applicant_payment_token {
 model examn_applicant {
   id_examn_applicant         Int     @id @default(autoincrement())
   applicant_payment_token_id Int?
-  exam_data                  Json?   @db.Json
+  exam_date                  DateTime @db.Timestamp()
   examn_status               Boolean @db.Boolean
 
   applicant_payment_token applicant_payment_token? @relation(fields: [applicant_payment_token_id], references: [id_payment_token], onDelete: Cascade, onUpdate: Cascade)
@@ -401,9 +401,9 @@ model group_tags {
   group group? @relation(fields: [id_group], references: [id_group], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model class_room {
+model class_room { 
   id_class_room String @id @db.Char(10)
-  room_number   Int?   @db.Integer
+  room_number   Int?   @db.Integer// ejemplo salones a, b, c ... son caracteres. como propuesta podria volver a room_number como string.seri un ejemplo h10
   capacity      Int?   @db.Integer
 
   class_schedule class_schedule[]
