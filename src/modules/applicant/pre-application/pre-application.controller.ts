@@ -10,7 +10,7 @@ import {
 } from './dto';
 import { TrimPipe } from 'src/common/pipes';
 
-@Controller('pre-application')
+@Controller('applicant/pre-application')
 export class PreApplicationController {
 	constructor(private readonly preApplicationService: PreApplicationService) {}
 

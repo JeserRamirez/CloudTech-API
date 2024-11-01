@@ -352,6 +352,14 @@ export class PreApplicationService {
 					updated_at: new Date(),
 				},
 			});
+
+			await this.prisma.examn_applicant.create({
+				data: {
+				  applicant_payment_token_id: id_payment_token,
+				  exam_date: new Date(),
+				  examn_status: false,
+				}
+			  });
 		} catch (error) {
 			if (
 				error instanceof BadRequestException ||
@@ -368,7 +376,7 @@ export class PreApplicationService {
 			const payment_token = await this.prisma.applicant_payment_token.findFirst(
 				{
 					where: { applicant_id: user.applicant_id },
-					include: { fees: true, examn_applicant: true },
+					include: { fees: true, examn_applicant: true},
 				},
 			);
 
@@ -388,6 +396,9 @@ export class PreApplicationService {
 				'applicant_id',
 				'fees_id',
 				'fees',
+				'id_examn_applicant',
+				'applicant_payment_token_id',
+				'examn_status',
 			]);
 
 			return cleanedData;
