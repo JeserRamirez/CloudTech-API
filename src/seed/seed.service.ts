@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class SeedService {
-	constructor(private readonly prisma: PrismaService) { }
+	constructor(private readonly prisma: PrismaService) {}
 
 	async seedDatabase() {
 		await this.prisma
@@ -622,7 +622,6 @@ export class SeedService {
 			// 		payment_status: faker.datatype.boolean(), // Estado de pago (true = pagado, false = no pagado)
 			// 	},
 			// });
-
 
 			const connectExamAplicant = await this.prisma.examn_applicant.create({
 				data: {
