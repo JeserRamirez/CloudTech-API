@@ -4,6 +4,7 @@ import { PreventiveDataModule } from './preventive-data/preventive-data.module';
 import { StudentPersonalDataModule } from './student-personal-data/student-personal-data.module';
 import { StudentTutorDataModule } from './student-tutor-data/student-tutor-data.module';
 import { PreApplicationModule } from './pre-application/pre-application.module';
+import { ComplementaryActivitiesModule } from './complementary-activities/complementary-activities.module';
 
 @Module({
 	imports: [
@@ -12,6 +13,7 @@ import { PreApplicationModule } from './pre-application/pre-application.module';
 		StudentPersonalDataModule,
 		StudentTutorDataModule,
 		PreApplicationModule,
+		ComplementaryActivitiesModule,
 	],
 })
 export class ApplicantModule {}

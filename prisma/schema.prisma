@@ -579,11 +579,10 @@ model complementary_activity {
 }
 
 model student_complementary_activities {
-  id_activity               Int      @id @default(autoincrement())
+  id_activity               Int     @id @default(autoincrement())
   student_id                Int?
   complementary_activity_id Int?
-  status                    String[] @db.VarChar // "In Progress", "Completed"
-  period                    String?  @db.VarChar
+  status                    String? @db.VarChar // "In Progress", "Completed"
 
   student                student?                @relation(fields: [student_id], references: [student_id])
   complementary_activity complementary_activity? @relation(fields: [complementary_activity_id], references: [id_complementary])

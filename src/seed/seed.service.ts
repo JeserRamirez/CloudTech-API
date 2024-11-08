@@ -937,12 +937,12 @@ export class SeedService {
 				data: {
 					student_id: student.student_id, // ID del estudiante
 					complementary_activity_id: activity.id_complementary, // ID de la actividad complementaria
-					status: faker.helpers.arrayElements([
-						'En progreso',
-						'Completado',
-						'Incompleto',
-					]),
-					period: generatePeriod(), // Periodo de la actividad
+					// status: faker.helpers.arrayElements([
+					// 	'En progreso',
+					// 	'Completado',
+					// 	'Incompleto',
+					// ]),
+					// period: generatePeriod(), // Periodo de la actividad
 				},
 			});
 		}
