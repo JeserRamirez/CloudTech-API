@@ -35,6 +35,7 @@ model student {
   student_complementary_activities student_complementary_activities[]
 
   student_current_class student_current_class[]
+  evaluation_response   evaluation_response[]
 }
 
 model reset_password {
@@ -282,7 +283,8 @@ model period {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  fees fees[]
+  fees            fees[]
+  evaluation_date evaluation_date[]
 }
 
 model carrer {
@@ -290,31 +292,33 @@ model carrer {
   carrer_name String? @db.VarChar
   modality    String? @db.VarChar
 
-  subject_plan subject_plan[]
+  study_plan study_plan[]
 
   specialities specialities[]
 
   student_current_status student_current_status[]
 }
 
-model subject_plan {
-  id_subject_plan Int     @id @default(autoincrement())
-  id_carrer       Int?    @unique @db.Integer
-  name            String? @db.VarChar
-  modality        String? @db.VarChar // Modalidad específica (dual, en línea)
+model study_plan {
+  id_study_plan Int     @id @default(autoincrement())
+  id_carrer     Int?    @unique @db.Integer
+  name          String? @db.VarChar
+  // modality        String? @db.VarChar // Modalidad específica (dual, en línea) ?????
 
   carrer carrer? @relation(fields: [id_carrer], references: [id_carrer], onDelete: Cascade, onUpdate: Cascade)
+
+  student_kardex_plan student_kardex_plan[]
 
   subject_plan_relation subject_plan_relation[]
 }
 
 model subject {
-  id_subject        Int      @id @default(autoincrement())
-  subject_name      String?  @db.VarChar
-  theoretical_hours String?  @db.VarChar
-  practical_hours   Int?     @db.Integer
-  credits           Int?     @db.Integer
-  syllabus          String[] @db.VarChar
+  id_subject        Int     @id @default(autoincrement())
+  subject_name      String? @db.VarChar
+  theoretical_hours String? @db.VarChar
+  practical_hours   Int?    @db.Integer
+  credits           Int?    @db.Integer
+  syllabus          String  @db.VarChar
 
   subject_plan_relation subject_plan_relation[]
 }
@@ -341,14 +345,12 @@ model speciality_subject_plan {
 
 model subject_plan_relation {
   id_subject_plan_relation Int  @id @default(autoincrement())
-  id_subject_plan          Int? @db.Integer
+  id_study_plan            Int? @db.Integer
   id_subject               Int? @db.Integer
   semester                 Int? @db.Integer
 
-  subject_plan subject_plan? @relation(fields: [id_subject_plan], references: [id_subject_plan], onDelete: Cascade, onUpdate: Cascade)
-  subject      subject?      @relation(fields: [id_subject], references: [id_subject], onDelete: Cascade, onUpdate: Cascade)
-
-  student_kardex_plan student_kardex_plan[]
+  study_plan study_plan? @relation(fields: [id_study_plan], references: [id_study_plan], onDelete: Cascade, onUpdate: Cascade)
+  subject    subject?    @relation(fields: [id_subject], references: [id_subject], onDelete: Cascade, onUpdate: Cascade)
 
   class_schedule class_schedule[]
 
@@ -360,15 +362,15 @@ model subject_plan_relation {
 }
 
 model student_kardex_plan {
-  id_kardex                Int      @id @default(autoincrement())
-  subject_plan_relation_id Int?
-  id_plan_relation         Int?     @db.Integer
-  complete                 Boolean? @db.Boolean
-  end_semester             Int?     @db.Integer
+  id_kardex        Int      @id @default(autoincrement())
+  id_study_plan    Int?
+  id_plan_relation Int?     @db.Integer
+  complete         Boolean? @db.Boolean
+  end_semester     Int?     @db.Integer
 
-  general_data_id       Int?                   @unique
-  general_data          general_data?          @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
-  subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
+  general_data_id Int?          @unique
+  general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
+  study_plan      study_plan?   @relation(fields: [id_study_plan], references: [id_study_plan], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model student_current_class {
@@ -383,14 +385,13 @@ model student_current_class {
 }
 
 model group {
-  id_group   Int      @id @default(autoincrement())
-  group_type String[] @db.VarChar
-  semester   Int?     @db.Integer
-  period     String?  @db.VarChar(255)
+  id_group   Int     @id @default(autoincrement())
+  group_type String  @db.VarChar(1) // Solo permite un carácter
+  semester   Int?    @db.Integer
+  period     String? @db.VarChar(255)
 
   class_schedule class_schedule[]
-
-  group_tags group_tags[]
+  group_tags     group_tags[]
 }
 
 model group_tags {
@@ -402,9 +403,9 @@ model group_tags {
 }
 
 model class_room {
-  id_class_room String @id @db.Char(10)
-  room_number   Int?   @db.Integer // ejemplo salones a, b, c ... son caracteres. como propuesta podria volver a room_number como string.seri un ejemplo h10
-  capacity      Int?   @db.Integer
+  id_class_room Int     @id @default(autoincrement())
+  room_number   String? @db.VarChar // ejemplo salones a, b, c ... son caracteres. como propuesta podria volver a room_number como string.seri un ejemplo h10
+  capacity      Int?    @db.Integer
 
   class_schedule class_schedule[]
 }
@@ -413,8 +414,8 @@ model class_schedule {
   id_class_schedule        Int       @id @default(autoincrement())
   group_id                 Int?
   subject_plan_relation_id Int?
-  class_room_id            String?
-  teacher_id               String?
+  class_room_id            Int?
+  teacher_id               Int?
   day_of_week              String?   @db.VarChar(255)
   start_time               DateTime? @db.Timestamp(6)
   end_time                 DateTime? @db.Timestamp(6)
@@ -425,7 +426,7 @@ model class_schedule {
   group                 group?                 @relation(fields: [group_id], references: [id_group])
   subject_plan_relation subject_plan_relation? @relation(fields: [subject_plan_relation_id], references: [id_subject_plan_relation], onDelete: Cascade, onUpdate: Cascade)
   class_room            class_room?            @relation(fields: [class_room_id], references: [id_class_room], onDelete: Cascade, onUpdate: Cascade)
-  teacher               teacher?               @relation(fields: [teacher_id], references: [teacher_number], onDelete: Cascade, onUpdate: Cascade)
+  teacher               teacher?               @relation(fields: [teacher_id], references: [teacher_id], onDelete: Cascade, onUpdate: Cascade)
 
   student_current_class student_current_class[]
 }
@@ -586,4 +587,61 @@ model student_complementary_activities {
 
   student                student?                @relation(fields: [student_id], references: [student_id])
   complementary_activity complementary_activity? @relation(fields: [complementary_activity_id], references: [id_complementary])
+}
+
+model evaluation_section {
+  section_id   Int                   @id @default(autoincrement()) // Identificador único de la sección
+  section_name String // Nombre o título de la sección
+  questions    evaluation_question[] // Relación con las preguntas de esta sección
+}
+
+model evaluation_question {
+  question_id   Int                   @id @default(autoincrement()) // Identificador único de la pregunta
+  question_text String // Texto de la pregunta
+  section_id    Int // Relación con la sección de la pregunta
+  section       evaluation_section    @relation(fields: [section_id], references: [section_id]) // Relación con la sección
+  responses     evaluation_response[] // Relación con las respuestas a la pregunta
+}
+
+model evaluation {
+  evaluation_id Int @id @default(autoincrement())
+
+  evaluation_date_id Int?
+  evaluation_date    evaluation_date? @relation(fields: [evaluation_date_id], references: [evaluation_date_id], onUpdate: Cascade, onDelete: Cascade)
+
+  responses evaluation_response[]
+  feedbacks evaluation_feedback[] // Relación con los comentarios o retroalimentación
+}
+
+model evaluation_date {
+  evaluation_date_id Int      @id @default(autoincrement())
+  start_date         DateTime @default(now())
+  end_date           DateTime @default(now())
+
+  period_id  Int // Referencia al período
+  period     period       @relation(fields: [period_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  evaluation evaluation[]
+}
+
+model evaluation_response {
+  response_id Int @id @default(autoincrement())
+  score       Int // Rango permitido: 1 a 5, validación en la aplicación
+
+  evaluation_id Int
+  evaluation    evaluation          @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
+  question_id   Int
+  question      evaluation_question @relation(fields: [question_id], references: [question_id], onUpdate: Cascade, onDelete: Cascade)
+  student_id    Int
+  student       student             @relation(fields: [student_id], references: [student_id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model evaluation_feedback {
+  feedback_id   Int    @id @default(autoincrement())
+  feedback_text String // Comentario o retroalimentación
+
+  evaluation_id Int // Relación con la evaluación
+  evaluation    evaluation @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
+
+  created_at DateTime @default(now()) // Fecha y hora de creación
+  updated_at DateTime @updatedAt // Fecha de última actualización
 }
