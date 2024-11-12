@@ -36,6 +36,7 @@ model student {
 
   student_current_class student_current_class[]
   evaluation_response   evaluation_response[]
+  student_enrollment    student_enrollment[]
 }
 
 model reset_password {
@@ -558,6 +559,7 @@ model student_current_status {
   id_status           Int     @id @default(autoincrement())
   student_id          Int?    @db.Integer
   carrer_id           Int?    @db.Integer
+  semester            Int?    @db.Integer
   general_average     String? @db.VarChar
   completed_subjects  Int?    @db.Integer
   current_subjects    Int?    @db.Integer
@@ -590,16 +592,17 @@ model student_complementary_activities {
 }
 
 model evaluation_section {
-  section_id   Int                   @id @default(autoincrement()) // Identificador único de la sección
+  section_id   Int    @id @default(autoincrement()) // Identificador único de la sección
   section_name String // Nombre o título de la sección
-  questions    evaluation_question[] // Relación con las preguntas de esta sección
+
+  questions evaluation_question[] // Relación con las preguntas de esta sección
 }
 
 model evaluation_question {
   question_id   Int                   @id @default(autoincrement()) // Identificador único de la pregunta
   question_text String // Texto de la pregunta
   section_id    Int // Relación con la sección de la pregunta
-  section       evaluation_section    @relation(fields: [section_id], references: [section_id]) // Relación con la sección
+  section       evaluation_section    @relation(fields: [section_id], references: [section_id], onUpdate: Cascade, onDelete: Cascade) // Relación con la sección
   responses     evaluation_response[] // Relación con las respuestas a la pregunta
 }
 
@@ -644,4 +647,12 @@ model evaluation_feedback {
 
   created_at DateTime @default(now()) // Fecha y hora de creación
   updated_at DateTime @updatedAt // Fecha de última actualización
+}
+
+model student_enrollment {
+  enrollment_id   Int      @id @default(autoincrement())
+  enrollment_date DateTime @db.Timestamp(6)
+
+  student_id Int?
+  student    student? @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
 }

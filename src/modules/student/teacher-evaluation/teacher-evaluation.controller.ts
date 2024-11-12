@@ -1,15 +1,6 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { TeacherEvaluationService } from './teacher-evaluation.service';
-import { CreateTeacherEvaluationDto } from './dto/create-teacher-evaluation.dto';
-import { UpdateTeacherEvaluationDto } from './dto/update-teacher-evaluation.dto';
+import { CreateFeedbackDto, CreateResponseQuestionsDto } from './dto';
 
 @Controller('student/teacher-evaluation')
 export class TeacherEvaluationController {
@@ -17,34 +8,26 @@ export class TeacherEvaluationController {
 		private readonly teacherEvaluationService: TeacherEvaluationService,
 	) {}
 
-	@Post()
-	create(@Body() createTeacherEvaluationDto: CreateTeacherEvaluationDto) {
-		return this.teacherEvaluationService.create(createTeacherEvaluationDto);
-	}
-
 	@Get()
-	findAll() {
-		return this.teacherEvaluationService.findAll();
+	async getTeacherEvaluations() {
+		return await this.teacherEvaluationService.getEvaluation();
 	}
 
 	@Get(':id')
-	findOne(@Param('id') id: string) {
-		return this.teacherEvaluationService.findOne(+id);
+	async getTeacherSectionById(@Param('id') id: string) {
+		console.log(id);
+		return await this.teacherEvaluationService.getSectionById(+id);
 	}
 
-	@Patch(':id')
-	update(
-		@Param('id') id: string,
-		@Body() updateTeacherEvaluationDto: UpdateTeacherEvaluationDto,
+	@Post('response')
+	async createResponseQuestions(
+		@Body('response-questions')
+		createResponseQuestionsDto: CreateResponseQuestionsDto,
+		@Body('feedback') createFeedbackDto: CreateFeedbackDto,
 	) {
-		return this.teacherEvaluationService.update(
-			+id,
-			updateTeacherEvaluationDto,
+		return await this.teacherEvaluationService.createResponseQuestions(
+			createResponseQuestionsDto,
+			createFeedbackDto,
 		);
-	}
-
-	@Delete(':id')
-	remove(@Param('id') id: string) {
-		return this.teacherEvaluationService.remove(+id);
 	}
 }
