@@ -382,7 +382,8 @@ model student_current_class {
   class_schedule class_schedule? @relation(fields: [class_schedule_id], references: [id_class_schedule], onDelete: Cascade, onUpdate: Cascade)
   student        student?        @relation(fields: [student_id], references: [student_id])
 
-  grades_current grades_current[]
+  grades_current      grades_current[]
+  evaluation_feedback evaluation_feedback[]
 }
 
 model group {
@@ -564,6 +565,7 @@ model student_current_status {
   completed_subjects  Int?    @db.Integer
   current_subjects    Int?    @db.Integer
   accumulated_credits Int?    @db.Integer
+  period              String? @db.VarChar
 
   student student? @relation(fields: [student_id], references: [student_id])
   carrer  carrer?  @relation(fields: [carrer_id], references: [id_carrer])
@@ -642,8 +644,10 @@ model evaluation_feedback {
   feedback_id   Int    @id @default(autoincrement())
   feedback_text String // Comentario o retroalimentación
 
-  evaluation_id Int // Relación con la evaluación
-  evaluation    evaluation @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
+  evaluation_id            Int // Relación con la evaluación
+  evaluation               evaluation             @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
+  student_current_class_id Int?
+  student_current_class    student_current_class? @relation(fields: [student_current_class_id], references: [id_current_class], onDelete: Cascade, onUpdate: Cascade)
 
   created_at DateTime @default(now()) // Fecha y hora de creación
   updated_at DateTime @updatedAt // Fecha de última actualización

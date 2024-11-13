@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeedbackDto, CreateResponseQuestionsDto } from './dto';
+import { student } from '@prisma/client';
 
 @Injectable()
 export class TeacherEvaluationService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	// Métodos para evaluation_section
-	async getEvaluation() {
+	async getEvaluation(user: student) {
+		console.log(user);
 		return await this.prisma.evaluation_section.findMany({
 			include: { questions: true },
 		});
@@ -64,5 +66,9 @@ export class TeacherEvaluationService {
 		return this.prisma.evaluation_feedback.findMany({
 			where: { evaluation_id },
 		});
+	}
+
+	async validateEvaluationDate() {
+		// TODO: validation of evaluation date based on the period
 	}
 }
