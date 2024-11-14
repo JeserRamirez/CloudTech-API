@@ -68,7 +68,18 @@ export class TeacherEvaluationService {
 		});
 	}
 
-	async validateEvaluationDate() {
+	async validateEvaluationDate(student_id: number) {
 		// TODO: validation of evaluation date based on the period
+
+		const { period } = await this.prisma.student_current_status.findFirst({
+			where: { student_id },
+		});
+
+		const evaluation_date = await this.prisma.evaluation_date.findFirst({
+			where: { period: { name: period } },
+		});
+
+		if (evaluation_date.start_date) {
+		}
 	}
 }
