@@ -3,6 +3,7 @@ import { StudentPersonalDataModule } from './student-personal-data/student-perso
 import { StudentTutorDataModule } from './student-tutor-data/student-tutor-data.module';
 import { PreventiveDataModule } from './preventive-data/preventive-data.module';
 import { LastStudyLevelModule } from './last-study-level/last-study-level.module';
+import { TeacherEvaluationModule } from './teacher-evaluation/teacher-evaluation.module';
 
 @Module({
 	imports: [
@@ -10,6 +11,7 @@ import { LastStudyLevelModule } from './last-study-level/last-study-level.module
 		StudentTutorDataModule,
 		PreventiveDataModule,
 		LastStudyLevelModule,
+		TeacherEvaluationModule,
 	],
 })
 export class StudentModule {}

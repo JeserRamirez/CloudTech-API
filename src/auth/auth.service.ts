@@ -25,7 +25,7 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
-import { getPeriod } from 'src/common/helpers';
+import { getPeriod, removeAttributes } from 'src/common/helpers';
 import { student, teacher } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { MailService } from './services/mail.service';
@@ -159,7 +159,9 @@ export class AuthService {
 			await this.invalidateOldSessions(applicant.curp);
 			await this.createSession(applicant.curp, token);
 
-			return { ...applicant, token };
+			const cleanedApplicant = removeAttributes(applicant, ['hashed_password']);
+
+			return { ...cleanedApplicant, token };
 		} catch (error) {
 			if (error instanceof BadRequestException) {
 				throw error;
@@ -194,7 +196,9 @@ export class AuthService {
 		await this.invalidateOldSessions(applicant.curp);
 		await this.createSession(applicant.curp, token);
 
-		return { ...applicant, token };
+		const cleanedApplicant = removeAttributes(applicant, ['hashed_password']);
+
+		return { ...cleanedApplicant, token };
 	}
 
 	// Register and login of Student
@@ -262,7 +266,10 @@ export class AuthService {
 			// Delete old sessions and create a new one
 			await this.invalidateOldSessions(student.control_number);
 			await this.createSession(student.control_number, token);
-			return { ...student, token };
+
+			const cleanedStudent = removeAttributes(student, ['hashed_password']);
+
+			return { ...cleanedStudent, token };
 		} catch (error) {
 			this.handleDBErrors(error);
 		}
@@ -293,7 +300,9 @@ export class AuthService {
 		await this.invalidateOldSessions(student.control_number);
 		await this.createSession(student.control_number, token);
 
-		return { ...student, token };
+		const cleanedStudent = removeAttributes(student, ['hashed_password']);
+
+		return { ...cleanedStudent, token };
 	}
 
 	// Register and login of Teacher
@@ -319,7 +328,9 @@ export class AuthService {
 			await this.invalidateOldSessions(teacher.teacher_number);
 			await this.createSession(teacher.teacher_number, token);
 
-			return { ...teacher, token };
+			const cleanedTeacher = removeAttributes(teacher, ['hashed_password']);
+
+			return { ...cleanedTeacher, token };
 		} catch (error) {
 			this.handleDBErrors(error);
 		}
@@ -353,7 +364,9 @@ export class AuthService {
 		await this.invalidateOldSessions(teacher.teacher_number);
 		await this.createSession(teacher.teacher_number, token);
 
-		return { ...teacher, token };
+		const cleanedTeacher = removeAttributes(teacher, ['hashed_password']);
+
+		return { ...cleanedTeacher, token };
 	}
 
 	async changePassword(user: any, changePasswordDto: ChangePasswordDto) {
