@@ -43,10 +43,7 @@ model student {
 
   student_current_class student_current_class[]
   evaluation_response   evaluation_response[]
-<<<<<<< HEAD
-=======
   student_enrollment    student_enrollment[]
->>>>>>> fb19a1a44927e7972f09b6f4906a65af735206d5
 }
 
 model reset_password {
