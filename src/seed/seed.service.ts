@@ -639,10 +639,10 @@ export class SeedService {
 
 			await this.prisma.applicant_payment_inscription.create({
 				data: {
-					payment_data: faker.date.soon({
-						days: faker.number.int({ min: 30, max: 90 }),
-					}), // Fecha de examen en los próximos 30 a 90 días
+					state: 'pendiente',
 					payment_status: faker.datatype.boolean(),
+					payment_method: '',
+					reference_number: '',
 					applicant: {
 						connect: { applicant_id: applicant.applicant_id }, // Conectar con el teacher recién creado
 					},

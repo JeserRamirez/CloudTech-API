@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output = "../ERD.svg"
+  theme = "dark"
+  // disabled = true 
+}
+
 model applicant {
   applicant_id    Int      @id @default(autoincrement())
   curp            String?  @unique @db.VarChar(18)
@@ -244,9 +251,19 @@ model examn_applicant {
 }
 
 model applicant_payment_inscription {
-  id_payment_inscription Int      @id @default(autoincrement())
-  payment_data           Json?    @db.Json
-  payment_status         Boolean? @db.Boolean
+  id_payment_inscription    Int      @id @default(autoincrement())
+  inscription_token         String?   @unique @db.VarChar(255)
+  inscription_request_date  DateTime? @default(now()) @db.Timestamp(6)
+  state                     String   @db.VarChar(255)
+  payment_status            Boolean? @db.Boolean
+
+  payment_method            String @db.VarChar(255) 
+  reference_number          String @db.VarChar(255)
+  total_amount_to_pay       Decimal? @db.Decimal(10, 2)
+
+
+  created_at DateTime @default(now())
+  updated_at DateTime  @updatedAt
 
   fees_id Int? // Referencia al período
   fees    fees? @relation(fields: [fees_id], references: [id])
@@ -254,7 +271,7 @@ model applicant_payment_inscription {
   examn_applicant_id Int?
   examn_applicant    examn_applicant? @relation(fields: [examn_applicant_id], references: [id_examn_applicant], onDelete: Cascade, onUpdate: Cascade)
 
-  applicant_id Int?
+  applicant_id Int? @unique
   applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id])
 }
 

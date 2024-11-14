@@ -213,11 +213,28 @@ export class AuthService {
 			const applicant = await this.prisma.applicant.findUnique({
 				where: { curp: curpFormatted },
 			});
-
+			
 			if (!applicant)
 				return new NotFoundException(
 					`No applicant was found with the curp: ${curpFormatted}`,
 				);
+				
+			const insReq = await this.prisma.applicant_payment_inscription.findFirst({
+				where: { applicant_id: applicant.applicant_id },
+				select: { payment_status: true}
+			});
+
+			if (!insReq) {
+				throw new NotFoundException(`No se encontro informacion sobre la inscripcion`);
+			}
+
+			if (insReq.payment_status === false) {
+				throw new BadRequestException(`
+					No se puede completar la inscripcion por que no 
+					se ha recibido el pago de la inscripcion`
+				);
+			} 
+
 
 			const student = await this.prisma.student.create({
 				data: {
