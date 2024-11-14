@@ -26,10 +26,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtPayload } from './interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { getPeriod, removeAttributes } from 'src/common/helpers';
-import { student, teacher } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { MailService } from './services/mail.service';
 import { TokenExpiredException } from './error';
+import { teacher, student } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -213,28 +213,28 @@ export class AuthService {
 			const applicant = await this.prisma.applicant.findUnique({
 				where: { curp: curpFormatted },
 			});
-			
+
 			if (!applicant)
 				return new NotFoundException(
 					`No applicant was found with the curp: ${curpFormatted}`,
 				);
-				
+
 			const insReq = await this.prisma.applicant_payment_inscription.findFirst({
 				where: { applicant_id: applicant.applicant_id },
-				select: { payment_status: true}
+				select: { payment_status: true },
 			});
 
 			if (!insReq) {
-				throw new NotFoundException(`No se encontro informacion sobre la inscripcion`);
+				throw new NotFoundException(
+					`No se encontro informacion sobre la inscripcion`,
+				);
 			}
 
 			if (insReq.payment_status === false) {
 				throw new BadRequestException(`
-					No se puede completar la inscripcion por que no 
-					se ha recibido el pago de la inscripcion`
-				);
-			} 
-
+					No se puede completar la inscripcion por que no
+					se ha recibido el pago de la inscripcion`);
+			}
 
 			const student = await this.prisma.student.create({
 				data: {
