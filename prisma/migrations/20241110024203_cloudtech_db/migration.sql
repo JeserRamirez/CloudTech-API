@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "subject" ALTER COLUMN "syllabus" SET NOT NULL,
+ALTER COLUMN "syllabus" SET DATA TYPE VARCHAR;
