@@ -112,137 +112,137 @@ export class SeedService {
 			skipDuplicates: true, // Evita duplicados si ya existen
 		});
 
-		await this.prisma.subject_plan.createMany({
-			data: [
-				{
-					id_carrer: 1,
-					name: 'Plan de estudios - Ingeniería en Sistemas Computacionales',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 2,
-					name: 'Plan de estudios - Administración de Empresas',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 3,
-					name: 'Plan de estudios - Derecho',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 4,
-					name: 'Plan de estudios - Ingeniería Industrial',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 5,
-					name: 'Plan de estudios - Contaduría Pública',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 6,
-					name: 'Plan de estudios - Energías Renovables',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 7,
-					name: 'Plan de estudios - Psicología',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 8,
-					name: 'Plan de estudios - Mecatrónica',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 9,
-					name: 'Plan de estudios - Mercadotecnia',
-					modality: 'Presencial',
-				},
-				{
-					id_carrer: 10,
-					name: 'Plan de estudios - Pedagogía',
-					modality: 'Presencial',
-				},
-			],
-			skipDuplicates: true, // Evita duplicados si ya existen
-		});
+		// await this.prisma.subject_plan.createMany({
+		// 	data: [
+		// 		{
+		// 			id_carrer: 1,
+		// 			name: 'Plan de estudios - Ingeniería en Sistemas Computacionales',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 2,
+		// 			name: 'Plan de estudios - Administración de Empresas',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 3,
+		// 			name: 'Plan de estudios - Derecho',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 4,
+		// 			name: 'Plan de estudios - Ingeniería Industrial',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 5,
+		// 			name: 'Plan de estudios - Contaduría Pública',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 6,
+		// 			name: 'Plan de estudios - Energías Renovables',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 7,
+		// 			name: 'Plan de estudios - Psicología',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 8,
+		// 			name: 'Plan de estudios - Mecatrónica',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 9,
+		// 			name: 'Plan de estudios - Mercadotecnia',
+		// 			modality: 'Presencial',
+		// 		},
+		// 		{
+		// 			id_carrer: 10,
+		// 			name: 'Plan de estudios - Pedagogía',
+		// 			modality: 'Presencial',
+		// 		},
+		// 	],
+		// 	skipDuplicates: true, // Evita duplicados si ya existen
+		// });
 
-		await this.prisma.subject.createMany({
-			data: [
-				{
-					subject_name: 'Matemáticas I',
-					theoretical_hours: '3',
-					practical_hours: 2,
-					credits: 5,
-					syllabus: ['1', '2', '3'],
-				},
-				{
-					subject_name: 'Física I',
-					theoretical_hours: '2',
-					practical_hours: 3,
-					credits: 5,
-					syllabus: ['4', '5', '6'],
-				},
-				{
-					subject_name: 'Introducción a la Programación',
-					theoretical_hours: '4',
-					practical_hours: 2,
-					credits: 6,
-					syllabus: ['7', '8', '9'],
-				},
-				{
-					subject_name: 'Contabilidad Básica',
-					theoretical_hours: '3',
-					practical_hours: 1,
-					credits: 4,
-					syllabus: ['10', '11', '12'],
-				},
-				{
-					subject_name: 'Derecho Constitucional',
-					theoretical_hours: '2',
-					practical_hours: 2,
-					credits: 4,
-					syllabus: ['13', '14', '15'],
-				},
-				{
-					subject_name: 'Cálculo Diferencial',
-					theoretical_hours: '3',
-					practical_hours: 2,
-					credits: 5,
-					syllabus: ['16', '17', '18'],
-				},
-				{
-					subject_name: 'Química General',
-					theoretical_hours: '2',
-					practical_hours: 3,
-					credits: 5,
-					syllabus: ['19', '20', '21'],
-				},
-				{
-					subject_name: 'Psicología del Desarrollo',
-					theoretical_hours: '3',
-					practical_hours: 1,
-					credits: 4,
-					syllabus: ['22', '23', '24'],
-				},
-				{
-					subject_name: 'Mercadotecnia Básica',
-					theoretical_hours: '2',
-					practical_hours: 2,
-					credits: 4,
-					syllabus: ['25', '26', '27'],
-				},
-				{
-					subject_name: 'Introducción a la Pedagogía',
-					theoretical_hours: '3',
-					practical_hours: 1,
-					credits: 4,
-					syllabus: ['28', '29', '30'],
-				},
-			],
-			skipDuplicates: true, // Evita duplicados
-		});
+		// await this.prisma.subject.createMany({
+		// 	data: [
+		// 		{
+		// 			subject_name: 'Matemáticas I',
+		// 			theoretical_hours: '3',
+		// 			practical_hours: 2,
+		// 			credits: 5,
+		// 			syllabus: ['1', '2', '3'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Física I',
+		// 			theoretical_hours: '2',
+		// 			practical_hours: 3,
+		// 			credits: 5,
+		// 			syllabus: ['4', '5', '6'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Introducción a la Programación',
+		// 			theoretical_hours: '4',
+		// 			practical_hours: 2,
+		// 			credits: 6,
+		// 			syllabus: ['7', '8', '9'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Contabilidad Básica',
+		// 			theoretical_hours: '3',
+		// 			practical_hours: 1,
+		// 			credits: 4,
+		// 			syllabus: ['10', '11', '12'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Derecho Constitucional',
+		// 			theoretical_hours: '2',
+		// 			practical_hours: 2,
+		// 			credits: 4,
+		// 			syllabus: ['13', '14', '15'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Cálculo Diferencial',
+		// 			theoretical_hours: '3',
+		// 			practical_hours: 2,
+		// 			credits: 5,
+		// 			syllabus: ['16', '17', '18'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Química General',
+		// 			theoretical_hours: '2',
+		// 			practical_hours: 3,
+		// 			credits: 5,
+		// 			syllabus: ['19', '20', '21'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Psicología del Desarrollo',
+		// 			theoretical_hours: '3',
+		// 			practical_hours: 1,
+		// 			credits: 4,
+		// 			syllabus: ['22', '23', '24'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Mercadotecnia Básica',
+		// 			theoretical_hours: '2',
+		// 			practical_hours: 2,
+		// 			credits: 4,
+		// 			syllabus: ['25', '26', '27'],
+		// 		},
+		// 		{
+		// 			subject_name: 'Introducción a la Pedagogía',
+		// 			theoretical_hours: '3',
+		// 			practical_hours: 1,
+		// 			credits: 4,
+		// 			syllabus: ['28', '29', '30'],
+		// 		},
+		// 	],
+		// 	skipDuplicates: true, // Evita duplicados
+		// });
 
 		await this.prisma.specialities.createMany({
 			data: [
@@ -268,21 +268,21 @@ export class SeedService {
 			skipDuplicates: true, // Evita duplicados
 		});
 
-		await this.prisma.subject_plan_relation.createMany({
-			data: [
-				{ id_subject_plan: 1, id_subject: 1, semester: 1 },
-				{ id_subject_plan: 1, id_subject: 2, semester: 2 },
-				{ id_subject_plan: 2, id_subject: 3, semester: 1 },
-				{ id_subject_plan: 2, id_subject: 4, semester: 2 },
-				{ id_subject_plan: 3, id_subject: 5, semester: 3 },
-				{ id_subject_plan: 3, id_subject: 6, semester: 4 },
-				{ id_subject_plan: 4, id_subject: 7, semester: 1 },
-				{ id_subject_plan: 5, id_subject: 8, semester: 2 },
-				{ id_subject_plan: 6, id_subject: 9, semester: 3 },
-				{ id_subject_plan: 7, id_subject: 10, semester: 4 },
-			],
-			skipDuplicates: true, // Evita duplicados
-		});
+		// await this.prisma.subject_plan_relation.createMany({
+		// 	data: [
+		// 		{ id_subject_plan: 1, id_subject: 1, semester: 1 },
+		// 		{ id_subject_plan: 1, id_subject: 2, semester: 2 },
+		// 		{ id_subject_plan: 2, id_subject: 3, semester: 1 },
+		// 		{ id_subject_plan: 2, id_subject: 4, semester: 2 },
+		// 		{ id_subject_plan: 3, id_subject: 5, semester: 3 },
+		// 		{ id_subject_plan: 3, id_subject: 6, semester: 4 },
+		// 		{ id_subject_plan: 4, id_subject: 7, semester: 1 },
+		// 		{ id_subject_plan: 5, id_subject: 8, semester: 2 },
+		// 		{ id_subject_plan: 6, id_subject: 9, semester: 3 },
+		// 		{ id_subject_plan: 7, id_subject: 10, semester: 4 },
+		// 	],
+		// 	skipDuplicates: true, // Evita duplicados
+		// });
 
 		await this.prisma.speciality_subject_plan.createMany({
 			data: [
@@ -456,19 +456,19 @@ export class SeedService {
 					},
 				});
 
-				const studentKardexPlan = await this.prisma.student_kardex_plan.create({
-					data: {
-						//   general_data_id: generalDataId, // Ensure this is linked to an existing student
-						subject_plan_relation_id: faker.helpers.arrayElement([
-							1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-						]),
-						id_plan_relation: faker.helpers.arrayElement([
-							1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-						]),
-						complete: faker.datatype.boolean(),
-						end_semester: faker.number.int({ min: 1, max: 12 }), // Assuming a typical 8-semester program
-					},
-				});
+				// const studentKardexPlan = await this.prisma.student_kardex_plan.create({
+				// 	data: {
+				// 		//   general_data_id: generalDataId, // Ensure this is linked to an existing student
+				// 		subject_plan_relation_id: faker.helpers.arrayElement([
+				// 			1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+				// 		]),
+				// 		id_plan_relation: faker.helpers.arrayElement([
+				// 			1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+				// 		]),
+				// 		complete: faker.datatype.boolean(),
+				// 		end_semester: faker.number.int({ min: 1, max: 12 }), // Assuming a typical 8-semester program
+				// 	},
+				// });
 
 				const connectStudentCurrentStatus =
 					await this.prisma.student_current_status.create({
@@ -541,11 +541,11 @@ export class SeedService {
 								student_id: student.student_id, // Conectar con el applicant recién creado
 							},
 						},
-						student_kardex_plan: {
-							connect: {
-								id_kardex: studentKardexPlan.id_kardex, // Conectar con el applicant recién creado
-							},
-						},
+						// student_kardex_plan: {
+						// 	connect: {
+						// 		id_kardex: studentKardexPlan.id_kardex, // Conectar con el applicant recién creado
+						// 	},
+						// },
 						// Aquí agrega otros campos necesarios para general_data
 					},
 				});
@@ -639,10 +639,10 @@ export class SeedService {
 
 			await this.prisma.applicant_payment_inscription.create({
 				data: {
-					payment_data: faker.date.soon({
-						days: faker.number.int({ min: 30, max: 90 }),
-					}), // Fecha de examen en los próximos 30 a 90 días
+					state: 'pendiente',
 					payment_status: faker.datatype.boolean(),
+					payment_method: '',
+					reference_number: '',
 					applicant: {
 						connect: { applicant_id: applicant.applicant_id }, // Conectar con el teacher recién creado
 					},
@@ -689,26 +689,26 @@ export class SeedService {
 			];
 
 			const groupType = faker.helpers.arrayElement(['A', 'B']);
-			const group = await this.prisma.group.create({
-				data: {
-					group_type: groupType === 'A' ? ['B'] : ['A'], // Elegir tipo de grupo
-					semester: faker.number.int({ min: 1, max: 12 }), // Suponiendo un programa típico de 12 semestres
-					period: generatePeriod(), // Asumiendo que tienes una función para generar el periodo
-					group_tags: {
-						create: {
-							tag: faker.helpers.arrayElement(careers), // Elegir una carrera aleatoriamente
-						},
-					},
-				},
-			});
+			// const group = await this.prisma.group.create({
+			// 	data: {
+			// 		// group_type: groupType === 'A' ? ['B'] : ['A'], // Elegir tipo de grupo
+			// 		semester: faker.number.int({ min: 1, max: 12 }), // Suponiendo un programa típico de 12 semestres
+			// 		period: generatePeriod(), // Asumiendo que tienes una función para generar el periodo
+			// 		group_tags: {
+			// 			create: {
+			// 				tag: faker.helpers.arrayElement(careers), // Elegir una carrera aleatoriamente
+			// 			},
+			// 		},
+			// 	},
+			// });
 
 			// Crear el nuevo registro de aula
 			const classRoom = await this.prisma.class_room.create({
 				data: {
-					id_class_room: faker.number
-						.int({ min: 80101101, max: 90230254 })
-						.toString(),
-					room_number: faker.number.int({ min: 1, max: 11 }), // Número de aula aleatorio entre 1 y 11
+					// id_class_room: faker.number
+					// 	.int({ min: 80101101, max: 90230254 })
+					// 	.toString(),
+					// room_number: faker.number.int({ min: 1, max: 11 }), // Número de aula aleatorio entre 1 y 11
 					capacity: faker.number.int({ min: 10, max: 50 }), // Capacidad de aula entre 10 y 50
 				},
 			});
@@ -795,9 +795,9 @@ export class SeedService {
 						connect: { teacher_id: teacher.teacher_id },
 					},
 
-					group: {
-						connect: { id_group: group.id_group },
-					},
+					// group: {
+					// 	connect: { id_group: group.id_group },
+					// },
 					class_room: {
 						connect: { id_class_room: classRoom.id_class_room },
 					},
@@ -937,12 +937,12 @@ export class SeedService {
 				data: {
 					student_id: student.student_id, // ID del estudiante
 					complementary_activity_id: activity.id_complementary, // ID de la actividad complementaria
-					status: faker.helpers.arrayElements([
-						'En progreso',
-						'Completado',
-						'Incompleto',
-					]),
-					period: generatePeriod(), // Periodo de la actividad
+					// status: faker.helpers.arrayElements([
+					// 	'En progreso',
+					// 	'Completado',
+					// 	'Incompleto',
+					// ]),
+					// period: generatePeriod(), // Periodo de la actividad
 				},
 			});
 		}
