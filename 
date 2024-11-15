@@ -1,0 +1,352 @@
+[33mcommit 7b2278ac88cccdc551619a85fba737cd0d310bb0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mapplicant/inscription[m[33m, [m[1;31morigin/applicant/inscription[m[33m)[m
+Merge: b67a567 fb19a1a
+Author: Delarox <delafosa.v@gmail.com>
+Date:   Wed Nov 13 22:38:20 2024 -0600
+
+    B
+    MOAerge branch 'applicant/inscription' of https://github.com/JeserRamirez/CloudTech-API into applicant/inscription
+
+[33mcommit b67a567de54966f3174fa4b8c80fa7d3236582a6[m
+Author: Delarox <delafosa.v@gmail.com>
+Date:   Wed Nov 13 22:38:09 2024 -0600
+
+    Agregar archivos no rastreados antes del pull
+
+[33mcommit f07865fb04eb32143de9bfab965843acd42fe7fc[m
+Author: Delarox <delafosa.v@gmail.com>
+Date:   Wed Nov 13 22:33:23 2024 -0600
+
+    Resuelto conflicto en archivos
+
+[33mcommit dca443bcdf0fc6edfdaf5c8bcfb20945c5df9a31[m
+Author: Delarox <delafosa.v@gmail.com>
+Date:   Wed Nov 13 22:14:07 2024 -0600
+
+    Conflictos resueltos
+
+[33mcommit 24f44d735c9ca65ef48c51a24745f684c5436f77[m
+Author: Delarox <delafosa.v@gmail.com>
+Date:   Wed Nov 13 22:02:05 2024 -0600
+
+    Implementacion del modulo de Inscripcion
+
+[33mcommit fb19a1a44927e7972f09b6f4906a65af735206d5[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Tue Nov 12 22:47:43 2024 -0600
+
+    teacher_evaluation v0.1.1
+
+[33mcommit 52e03143fbc201a9515f37caa930b01b6d7b825d[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Nov 11 23:57:08 2024 -0600
+
+    hashed_password attribute removed, pending teacher evaluation
+
+[33mcommit 1737af231591e56a291d2ab6686e74fd8497cca4[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sun Nov 10 22:41:54 2024 -0600
+
+    pre-application controller docs
+
+[33mcommit 480c22c5e1228e2988ff4762440029776efebf57[m
+Merge: 7cb58ff 1743cf9
+Author: Delarox <92750682+Delarox@users.noreply.github.com>
+Date:   Fri Nov 8 19:05:23 2024 -0600
+
+    Merge pull request #6 from JeserRamirez/Delarox-fixed
+    
+    Update package.json
+
+[33mcommit 1743cf9f29d1915bbff4b07c3662be995140ce3c[m
+Author: Delarox <92750682+Delarox@users.noreply.github.com>
+Date:   Fri Nov 8 19:04:13 2024 -0600
+
+    Update package.json
+
+[33mcommit 7cb58ff078c89f47c7dc8d390a96ed04ac104b7c[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Fri Nov 8 12:15:55 2024 -0600
+
+    complementary-activities module
+
+[33mcommit 1fe051fefd742ca84779cfd5fa2812ce884d7969[m[33m ([m[1;32mmain[m[33m)[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Nov 4 22:25:21 2024 -0600
+
+    forced prisma generate
+
+[33mcommit 0fe3cceac7f475d944d2ffbbcfaaf058a79910c9[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Nov 4 21:52:04 2024 -0600
+
+    schema exam_date column
+
+[33mcommit 02c411e69cab91231e4ee2ae6981d2f96161ba62[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Nov 4 21:38:48 2024 -0600
+
+    enable CORS
+
+[33mcommit 7ae9619371142c2e4205bfd5096b11c583f9bd02[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Fri Nov 1 15:34:21 2024 -0600
+
+    pre-application: new Validations added
+
+[33mcommit 4f56fead78bc746ce26f9d9431630e02e447dadb[m
+Merge: 26b7d71 55c66ab
+Author: Delarox <92750682+Delarox@users.noreply.github.com>
+Date:   Thu Oct 31 20:45:00 2024 -0600
+
+    Merge pull request #5 from JeserRamirez/exam-info
+    
+    new features
+
+[33mcommit 55c66ab6b3e39b305448b768fc728f9d34c66986[m[33m ([m[1;31morigin/exam-info[m[33m)[m
+Author: Delarox <delafosa.v@gmail.com>
+Date:   Thu Oct 31 20:41:02 2024 -0600
+
+    new features
+
+[33mcommit 26b7d71c8a7cc968722e831ab9071d4e27726891[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sun Oct 27 14:38:45 2024 -0600
+
+    pre-application-request module
+
+[33mcommit b9e5a3e048e27a2ae7a26ae88dd562bf5b5c2a9a[m[33m ([m[1;31morigin/Feature/Applicant[m[33m)[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sat Oct 19 00:05:00 2024 -0600
+
+    prisma generate for deploy
+
+[33mcommit 41fe98017fa07be8228f90d1c0da8d50d1036e96[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Fri Oct 18 23:51:18 2024 -0600
+
+    column modified scheme deleted by mistake
+
+[33mcommit 40ff798e611b270a7e28c6f9e4d3e5c2d3dff132[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Fri Oct 18 23:43:21 2024 -0600
+
+    General Data and register correction for all users, .env.example updated, faker as devDependencies
+
+[33mcommit cf743490dafda54e6f04fbe036b959eb1c6be92d[m
+Merge: dd7b53e 14d2021
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Fri Oct 18 09:45:31 2024 -0600
+
+    Merge pull request #4 from JeserRamirez/feature/seedData
+    
+    Feature/seed data full
+
+[33mcommit 14d20213a16721eb358e74e7190216b2c93ccff0[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Fri Oct 18 07:30:35 2024 -0600
+
+    feat: :rocket: feat: update student_personal_data, student_tutor_data, and scholar_data models to include additional fields (birth state, municipality, home phone, mobile phone, RFC, workplace, and admission period)
+    
+    feat: update student_personal_data, student_tutor_data, and scholar_data models  - Added new fields to the student_personal_data model:   - birth_state: String? @db.VarChar // Estado de nacimiento   - state: String? @db.VarChar // Estado   - municipality: String? @db.VarChar // Municipio de nacimiento   - home_phone: String? @db.VarChar // Teléfono de domicilio   - mobile_phone: String? @db.VarChar // Teléfono celular   - neighborhood: String? @db.VarChar // Colonia   - optional_company: String? @db.VarChar // Empresa (opcional)  - Updated the student_tutor_data model with:   - state: String? @db.VarChar // Estado   - neighborhood: String? @db.VarChar // Colonia   - home_phone: String? @db.VarChar // Teléfono de domicilio   - mobile_phone: String? @db.VarChar // Teléfono celular   - rfc: String? @db.VarChar // RFC   - workplace: String? @db.VarChar // Empresa  - Enhanced the scholar_data model by adding:   - admission_period: String? @db.VarChar // Periodo de ingreso  These updates improve the data capture capabilities of the models to meet new requirements.
+
+[33mcommit beeb33c07877c2684916448ae11895911550f5b9[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Fri Oct 18 06:28:07 2024 -0600
+
+    Seed DB initial data subject 7/7
+
+[33mcommit 91938cdbcb1fdff88e139e002e64e2c521690204[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Thu Oct 17 11:44:10 2024 -0600
+
+    Seed DB initial data subject 1/7
+
+[33mcommit 331f47c8e256f4408914f2827d21dc95e5838129[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Wed Oct 16 19:54:11 2024 -0600
+
+    Seed DB 1 / 2
+
+[33mcommit 671071e02978adf21f9d593d55a60950a55a39e9[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Wed Oct 16 11:40:48 2024 -0600
+
+    Schema DB Completed
+
+[33mcommit dd7b53ed22d4ca6d6d046df3ed38c5811d6e52d8[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Oct 14 14:18:19 2024 -0600
+
+    change-password, forgot-password, reset-password features
+
+[33mcommit dc8af14a54027c8af3238616f3d9a0f07741207f[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Mon Oct 14 02:04:02 2024 -0600
+
+    feat: :construction: add seed data for teacher, student, and applicant models
+    
+    This commit introduces the seed data generation for three key models: teacher, student, and applicant. It includes randomly generated values for fields such as personal information, addresses, and emails using the Faker library. The relationships between these models and other associated tables have been handled, ensuring proper data insertion for testing purposes.
+    
+    Implemented seed data for teacher, student, and applicant models, improving testing capabilities for these entities.
+
+[33mcommit 324ae72b777d7f25c9b4df38ab468c180e0ce9dd[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Sun Oct 13 22:52:48 2024 -0600
+
+    seed_Aplicant succesfully
+
+[33mcommit 0a16903263d28890976d7ddc5b6507fffa50a818[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sat Sep 28 22:24:05 2024 -0600
+
+    auth and user data modules, and schema modified
+
+[33mcommit a116406e466dad51eda0affdffda2add0a8d7958[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 26 22:28:02 2024 -0600
+
+    merge conflict schema resolved
+
+[33mcommit 40b4b5dd71f6897ff9c4da6634bf6cd66266a367[m
+Merge: 03e71e2 4fb3d61
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 26 22:25:48 2024 -0600
+
+    Merge branch 'applicant-student-logic'
+
+[33mcommit 4fb3d61a2d94e1288d87628e4fa7bf275ab13c4c[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 26 22:13:14 2024 -0600
+
+    create applicant and student logic
+
+[33mcommit 03e71e2802b94f283fef871fdc4aa4a2bd9b7559[m
+Merge: bb625d9 5c8e1fb
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 26 22:05:36 2024 -0600
+
+    Merge pull request #2 from gust0m/main
+    
+    agregar campos faltantes del figma a la db de general data y nueva tabla
+
+[33mcommit 5c8e1fb15c3fcc2681b3359ca13c1ba222237e1d[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Thu Sep 26 21:27:36 2024 -0600
+
+    fix: :sparkles: agregar campos faltantes del figma a la db de general data
+    
+    agregar campos faltantes del figma a la db de general data, agregado de tablas nuevas
+    
+    agregar nuevos campos faltantes de la tabla student_personal_data  Añadir nueva tabla last_Study_Level
+
+[33mcommit dab2001554dae4bda0ff05ced848875e323ecf65[m
+Author: gust0m <joseadriantorres2002@gmail.com>
+Date:   Thu Sep 26 21:13:51 2024 -0600
+
+    fix: :sparkles: agregar campos faltantes del figma a la db de general data
+    
+    agregar campos faltantes del figma a la db de general data, agregado de tablas nuevas
+    
+    -  [ ]
+
+[33mcommit 045f4a58b135503b8651e4548d30d6e25186b307[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Sep 23 23:34:28 2024 -0600
+
+    aplicant-student general data
+
+[33mcommit bb625d9b9cf3b812f6139b4847575e5ed7f72669[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 19 16:11:58 2024 -0600
+
+    CURP to UpperCase
+
+[33mcommit 5cfcc5843f390a320a3cac38a85f479f0a358cff[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 19 15:22:02 2024 -0600
+
+    Cleaning Auth Data
+
+[33mcommit 99e70f72c5a94a156908bf2199a51cd51435cf5c[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 19 14:38:17 2024 -0600
+
+    Excepction 2025
+
+[33mcommit 7dc3fa57958f596cddb5e002a172a42b8a5ca7d6[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Sep 19 14:27:50 2024 -0600
+
+    filter, rate limit
+
+[33mcommit 5f5cc4aab69823c737fc685a3cb679dd85322964[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Mon Sep 16 22:45:30 2024 -0600
+
+    swagger documentation
+
+[33mcommit 251ea675977790645305e6fea5eb0eb2b008873a[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sat Sep 14 22:56:15 2024 -0600
+
+    .env modified for profile pictures, routes protected
+
+[33mcommit d36561235a75ff3f3005d3f1e12fe9bf14102d91[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sat Sep 14 22:32:09 2024 -0600
+
+    set-global-prefix
+
+[33mcommit 7ba0ba4a0bfce13915806ffcd52b6b3645a01b1c[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Fri Sep 13 23:36:15 2024 -0600
+
+    personal data and profile picture modules
+
+[33mcommit a467c7645fb25bdbfe5cd779fa6b9f7f038081a7[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sat Aug 31 13:18:50 2024 -0600
+
+    Schema and folder structure modified, s3 service added
+
+[33mcommit 8d9e63ff780e607a7c8fa4c3555cc7a9d62af812[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Aug 22 20:03:29 2024 -0600
+
+    migrations deleted
+
+[33mcommit b5673bc5dd9a4883dc43457692d5d677bc5bc464[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Aug 22 20:02:30 2024 -0600
+
+    Register and login of user part 2
+
+[33mcommit a782991efeea1b78acb256dfea03b3250dee538c[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Wed Aug 21 15:16:11 2024 -0600
+
+    Register and login of users part 1
+
+[33mcommit 9e3617a94d449f006c44fcca6e79f4ecfb51ddb8[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Sat Aug 17 15:54:37 2024 -0600
+
+    Creacion de plantillas PDF de estudiantes
+
+[33mcommit b5218160fe85b242a75d66af83bf72d560559e24[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Thu Aug 1 22:25:13 2024 -0600
+
+    Configuración inicial pdfmake
+
+[33mcommit f3d9b6e6f802d6774254f83a778c2dd9a8b212f1[m
+Author: JeserRamirez <jeserramirez2002@outlook.com>
+Date:   Wed Jul 31 14:10:49 2024 -0600
+
+    Instrucciones README
+
+[33mcommit 9fcd62b7d39529246352cc2b856a0f07a0727eb9[m
+Author: mrgabdev <gabriel.escobar.torres@gmail.com>
+Date:   Mon May 20 00:33:13 2024 -0600
+
+    feat: :tada: add nestjs project custom schema

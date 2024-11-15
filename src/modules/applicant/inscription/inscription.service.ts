@@ -25,7 +25,6 @@ export class InscriptionService {
         );
       }
 
-      console.log('ok');
       const fee = await this.prisma.fees.findFirst({
         where: {
           AND: [
@@ -43,7 +42,6 @@ export class InscriptionService {
         );
       }
       
-      console.log({fee});
       const totalAmount =
         Number(fee.amount) - (Number(fee.amount) / 100) * Number(fee.discount);
 
@@ -61,7 +59,6 @@ export class InscriptionService {
         }
       });
 
-      console.log({examn_applicant});
       if (examn_applicant.length === 0) {
         throw new NotFoundException(
           'No se encontró informacion del examen del aplicante',
@@ -75,8 +72,6 @@ export class InscriptionService {
           'No se puede crear la solicitud de inscripcion, ya que no se ha aprobado el examen',
         );
       };
-
-      console.log('ok');
 
 
       const createInfo = await this.prisma.applicant_payment_inscription.create({
@@ -106,7 +101,7 @@ export class InscriptionService {
         }
       });
 
-      console.log('ok');
+      console.log('ok created applicant inscriptions');
     } catch (error) {
       if (
         error instanceof BadRequestException ||
@@ -149,8 +144,6 @@ export class InscriptionService {
 				},
 			});
 
-      console.log(fee);
-
       if (fee.deadline < new Date()) {
 				throw new BadRequestException(
 					'El plazo de pago para la solicitud de incripcion ha expirado',
@@ -176,9 +169,6 @@ export class InscriptionService {
         },
       });
 
-
-    // Retornar un mensaje de éxito
-    return { message: 'Método de pago actualizado exitosamente.' };
 
     } catch (error) {
       if (error instanceof BadRequestException || error instanceof NotFoundException) {
@@ -233,8 +223,6 @@ export class InscriptionService {
 			const validTokens = tokens
 				.map((token) => parseInt(token.inscription_token))
 				.filter((token) => !isNaN(token));
-
-			console.log(validTokens);
 
 			// Generar el nuevo token incrementando el máximo valor existente o comenzando desde 1
 			const newToken =
