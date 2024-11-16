@@ -231,10 +231,9 @@ export class AuthService {
 			}
 
 			if (insReq.payment_status === false) {
-				throw new BadRequestException(`
-					No se puede completar la inscripcion por que no
-					se ha recibido el pago de la inscripcion`);
-			}
+				throw new BadRequestException(
+					`No se puede completar la inscripcion por que no se ha recibido el pago de la inscripcion`
+				);}
 
 			const student = await this.prisma.student.create({
 				data: {
@@ -271,6 +270,13 @@ export class AuthService {
 
 			return { ...cleanedStudent, token };
 		} catch (error) {
+			
+			if (
+				error instanceof BadRequestException ||
+				error instanceof NotFoundException
+			) {
+				throw error;
+			}
 			this.handleDBErrors(error);
 		}
 	}
