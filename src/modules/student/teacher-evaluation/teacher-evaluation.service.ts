@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFeedbackDto, CreateResponseQuestionsDto } from './dto';
 import { student } from '@prisma/client';
@@ -22,55 +22,56 @@ export class TeacherEvaluationService {
 		});
 	}
 
-	async getQuestionsBySection(section_id: number) {
-		return this.prisma.evaluation_question.findMany({
-			where: { section_id },
-		});
-	}
-
-	async createResponseQuestions(
+	// TODO: Implement evaluation for each subject
+	async createResponseEvaluation(
+		user: student,
 		createResponseQuestionDto: CreateResponseQuestionsDto,
 		createFeedbackDto: CreateFeedbackDto,
 	) {
-		// TODO: evaluation_id depends on the period
+		try {
+			const evaluation_date = await this.validateEvaluationDate(
+				user.student_id,
+			);
 
-		const { responses } = createResponseQuestionDto;
-		const [evaluation] = responses;
+			const evaluation = await this.getEvaluation(user);
 
-		return responses;
+			const questions = evaluation.map((e) => e.questions || []);
+			const totalQuestions = questions.flat().length;
 
-		// return { createResponseQuestionDto, createFeedbackDto };
-	}
+			const { student_id } = user;
+			const { responses } = createResponseQuestionDto;
 
-	// Métodos para evaluation
-	async getEvaluationById(evaluation_id: number) {
-		return this.prisma.evaluation.findUnique({
-			where: { evaluation_id },
-		});
-	}
+			if (responses.length < totalQuestions) {
+				throw new BadRequestException(
+					'Todas las preguntas deben de ser contestadas',
+				);
+			}
 
-	async getResponsesByEvaluation(evaluation_id: number) {
-		return this.prisma.evaluation_response.findMany({
-			where: { evaluation_id },
-		});
-	}
-
-	// Métodos para evaluation_feedback
-	async createFeedback(evaluation_id: number, feedback_text: string) {
-		return this.prisma.evaluation_feedback.create({
-			data: { evaluation_id, feedback_text },
-		});
-	}
-
-	async getFeedbackByEvaluation(evaluation_id: number) {
-		return this.prisma.evaluation_feedback.findMany({
-			where: { evaluation_id },
-		});
+			await this.prisma.$transaction([
+				this.prisma.evaluation_response.createMany({
+					data: responses.map(({ evaluation_id, question_id, score }) => ({
+						student_id,
+						evaluation_id,
+						question_id,
+						score,
+					})),
+				}),
+				this.prisma.evaluation_feedback.create({
+					data: {
+						evaluation_id: evaluation_date.evaluation_id,
+						feedback_text: createFeedbackDto.feedback_text,
+					},
+				}),
+			]);
+		} catch (error) {
+			if (error instanceof BadRequestException) {
+				throw error;
+			}
+		}
 	}
 
 	async validateEvaluationDate(student_id: number) {
 		// TODO: validation of evaluation date based on the period
-
 		const { period } = await this.prisma.student_current_status.findFirst({
 			where: { student_id },
 		});
@@ -79,7 +80,22 @@ export class TeacherEvaluationService {
 			where: { period: { name: period } },
 		});
 
-		if (evaluation_date.start_date) {
+		if (evaluation_date.end_date <= new Date()) {
+			throw new BadRequestException(
+				'El perido de evaluacion docente ya ha finalizado',
+			);
 		}
+
+		if (evaluation_date.start_date <= new Date()) {
+			return await this.prisma.evaluation.findFirst({
+				where: {
+					evaluation_date_id: evaluation_date.evaluation_date_id,
+				},
+			});
+		}
+
+		throw new BadRequestException(
+			'No ha sido encontrada una evaluacion para el perido actual',
+		);
 	}
 }

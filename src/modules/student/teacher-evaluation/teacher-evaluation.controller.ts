@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { TeacherEvaluationService } from './teacher-evaluation.service';
 import { CreateFeedbackDto, CreateResponseQuestionsDto } from './dto';
-import { Auth } from 'src/auth/decorators';
+import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { student } from '@prisma/client';
 
@@ -13,7 +13,7 @@ export class TeacherEvaluationController {
 
 	@Get()
 	@Auth(ValidRoles.student)
-	async getTeacherEvaluations(user: student) {
+	async getTeacherEvaluations(@GetUser() user: student) {
 		return await this.teacherEvaluationService.getEvaluation(user);
 	}
 
@@ -25,12 +25,15 @@ export class TeacherEvaluationController {
 	}
 
 	@Post('response')
+	@Auth(ValidRoles.student)
 	async createResponseQuestions(
+		@GetUser() user: student,
 		@Body('response-questions')
 		createResponseQuestionsDto: CreateResponseQuestionsDto,
 		@Body('feedback') createFeedbackDto: CreateFeedbackDto,
 	) {
-		return await this.teacherEvaluationService.createResponseQuestions(
+		return await this.teacherEvaluationService.createResponseEvaluation(
+			user,
 			createResponseQuestionsDto,
 			createFeedbackDto,
 		);

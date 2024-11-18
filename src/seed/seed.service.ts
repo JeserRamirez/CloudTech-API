@@ -922,21 +922,21 @@ export class SeedService {
 			const activity = faker.helpers.arrayElement(complementaryActivities);
 
 			// Verifica si la actividad existe antes de hacer la asignación
-			// const activityExists =
-			// 	await this.prisma.complementary_activity.findUnique({
-			// 		where: { id_complementary: activity.id_complementary },
-			// 	});
+			const activityExists =
+				await this.prisma.complementary_activity.findUnique({
+					where: { id_complementary: activity.id_complementary },
+				});
 
-			// if (!activityExists) {
-			// 	throw new Error(
-			// 		`Activity with id ${activity.id_complementary} does not exist.`,
-			// 	);
-			// }
+			if (!activityExists) {
+				throw new Error(
+					`Activity with id ${activity.id_complementary} does not exist.`,
+				);
+			}
 
 			await this.prisma.student_complementary_activities.create({
 				data: {
 					student_id: student.student_id, // ID del estudiante
-					// complementary_activity_id: activity.id_complementary, // ID de la actividad complementaria
+					complementary_activity_id: activity.id_complementary, // ID de la actividad complementaria
 					// status: faker.helpers.arrayElements([
 					// 	'En progreso',
 					// 	'Completado',
@@ -1421,12 +1421,12 @@ export class SeedService {
 
 		for (const student of students2) {
 			// Selecciona un ID de clase aleatorio
-			// const randomClassScheduleId =
-			// 	faker.helpers.arrayElement(classSchedules).id_class_schedule;
+			const randomClassScheduleId =
+				faker.helpers.arrayElement(classSchedules).id_class_schedule;
 
 			await this.prisma.student_current_class.create({
 				data: {
-					// class_schedule_id: randomClassScheduleId, // Asigna el ID de horario de clase aleatorio
+					class_schedule_id: randomClassScheduleId, // Asigna el ID de horario de clase aleatorio
 					student_id: student.student_id, // ID del estudiante
 				},
 			});

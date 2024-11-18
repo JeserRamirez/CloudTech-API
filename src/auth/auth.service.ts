@@ -29,7 +29,8 @@ import { getPeriod, removeAttributes } from 'src/common/helpers';
 import { nanoid } from 'nanoid';
 import { MailService } from './services/mail.service';
 import { TokenExpiredException } from './error';
-import { teacher, student } from '@prisma/client';
+import { teacher, student, carrer } from '@prisma/client';
+import { fakerSK } from '@faker-js/faker/.';
 
 @Injectable()
 export class AuthService {
@@ -232,8 +233,9 @@ export class AuthService {
 
 			if (insReq.payment_status === false) {
 				throw new BadRequestException(
-					`No se puede completar la inscripcion por que no se ha recibido el pago de la inscripcion`
-				);}
+					`No se puede completar la inscripcion por que no se ha recibido el pago de la inscripcion`,
+				);
+			}
 
 			const student = await this.prisma.student.create({
 				data: {
@@ -244,6 +246,8 @@ export class AuthService {
 					period: getPeriod(new Date()),
 				},
 			});
+
+			await this.assignScholarInfo(applicant.applicant_id, student.student_id);
 
 			await this.prisma.$transaction([
 				this.prisma.general_data.updateMany({
@@ -270,7 +274,6 @@ export class AuthService {
 
 			return { ...cleanedStudent, token };
 		} catch (error) {
-			
 			if (
 				error instanceof BadRequestException ||
 				error instanceof NotFoundException
@@ -671,6 +674,64 @@ export class AuthService {
 		const token = this.jwtService.sign(payload);
 
 		return token;
+	}
+
+	async assignScholarInfo(applicant_id: number, student_id: number) {
+		const { career, career_model } =
+			await this.prisma.applicant_payment_token.findFirst({
+				where: {
+					applicant_id,
+				},
+			});
+
+		const carrer = await this.prisma.carrer.findFirst({
+			where: {
+				AND: [{ carrer_name: career, modality: career_model }],
+			},
+			select: { id_carrer: true },
+		});
+
+		const { id_general_data } = await this.prisma.general_data.findFirst({
+			where: {
+				applicant_id: applicant_id,
+			},
+		});
+
+		this.prisma.$transaction([
+			this.prisma.student_kardex_plan.create({
+				data: {
+					complete: false,
+					end_semester: 0,
+					general_data: {
+						connect: { id_general_data },
+					},
+					study_plan: {
+						connect: { id_carrer: carrer.id_carrer },
+					},
+				},
+			}),
+			// TODO: Completar el auth
+			this.prisma.student_current_status.create({
+				data: {
+					student: {
+						connect: { student_id },
+					},
+					carrer: {
+						connect: { id_carrer: carrer.id_carrer },
+					},
+				},
+			}),
+			this.prisma.scholar_data.create({
+				data: {
+					validate_periods: false,
+					accumulated_credits: 0,
+					status: 'active',
+					general_data: {
+						connect: { id_general_data },
+					},
+				},
+			}),
+		]);
 	}
 
 	private handleDBErrors(error: any): never {

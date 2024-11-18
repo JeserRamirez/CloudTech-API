@@ -9,9 +9,9 @@ datasource db {
 
 generator erd {
   provider = "prisma-erd-generator"
-  output = "../ERD.svg"
-  theme = "dark"
-  // disabled = true 
+  output   = "../ERD.svg"
+  theme    = "dark"
+  // disabled = true
 }
 
 model applicant {
@@ -251,19 +251,18 @@ model examn_applicant {
 }
 
 model applicant_payment_inscription {
-  id_payment_inscription    Int      @id @default(autoincrement())
-  inscription_token         String?   @unique @db.VarChar(255)
-  inscription_request_date  DateTime? @default(now()) @db.Timestamp(6)
-  state                     String   @db.VarChar(255)
-  payment_status            Boolean? @db.Boolean
+  id_payment_inscription   Int       @id @default(autoincrement())
+  inscription_token        String?   @unique @db.VarChar(255)
+  inscription_request_date DateTime? @default(now()) @db.Timestamp(6)
+  state                    String    @db.VarChar(255)
+  payment_status           Boolean?  @db.Boolean
 
-  payment_method            String @db.VarChar(255) 
-  reference_number          String @db.VarChar(255)
-  total_amount_to_pay       Decimal? @db.Decimal(10, 2)
-
+  payment_method      String   @db.VarChar(255)
+  reference_number    String   @db.VarChar(255)
+  total_amount_to_pay Decimal? @db.Decimal(10, 2)
 
   created_at DateTime @default(now())
-  updated_at DateTime  @updatedAt
+  updated_at DateTime @updatedAt
 
   fees_id Int? // Referencia al período
   fees    fees? @relation(fields: [fees_id], references: [id])
@@ -271,7 +270,7 @@ model applicant_payment_inscription {
   examn_applicant_id Int?
   examn_applicant    examn_applicant? @relation(fields: [examn_applicant_id], references: [id_examn_applicant], onDelete: Cascade, onUpdate: Cascade)
 
-  applicant_id Int? @unique
+  applicant_id Int?       @unique
   applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id])
 }
 
@@ -382,7 +381,7 @@ model subject_plan_relation {
 model student_kardex_plan {
   id_kardex        Int      @id @default(autoincrement())
   id_study_plan    Int?
-  id_plan_relation Int?     @db.Integer
+  id_plan_relation Int?     @db.Integer // ???????????
   complete         Boolean? @db.Boolean
   end_semester     Int?     @db.Integer
 
@@ -401,6 +400,7 @@ model student_current_class {
 
   grades_current      grades_current[]
   evaluation_feedback evaluation_feedback[]
+  evaluation_response evaluation_response[]
 }
 
 model group {
@@ -649,12 +649,14 @@ model evaluation_response {
   response_id Int @id @default(autoincrement())
   score       Int // Rango permitido: 1 a 5, validación en la aplicación
 
-  evaluation_id Int
-  evaluation    evaluation          @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
-  question_id   Int
-  question      evaluation_question @relation(fields: [question_id], references: [question_id], onUpdate: Cascade, onDelete: Cascade)
-  student_id    Int
-  student       student             @relation(fields: [student_id], references: [student_id], onUpdate: Cascade, onDelete: Cascade)
+  evaluation_id            Int
+  evaluation               evaluation             @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
+  question_id              Int
+  question                 evaluation_question    @relation(fields: [question_id], references: [question_id], onUpdate: Cascade, onDelete: Cascade)
+  student_id               Int
+  student                  student                @relation(fields: [student_id], references: [student_id], onUpdate: Cascade, onDelete: Cascade)
+  student_current_class_id Int?
+  student_current_class    student_current_class? @relation(fields: [student_current_class_id], references: [id_current_class], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model evaluation_feedback {

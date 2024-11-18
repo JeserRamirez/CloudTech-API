@@ -5,8 +5,8 @@ import { AuthModule } from 'src/auth/auth.module';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule],
-  controllers: [InscriptionController],
-  providers: [InscriptionService],
+	imports: [PrismaModule, AuthModule],
+	controllers: [InscriptionController],
+	providers: [InscriptionService],
 })
 export class InscriptionModule {}
