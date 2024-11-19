@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 
 export class CreateFeedbackDto {
 	@ApiProperty({
@@ -9,4 +9,6 @@ export class CreateFeedbackDto {
 	})
 	@IsString()
 	feedback_text: string;
+	@IsNumber()
+	current_class_id: number;
 }

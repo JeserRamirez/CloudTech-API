@@ -44,6 +44,7 @@ model student {
   student_current_class student_current_class[]
   evaluation_response   evaluation_response[]
   student_enrollment    student_enrollment[]
+  evaluation_feedback   evaluation_feedback[]
 }
 
 model reset_password {
@@ -88,22 +89,23 @@ model student_personal_data {
   lastname                 String?   @db.VarChar
   birthdate                DateTime? @db.Timestamp(6)
   curp                     String?   @db.VarChar
-  street_name              String?   @db.VarChar
-  street_number            String?   @db.VarChar
+
+  street_name           String? @db.VarChar
+  street_number         String? @db.VarChar
   // city                     String?   @db.VarChar
-  state_of_birth           String?   @db.VarChar // Estado de nacimiento
-  state                    String?   @db.VarChar // Estado actual
-  municipality_of_birth    String?   @db.VarChar // Municipio de nacimiento
-  home_phone               String?   @db.VarChar // Teléfono de domicilio
-  mobile_phone             String?   @db.VarChar // Teléfono celular
-  neighborhood             String?   @db.VarChar // Colonia
-  company                  String?   @db.VarChar // Empresa (opcional)
-  cp                       String?   @db.VarChar
-  personal_email           String?   @db.VarChar
-  schoolar_email           String?   @db.VarChar
-  civil_status             String?   @db.VarChar
-  laboral_status           String?   @db.VarChar
-  rfc                      String?   @db.VarChar
+  state_of_birth        String? @db.VarChar // Estado de nacimiento
+  state                 String? @db.VarChar // Estado actual
+  municipality_of_birth String? @db.VarChar // Municipio de nacimiento
+  home_phone            String? @db.VarChar // Teléfono de domicilio
+  mobile_phone          String? @db.VarChar // Teléfono celular
+  neighborhood          String? @db.VarChar // Colonia
+  company               String? @db.VarChar // Empresa (opcional)
+  cp                    String? @db.VarChar
+  personal_email        String? @db.VarChar
+  schoolar_email        String? @db.VarChar
+  civil_status          String? @db.VarChar
+  laboral_status        String? @db.VarChar
+  rfc                   String? @db.VarChar
 
   general_data_id Int?          @unique
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
@@ -582,7 +584,6 @@ model student_current_status {
   completed_subjects  Int?    @db.Integer
   current_subjects    Int?    @db.Integer
   accumulated_credits Int?    @db.Integer
-  period              String? @db.VarChar
 
   student student? @relation(fields: [student_id], references: [student_id])
   carrer  carrer?  @relation(fields: [carrer_id], references: [id_carrer])
@@ -665,6 +666,8 @@ model evaluation_feedback {
 
   evaluation_id            Int // Relación con la evaluación
   evaluation               evaluation             @relation(fields: [evaluation_id], references: [evaluation_id], onUpdate: Cascade, onDelete: Cascade)
+  student_id               Int
+  student                  student                @relation(fields: [student_id], references: [student_id], onUpdate: Cascade, onDelete: Cascade)
   student_current_class_id Int?
   student_current_class    student_current_class? @relation(fields: [student_current_class_id], references: [id_current_class], onDelete: Cascade, onUpdate: Cascade)
 
