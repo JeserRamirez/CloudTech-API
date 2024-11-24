@@ -41,10 +41,12 @@ model student {
 
   student_complementary_activities student_complementary_activities[]
 
-  student_current_class student_current_class[]
-  evaluation_response   evaluation_response[]
-  student_enrollment    student_enrollment[]
-  evaluation_feedback   evaluation_feedback[]
+  student_current_class         student_current_class[]
+  evaluation_response           evaluation_response[]
+  student_enrollment            student_enrollment[]
+  evaluation_feedback           evaluation_feedback[]
+  debts_to_departments          debts_to_departments[]
+  student_payment_reinscription student_payment_reinscription[]
 }
 
 model reset_password {
@@ -276,6 +278,22 @@ model applicant_payment_inscription {
   applicant    applicant? @relation(fields: [applicant_id], references: [applicant_id])
 }
 
+model student_payment_reinscription {
+  id_student_reinscription   Int       @id @default(autoincrement())
+  reinscription_token        String?   @unique @db.VarChar(255)
+  reinscription_request_date DateTime? @default(now()) @db.Timestamp(6)
+  validation_date            DateTime? @db.Timestamp(6)
+  authorization              String?   @db.VarChar(255)
+
+  payment_status Boolean? @db.Boolean
+
+  student_id Int?
+  student    student? @relation(fields: [student_id], references: [student_id])
+
+  fees_id Int? // Referencia al período
+  fees    fees? @relation(fields: [fees_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
 model fees {
   id         Int      @id @default(autoincrement())
   fee_type   String // Ejemplo: 'preficha', 'inscripción', 'reinscripción'
@@ -292,6 +310,21 @@ model fees {
 
   applicant_payment_token       applicant_payment_token[]
   applicant_payment_inscription applicant_payment_inscription[]
+  debts_to_departments          debts_to_departments[]
+  student_payment_reinscription student_payment_reinscription[]
+}
+
+model debts_to_departments {
+  id_debt_to_department Int     @id @default(autoincrement())
+  department            String?
+  description           String?
+  state                 String?
+
+  student_id Int?
+  student    student? @relation(fields: [student_id], references: [student_id])
+
+  fees_id Int? // Referencia al período
+  fees    fees? @relation(fields: [fees_id], references: [id])
 }
 
 model period {

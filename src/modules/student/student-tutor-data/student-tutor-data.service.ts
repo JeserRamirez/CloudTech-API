@@ -26,7 +26,7 @@ export class StudentTutorDataService {
 				message: `There is no tutor data of the user ${user.control_number}`,
 			});
 
-		const cleanedData = removeAttributes(student_tutor_data, [
+		const cleanedData = removeAttributes(student_tutor_data[0], [
 			'general_data_id',
 			'id_student_tutor_data',
 		]);

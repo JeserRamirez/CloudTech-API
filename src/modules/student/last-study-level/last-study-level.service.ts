@@ -26,7 +26,7 @@ export class LastStudyLevelService {
 				message: `There is no last study level data of the user ${user.control_number}`,
 			});
 
-		const cleanedData = removeAttributes(last_study_Level, [
+		const cleanedData = removeAttributes(last_study_Level[0], [
 			'general_data_id',
 			'id_last_study_Level',
 		]);
