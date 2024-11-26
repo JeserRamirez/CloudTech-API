@@ -6,11 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { student } from '@prisma/client';
-
-interface ReinscriptionDate {
-	start_date: Date;
-	deadline: Date;
-}
+import { ReinscriptionDate } from './interfaces';
 
 @Injectable()
 export class PaymentOfServicesService {

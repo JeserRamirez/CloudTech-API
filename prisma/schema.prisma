@@ -8,10 +8,10 @@ datasource db {
 }
 
 generator erd {
-  provider = "prisma-erd-generator"
-  output   = "../rds.svg"
+  provider  = "prisma-erd-generator"
+  output    = "../rds.svg"
   relations = true
-  theme    = "dark"
+  theme     = "dark"
   // disabled = true
 }
 
@@ -422,7 +422,7 @@ model student_kardex_plan {
   complete         Boolean? @db.Boolean
   end_semester     Int?     @db.Integer
 
-  general_data_id Int?          
+  general_data_id Int?
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
   study_plan      study_plan?   @relation(fields: [id_study_plan], references: [id_study_plan], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -589,7 +589,6 @@ model assing_general_competence_edit {
 model curse_following_grades_themes {
   id_curse_following_grades_themes Int  @id @default(autoincrement())
   assing_general_data_subject_id   Int?
-  
 
   assing_general_data_subject assing_general_data_subject? @relation(fields: [assing_general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
 
@@ -621,8 +620,8 @@ model student_current_status {
   current_subjects    Int?    @db.Integer
   accumulated_credits Int?    @db.Integer
 
-  student student? @relation(fields: [student_id], references: [student_id])
-  carrer  carrer?  @relation(fields: [carrer_id], references: [id_carrer])
+  student student? @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
+  carrer  carrer?  @relation(fields: [carrer_id], references: [id_carrer], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model complementary_activity {

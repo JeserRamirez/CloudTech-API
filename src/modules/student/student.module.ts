@@ -9,6 +9,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { DebtsToDepartmentsModule } from './debts-to-departments/debts-to-departments.module';
 import { PaymentOfServicesModule } from './payment-of-services/payment-of-services.module';
 import { ScheduleModule } from './schedule-grades/schedule.module';
+import { ScholarInfoModule } from './scholar-info/scholar-info.module';
 
 @Module({
 	imports: [
@@ -22,6 +23,7 @@ import { ScheduleModule } from './schedule-grades/schedule.module';
 		DebtsToDepartmentsModule,
 		PaymentOfServicesModule,
 		ScheduleModule,
+		ScholarInfoModule,
 	],
 })
 export class StudentModule {}

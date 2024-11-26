@@ -29,8 +29,7 @@ import { getPeriod, removeAttributes } from 'src/common/helpers';
 import { nanoid } from 'nanoid';
 import { MailService } from './services/mail.service';
 import { TokenExpiredException } from './error';
-import { teacher, student, carrer } from '@prisma/client';
-import { fakerSK } from '@faker-js/faker/.';
+import { teacher, student } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -247,7 +246,21 @@ export class AuthService {
 				},
 			});
 
-			await this.assignScholarInfo(applicant.applicant_id, student.student_id);
+			try {
+				// Intentar asignar la información de beca
+				await this.assignScholarInfo(
+					applicant.applicant_id,
+					student.student_id,
+				);
+			} catch (error) {
+				// Si falla, eliminar el estudiante y lanzar la excepción
+				await this.prisma.student.delete({
+					where: { student_id: student.student_id },
+				});
+				throw new BadRequestException(
+					`Error al asignar la informacion escolar al estudiante: ${error.message}`,
+				);
+			}
 
 			await this.prisma.$transaction([
 				this.prisma.general_data.updateMany({
@@ -677,61 +690,91 @@ export class AuthService {
 	}
 
 	async assignScholarInfo(applicant_id: number, student_id: number) {
-		const { career, career_model } =
-			await this.prisma.applicant_payment_token.findFirst({
-				where: {
-					applicant_id,
-				},
+		try {
+			// Obtener datos de carrera desde applicant_payment_token
+			const paymentToken = await this.prisma.applicant_payment_token.findFirst({
+				where: { applicant_id },
 			});
 
-		const carrer = await this.prisma.carrer.findFirst({
-			where: {
-				AND: [{ carrer_name: career, modality: career_model }],
-			},
-			select: { id_carrer: true },
-		});
+			if (!paymentToken) {
+				throw new NotFoundException(
+					`No se encontró información de carrera para el aspirante con ID: ${applicant_id}`,
+				);
+			}
 
-		const { id_general_data } = await this.prisma.general_data.findFirst({
-			where: {
-				applicant_id: applicant_id,
-			},
-		});
+			const { career, career_model } = paymentToken;
 
-		this.prisma.$transaction([
-			this.prisma.student_kardex_plan.create({
-				data: {
-					complete: false,
-					end_semester: 0,
-					general_data: {
-						connect: { id_general_data },
-					},
-					study_plan: {
-						connect: { id_carrer: carrer.id_carrer },
-					},
+			// Obtener carrera
+			const carrer = await this.prisma.carrer.findFirst({
+				where: {
+					AND: [{ carrer_name: career }, { modality: career_model }],
 				},
-			}),
-			// TODO: Completar el auth
-			this.prisma.student_current_status.create({
-				data: {
-					student: {
-						connect: { student_id },
+				select: { id_carrer: true },
+			});
+
+			if (!carrer) {
+				throw new NotFoundException(
+					`No se encontró la carrera "${career}" con la modalidad "${career_model}"`,
+				);
+			}
+
+			// Obtener datos generales
+			const generalData = await this.prisma.general_data.findFirst({
+				where: { applicant_id },
+			});
+
+			if (!generalData) {
+				throw new NotFoundException(
+					`No se encontraron datos generales para el aspirante con ID: ${applicant_id}`,
+				);
+			}
+
+			const { id_general_data } = generalData;
+
+			// Ejecutar transacción
+			await this.prisma.$transaction([
+				this.prisma.student_kardex_plan.create({
+					data: {
+						complete: false,
+						end_semester: 0,
+						general_data: {
+							connect: { id_general_data },
+						},
+						study_plan: {
+							connect: { id_carrer: carrer.id_carrer },
+						},
 					},
-					carrer: {
-						connect: { id_carrer: carrer.id_carrer },
+				}),
+				this.prisma.student_current_status.create({
+					data: {
+						student: {
+							connect: { student_id },
+						},
+						carrer: {
+							connect: { id_carrer: carrer.id_carrer },
+						},
 					},
-				},
-			}),
-			this.prisma.scholar_data.create({
-				data: {
-					validate_periods: false,
-					accumulated_credits: 0,
-					status: 'active',
-					general_data: {
-						connect: { id_general_data },
+				}),
+				this.prisma.scholar_data.create({
+					data: {
+						validate_periods: false,
+						accumulated_credits: 0,
+						status: 'active',
+						general_data: {
+							connect: { id_general_data },
+						},
 					},
-				},
-			}),
-		]);
+				}),
+			]);
+		} catch (error) {
+			if (
+				error instanceof NotFoundException ||
+				error instanceof BadRequestException
+			) {
+				throw error;
+			}
+			throw new Error(`Error al asignar información de beca: ${error.message}`);
+		}
 	}
 
 	private handleDBErrors(error: any): never {
