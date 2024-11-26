@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { student } from '@prisma/client';
 
@@ -7,7 +7,7 @@ export class ScholarInfoService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async getStudentInfo(user: student) {
-		return await this.prisma.general_data.findFirst({
+		const scholar_info = await this.prisma.general_data.findFirst({
 			where: { student_id: user.student_id },
 			select: {
 				student: {
@@ -33,5 +33,13 @@ export class ScholarInfoService {
 				},
 			},
 		});
+
+		if (!scholar_info) {
+			throw new NotFoundException(
+				'No ha sido encontrada la informacion escolar del usuario',
+			);
+		}
+
+		return scholar_info;
 	}
 }

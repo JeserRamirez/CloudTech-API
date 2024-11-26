@@ -15,7 +15,33 @@ export class ScholarInfoController {
 		status: 200,
 		content: {
 			'application/json': {
-				example: {},
+				example: {
+					student: {
+						control_number: '20230239',
+					},
+					student_personal_data: [
+						{
+							firstname: 'Jeser',
+							lastname: 'Ramirez Estrada',
+							curp: 'RAEJ020717HVZMSSA2',
+						},
+					],
+					student_kardex_plan: [
+						{
+							study_plan: {
+								name: 'ISC-2010',
+								carrer: {
+									carrer_name: 'ingenieria en sistemas computacionales',
+									student_current_status: [
+										{
+											semester: 2,
+										},
+									],
+								},
+							},
+						},
+					],
+				},
 			},
 		},
 	})
