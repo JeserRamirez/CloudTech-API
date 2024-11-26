@@ -5,6 +5,7 @@ import { PreventiveDataModule } from './preventive-data/preventive-data.module';
 import { LastStudyLevelModule } from './last-study-level/last-study-level.module';
 import { TeacherEvaluationModule } from './teacher-evaluation/teacher-evaluation.module';
 import { ComplementaryActivitiesModule } from './complementary-activities/complementary-activities.module';
+import { ScheduleModule } from './schedule-grades/schedule.module';
 
 @Module({
 	imports: [
@@ -14,6 +15,7 @@ import { ComplementaryActivitiesModule } from './complementary-activities/comple
 		LastStudyLevelModule,
 		TeacherEvaluationModule,
 		ComplementaryActivitiesModule,
+		ScheduleModule,
 	],
 })
 export class StudentModule {}
