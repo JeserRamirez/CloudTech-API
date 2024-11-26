@@ -26,7 +26,7 @@ export class PreventiveDataService {
 				message: `There is no preventive data of the user ${user.curp}`,
 			});
 
-		const cleanedData = removeAttributes(preventive_data, [
+		const cleanedData = removeAttributes(preventive_data[0], [
 			'general_data_id',
 			'id_preventive_data',
 		]);

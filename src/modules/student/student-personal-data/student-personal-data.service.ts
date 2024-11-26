@@ -26,7 +26,7 @@ export class StudentPersonalDataService {
 				message: `There is no personal data of the user ${user.control_number}`,
 			});
 
-		const cleanedData = removeAttributes(student_personal_data, [
+		const cleanedData = removeAttributes(student_personal_data[0], [
 			'general_data_id',
 			'id_student_personal_data',
 		]);
