@@ -9,7 +9,8 @@ datasource db {
 
 generator erd {
   provider = "prisma-erd-generator"
-  output   = "../ERD.svg"
+  output   = "../rds.svg"
+  relations = true
   theme    = "dark"
   // disabled = true
 }
@@ -420,7 +421,7 @@ model student_kardex_plan {
   complete         Boolean? @db.Boolean
   end_semester     Int?     @db.Integer
 
-  general_data_id Int?          @unique
+  general_data_id Int?          
   general_data    general_data? @relation(fields: [general_data_id], references: [id_general_data], onDelete: Cascade, onUpdate: Cascade)
   study_plan      study_plan?   @relation(fields: [id_study_plan], references: [id_study_plan], onDelete: Cascade, onUpdate: Cascade)
 }
@@ -587,6 +588,7 @@ model assing_general_competence_edit {
 model curse_following_grades_themes {
   id_curse_following_grades_themes Int  @id @default(autoincrement())
   assing_general_data_subject_id   Int?
+  
 
   assing_general_data_subject assing_general_data_subject? @relation(fields: [assing_general_data_subject_id], references: [id_general_data_subject], onDelete: Cascade, onUpdate: Cascade)
 

@@ -8,6 +8,7 @@ import { ComplementaryActivitiesModule } from './complementary-activities/comple
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { DebtsToDepartmentsModule } from './debts-to-departments/debts-to-departments.module';
 import { PaymentOfServicesModule } from './payment-of-services/payment-of-services.module';
+import { ScheduleModule } from './schedule-grades/schedule.module';
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import { PaymentOfServicesModule } from './payment-of-services/payment-of-servic
 		PrismaModule,
 		DebtsToDepartmentsModule,
 		PaymentOfServicesModule,
+		ScheduleModule,
 	],
 })
 export class StudentModule {}
