@@ -336,8 +336,9 @@ model period {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  fees            fees[]
-  evaluation_date evaluation_date[]
+  fees               fees[]
+  evaluation_date    evaluation_date[]
+  reinscription_date reinscription_date[]
 }
 
 model carrer {
@@ -714,6 +715,18 @@ model student_enrollment {
   enrollment_id   Int      @id @default(autoincrement())
   enrollment_date DateTime @db.Timestamp(6)
 
-  student_id Int?
-  student    student? @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
+  student_id            Int?
+  student               student?            @relation(fields: [student_id], references: [student_id], onDelete: Cascade, onUpdate: Cascade)
+  id_reinscription_date Int?
+  reinscription_date    reinscription_date? @relation(fields: [id_reinscription_date], references: [id_reinscription_date])
+}
+
+model reinscription_date {
+  id_reinscription_date Int      @id @default(autoincrement())
+  start_date            DateTime @db.Timestamp(6)
+  deadline              DateTime @db.Timestamp(6)
+
+  period_id          Int // Referencia al período
+  period             period               @relation(fields: [period_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  student_enrollment student_enrollment[]
 }
